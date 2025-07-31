@@ -123,6 +123,27 @@
       line-height: 1.5;
       color: #ddd;
     }
+
+    .announcement {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border: 1px solid #444;
+      background-color: #1a1a1a;
+      border-radius: 8px;
+    }
+    .announcement img {
+      width: 64px;
+      height: auto;
+    }
+    .announcement .text-content h2 {
+      margin: 0 0 0.25rem 0;
+    }
+    .announcement .text-content p {
+      margin: 0;
+      color: #ccc;
+    }
     
   </style>
 </head>
@@ -134,6 +155,15 @@
     <a href="ProfitSpliter.html">Profit Splitter</a>
   </div>
 
+  <div class="announcement">
+    <img src="https://img.icons8.com/ios-filled/150/ffffff/information.png" alt="Announcements Icon" />
+    <div class="text-content">
+      <h2>Work In Progress Information Here</h2>
+      <p>A paragraph. I mean, it will be. It has potential.</p>
+    </div>
+  </div>
+
+  
   <div class="button-row">
 
     <div class="app-button" onclick="location.href='Yield2Sell.html'">
@@ -168,15 +198,6 @@
     </div>
   </div>
 
-  <div class="Announcements">
-    <img src="https://img.icons8.com/ios-filled/150/ffffff/information.png" alt="Announcements Image" />
-    <div class="text-content">
-      <h2>Work In Progress Information Here</h2>
-      <p>
-        A paragraph. I mean, it will be. It has potential.
-      </p>
-    </div>
-  </div>
   <script>
     // Highlight active tab based on current filename
     const path = window.location.pathname;
