@@ -163,3 +163,5 @@ const Yield2SellItemPrices = {
     "STARLIGHT SERVICE STATION, PYRO": 2315
   }
 };
+
+const itemPrices = Yield2SellItemPrices;
