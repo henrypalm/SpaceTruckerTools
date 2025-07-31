@@ -71,5 +71,18 @@
   <button onclick="location.href='CargoManifestWriter.html'">Cargo Manifest Writer</button>
   <button onclick="location.href='Yield2Sell.html'">Yield 2 Sell</button>
   <button onclick="location.href='ProfitSplitter.html'">Profit Splitter</button>
+
+  <script>
+    // Highlight active tab based on current filename
+    const path = window.location.pathname;
+    const page = path.substring(path.lastIndexOf('/') + 1);
+    const tabs = document.querySelectorAll('.nav-tabs a');
+    tabs.forEach(tab => {
+      if (tab.getAttribute('href') === page) {
+        tab.classList.add('active');
+      }
+    });
+  </script>
+
 </body>
 </html>
