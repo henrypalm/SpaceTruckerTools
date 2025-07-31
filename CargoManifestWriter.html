@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SC Cargo Manifest</title>
+  <title>Cargo Manifest Writer</title>
   <link rel="icon" href="logo.ico" type="image/x-icon" />
   <style>
     body {
@@ -107,7 +107,7 @@
 </head>
 <body>
   <input type="text" id="manifestTitle" placeholder="Enter manifest title..." />
-  <h1 id="manifestTitleDisplay">Cargo Manifest Calculator</h1>
+  <h1 id="manifestTitleDisplay">Cargo Manifest Writer</h1>
 
   <details open>
     <summary>Ship Mining</summary>
@@ -164,8 +164,8 @@
     <div id="grandTotalDisplay">Total: 0 aUEC</div>
   </div>
 
-  <script src="itemPrices.js"></script>
-  <script src="itemColors.js"></script>
+  <script src="CargoManifestWriterItemPrices.js"></script>
+  <script src="CargoManifestWriterItemColors.js"></script>
   <script>
     window.onload = function () {
       const shipMiningBody = document.getElementById("shipMiningBody");
