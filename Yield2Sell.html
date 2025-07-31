@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yield 2 Sell</title>
+  <link rel="icon" href="logo.ico" type="image/x-icon" />
+  <style>
+    body {
+      background-color: #000;
+      color: #00FF00;
+      font-family: Helvetica, sans-serif;
+      padding: 10px 15px;
+      margin: 0;
+      font-size: 12px;
+    }
+
+    .title {
+      color: #FFD700;
+      font-size: 18px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .total-top {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-align: center;
+      color: #FFD700;
+    }
+
+    label, select, input, button {
+      font-size: 12px;
+    }
+
+    .refinery {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+    }
+
+    .refinery input {
+      background: #111;
+      color: #00FF00;
+      border: none;
+      padding: 5px;
+      margin-top: 2px;
+      font-size: 12px;
+    }
+
+    .item-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item {
+      background: #111;
+      padding: 6px 8px;
+      border-radius: 6px;
+    }
+
+    .item-label {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .row input, .row select {
+      flex: 1 1 100px;
+      padding: 4px 6px;
+      background: #1a1a1a;
+      color: #00FF00;
+      border: none;
+      font-size: 12px;
+    }
+
+    .row button {
+      background: red;
+      color: white;
+      border: none;
+      padding: 4px 6px;
+      font-weight: bold;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 4px;
+      background: #000;
+      padding: 4px;
+      font-family: monospace;
+      font-size: 11px;
+      min-height: 18px;
+    }
+
+    .total {
+      font-size: 16px;
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .actions {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .actions button {
+      background: #FFD700;
+      color: black;
+      padding: 6px 10px;
+      margin: 3px;
+      border: none;
+      font-weight: bold;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .actions .clear {
+      background: lime;
+    }
+
+    .ready-container {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #111;
+      border-radius: 6px;
+    }
+
+    .ready-container label {
+      display: block;
+      margin-bottom: 4px;
+      color: #FFD700;
+    }
+
+    .ready-container input {
+      width: 60px;
+      margin-right: 10px;
+    }
+
+    .ready-time {
+      margin-top: 6px;
+      font-family: monospace;
+      font-size: 13px;
+      color: #00FF00;
+    }
+
+    @media (max-width: 600px) {
+      .row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="title">Yield 2 Sell</div>
+
+  <div class="total-top" id="totalDisplayTop">Total: 0.00 aUEC</div>
+
+  <div class="refinery">
+    <label>Refinery Location:
+      <input id="refineryTitle" placeholder="Enter refinery name..." />
+    </label>
+  </div>
+
+  <div id="itemsContainer" class="item-container"></div>
+
+  <div class="total" id="totalDisplay">Total: 0.00 aUEC</div>
+
+  <!-- NEW: Order Ready Time Inputs -->
+  <div class="ready-container">
+    <label>Order estimated ready at:</label>
+    <div class="row">
+      <input type="number" id="hoursInput" placeholder="Hours" min="0" />
+      <input type="number" id="minutesInput" placeholder="Minutes" min="0" />
+    </div>
+    <div class="ready-time" id="readyTimeOutput">Ready at: —</div>
+  </div>
+
+  <div class="actions">
+    <button onclick="exportToFile('txt')">Export to TXT</button>
+    <button onclick="exportToFile('csv')">Export to CSV</button>
+    <button class="clear" onclick="clearAll()">Clear All</button>
+  </div>
+
+  <script src="itemPrices.js"></script>
+  <script src="itemColors.js"></script>
+  <script>
+    const itemsContainer = document.getElementById('itemsContainer');
+    const totalDisplay = document.getElementById('totalDisplay');
+    const totalDisplayTop = document.getElementById('totalDisplayTop');
+    const entries = {};
+
+    // READY TIME references
+    const hoursInput = document.getElementById("hoursInput");
+    const minutesInput = document.getElementById("minutesInput");
+    const readyTimeOutput = document.getElementById("readyTimeOutput");
+
+    // Estimate Ready Time logic
+    function updateReadyTime() {
+      const hours = parseInt(hoursInput.value) || 0;
+      const minutes = parseInt(minutesInput.value) || 0;
+
+      const now = new Date();
+      now.setHours(now.getHours() + hours);
+      now.setMinutes(now.getMinutes() + minutes);
+
+      const readyTimeStr = now.toLocaleString();
+      readyTimeOutput.textContent = `Ready at: ${readyTimeStr}`;
+      return readyTimeStr;
+    }
+
+    hoursInput.addEventListener("input", updateReadyTime);
+    minutesInput.addEventListener("input", updateReadyTime);
+
+    // BUILD ITEMS
+    for (const [item, locations] of Object.entries(itemPrices)) {
+      const container = document.createElement('div');
+      container.className = 'item';
+
+      const label = document.createElement('div');
+      label.className = 'item-label';
+      label.textContent = item;
+      label.style.color = itemColors[item] || '#00FF00';
+      container.appendChild(label);
+
+      const row = document.createElement('div');
+      row.className = 'row';
+
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.placeholder = 'Yield amount...';
+
+      const select = document.createElement('select');
+      for (const loc of Object.keys(locations)) {
+        const opt = document.createElement('option');
+        opt.value = loc;
+        opt.textContent = loc;
+        select.appendChild(opt);
+      }
+
+      const clear = document.createElement('button');
+      clear.textContent = "❌";
+      clear.onclick = () => {
+        input.value = '';
+        result.textContent = '';
+        calculateTotal();
+      };
+
+      row.appendChild(input);
+      row.appendChild(select);
+      row.appendChild(clear);
+      container.appendChild(row);
+
+      const result = document.createElement('div');
+      result.className = 'result';
+      container.appendChild(result);
+
+      itemsContainer.appendChild(container);
+
+      entries[item] = { input, select, result, locations };
+
+      input.addEventListener('input', calculateTotal);
+      select.addEventListener('change', calculateTotal);
+    }
+
+    function calculateTotal() {
+      let total = 0;
+      for (const item in entries) {
+        const { input, select, result, locations } = entries[item];
+        const raw = input.value;
+        if (!raw) {
+          result.textContent = '';
+          continue;
+        }
+        const value = parseFloat(raw);
+        if (isNaN(value)) {
+          result.textContent = 'Invalid input';
+          continue;
+        }
+        const units = Math.floor(value / 100);
+        const location = select.value;
+        const price = locations[location] || 0;
+        const itemTotal = units * price;
+        result.textContent = `${units} × ${price} = ${itemTotal.toLocaleString()} aUEC (${location})`;
+        total += itemTotal;
+      }
+      const formattedTotal = total.toLocaleString();
+      totalDisplay.textContent = `Total: ${formattedTotal} aUEC`;
+      totalDisplayTop.textContent = `Total: ${formattedTotal} aUEC`;
+    }
+
+    function clearAll() {
+      document.getElementById('refineryTitle').value = '';
+      hoursInput.value = '';
+      minutesInput.value = '';
+      readyTimeOutput.textContent = 'Ready at: —';
+      for (const item in entries) {
+        const { input, result } = entries[item];
+        input.value = '';
+        result.textContent = '';
+      }
+      totalDisplay.textContent = "Total: 0.00 aUEC";
+      totalDisplayTop.textContent = "Total: 0.00 aUEC";
+    }
+
+    function exportToFile(type) {
+      const title = document.getElementById('refineryTitle').value || "Untitled";
+      const now = new Date();
+      const timestamp = now.toISOString().replace(/[:.]/g, '-');
+      const fileName = `${title.replace(/\s+/g, '_')}_${timestamp}.${type}`;
+      let content = '';
+      let csv = [["Item", "Units", "Price", "Location", "Total Value"]];
+      let total = 0;
+
+      const readyTime = updateReadyTime(); // Make sure it's current
+
+      content += `Title: ${title}\nDate: ${now.toLocaleString()}\nEstimated Ready Time: ${readyTime}\n\n`;
+
+      for (const item in entries) {
+        const { input, select, locations } = entries[item];
+        const raw = input.value;
+        if (!raw) continue;
+        const value = parseFloat(raw);
+        const units = Math.floor(value / 100);
+        const loc = select.value;
+        const price = locations[loc];
+        const itemTotal = units * price;
+        total += itemTotal;
+
+        content += `${item}: ${units} × ${price} = ${itemTotal} aUEC (${loc})\n`;
+        csv.push([item, units, price, loc, itemTotal]);
+      }
+
+      content += `\nTotal: ${total.toLocaleString()} aUEC`;
+      csv.push([]);
+      csv.push(["Total", "", "", "", total]);
+      csv.push(["Estimated Ready Time", "", "", "", readyTime]);
+
+      const blob = new Blob([
+        type === "csv"
+          ? csv.map(r => r.join(",")).join("\n")
+          : content
+      ], { type: type === "csv" ? "text/csv" : "text/plain" });
+
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
