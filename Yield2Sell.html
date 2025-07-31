@@ -190,6 +190,7 @@
   <div class="actions">
     <button onclick="exportToFile('txt')">Export to TXT</button>
     <button onclick="exportToFile('csv')">Export to CSV</button>
+    <button onclick="copyToClipboard()">Copy to Clipboard</button>
     <button class="clear" onclick="clearAll()">Clear All</button>
   </div>
 
@@ -359,6 +360,70 @@
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    }
+
+    function copyToClipboard() {
+      // Gather the text you want to copy; for example, let's copy the export TXT content
+      const title = document.getElementById('refineryTitle').value || "Untitled";
+      const now = new Date();
+      const readyTime = updateReadyTime();
+    
+      let content = `Title: ${title}\nDate: ${now.toLocaleString()}\nEstimated Ready Time: ${readyTime}\n\n`;
+    
+      for (const item in entries) {
+        const { input, select, locations } = entries[item];
+        const raw = input.value;
+        if (!raw) continue;
+        const value = parseFloat(raw);
+        const units = Math.floor(value / 100);
+        const loc = select.value;
+        const price = locations[loc];
+        const itemTotal = units * price;
+    
+        content += `${item}: ${units} × ${price} = ${itemTotal} aUEC (${loc})\n`;
+      }
+    
+      // Add total at the end
+      let total = 0;
+      for (const item in entries) {
+        const { input, select, locations } = entries[item];
+        const raw = input.value;
+        if (!raw) continue;
+        const value = parseFloat(raw);
+        const units = Math.floor(value / 100);
+        const loc = select.value;
+        const price = locations[loc];
+        total += units * price;
+      }
+      content += `\nTotal: ${total.toLocaleString()} aUEC`;
+    
+      // Use the Clipboard API if available
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(content).then(() => {
+          alert("Copied to clipboard!");
+        }, () => {
+          alert("Failed to copy.");
+        });
+      } else {
+        // fallback for older browsers
+        const textArea = document.createElement("textarea");
+        textArea.value = content;
+        // Avoid scrolling to bottom
+        textArea.style.position = "fixed";
+        textArea.style.top = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+    
+        try {
+          const successful = document.execCommand('copy');
+          alert(successful ? "Copied to clipboard!" : "Failed to copy.");
+        } catch (err) {
+          alert("Failed to copy.");
+        }
+    
+        document.body.removeChild(textArea);
+      }
     }
   </script>
 </body>
