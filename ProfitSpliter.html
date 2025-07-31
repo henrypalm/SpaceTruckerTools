@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Profit Splitter</title>
+  <style>
+    body { background:#111; color:white; font-family:sans-serif; padding:20px; }
+    .entry { display:flex; gap:10px; margin:5px 0; }
+    input, select { padding:5px; font-size:1rem; }
+    button { padding:6px 10px; margin-top:10px; cursor:pointer; }
+    table { width:100%; border-collapse:collapse; margin-top:20px; }
+    td, th { border:1px solid #444; padding:8px; text-align:center; }
+    #results { display:none; }
+  </style>
+</head>
+<body>
+
+<h2>Profit Splitter</h2>
+
+<label>Total Pool: $<input id="pool" type="number" min="0" step="0.01" value="0"></label><br><br>
+<label>Mission Expenses: $<input id="expenses" type="number" min="0" step="0.01" placeholder="Optional"></label><br><br>
+
+<div id="entries"></div>
+<button onclick="addEntry()">+ Add Entry</button>
+<br><br>
+<button onclick="calculate()">Calculate</button>
+<button onclick="copyToClipboard()">Copy to Clipboard</button>
+
+<table id="results">
+  <thead><tr><th>Name</th><th>Type</th><th>Value</th><th>Amount</th></tr></thead>
+  <tbody></tbody>
+  <tfoot><tr><td colspan="3"><b>Total Distributed</b></td><td id="total">$0.00</td></tr></tfoot>
+</table>
+
+<script>
+let entriesDiv = document.getElementById("entries");
+function addEntry(name='', type='Flat Rate', val='') {
+  const div = document.createElement("div");
+  div.className = "entry";
+  div.innerHTML = `
+    <input type="text" placeholder="Name" value="${name}">
+    <select>
+      <option>Flat Rate</option>
+      <option>Percentage</option>
+      <option>Shares</option>
+    </select>
+    <input type="number" placeholder="Value" value="${val}" step="any" min="0">
+    <button onclick="this.parentElement.remove()">Remove</button>
+  `;
+  entriesDiv.appendChild(div);
+}
+
+function calculate() {
+  const pool = parseFloat(document.getElementById("pool").value) || 0;
+  const expenses = parseFloat(document.getElementById("expenses").value) || 0;
+  const rows = entriesDiv.querySelectorAll(".entry");
+  let people = [];
+
+  rows.forEach(row => {
+    const [nameInput, typeSelect, valInput] = row.querySelectorAll("input, select");
+    const name = nameInput.value.trim();
+    const type = typeSelect.value;
+    const value = parseFloat(valInput.value);
+    if (name && !isNaN(value)) {
+      people.push({ name, type, value });
+    }
+  });
+
+  let available = pool - expenses;
+  let flatTotal = 0;
+  let percentTotal = 0;
+  let shareUnits = 0;
+
+  const results = [];
+
+  // Flat Rate first
+  people.filter(p => p.type === "Flat Rate").forEach(p => {
+    flatTotal += p.value;
+    results.push({ ...p, amount: p.value });
+  });
+  available -= flatTotal;
+
+  // Percentage next
+  people.filter(p => p.type === "Percentage").forEach(p => {
+    const amt = available * (p.value / 100);
+    percentTotal += amt;
+    results.push({ ...p, amount: amt });
+  });
+  available -= percentTotal;
+
+  // Shares last
+  people.filter(p => p.type === "Shares").forEach(p => {
+    shareUnits += p.value;
+  });
+
+  const shareValue = shareUnits > 0 ? available / shareUnits : 0;
+
+  people.filter(p => p.type === "Shares").forEach(p => {
+    const amt = p.value * shareValue;
+    results.push({ ...p, amount: amt });
+  });
+
+  // Output table
+  const tbody = document.querySelector("#results tbody");
+  const totalTd = document.getElementById("total");
+  tbody.innerHTML = '';
+  let total = 0;
+
+  results.forEach(r => {
+    total += r.amount;
+    const row = `<tr><td>${r.name}</td><td>${r.type}</td><td>${r.value}</td><td>$${r.amount.toFixed(2)}</td></tr>`;
+    tbody.insertAdjacentHTML('beforeend', row);
+  });
+
+  totalTd.textContent = `$${total.toFixed(2)}`;
+  document.getElementById("results").style.display = "table";
+}
+
+function copyToClipboard() {
+  const table = document.getElementById("results");
+  if (!table || table.style.display === "none") return alert("Run a calculation first.");
+  let txt = "Name\tType\tValue\tAmount\n";
+  table.querySelectorAll("tbody tr").forEach(tr => {
+    const cells = tr.querySelectorAll("td");
+    txt += `${cells[0].textContent}\t${cells[1].textContent}\t${cells[2].textContent}\t${cells[3].textContent}\n`;
+  });
+  navigator.clipboard.writeText(txt).then(() => alert("Copied to clipboard!"));
+}
+</script>
+
+</body>
+</html>
