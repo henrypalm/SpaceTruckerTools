@@ -206,30 +206,53 @@
     <button class="close-btn" onclick="closeAnnouncement()">×</button>
     <img src="https://img.icons8.com/ios-filled/150/ffffff/information.png" alt="Announcements Icon" />
     <div class="text-content">
-      <h2>Work In Progress Information Here</h2>
-      <p>A paragraph. I mean, it will be. It has potential.</p>
+      <h2 id="announcementTitle">Welcome!</h2>
+      <p id="announcementBody">This is the first announcement.</p>
     </div>
-  
-    <!-- ⬅ Previous -->
     <button class="nav-btn prev-btn" onclick="prevAnnouncement()">← Previous</button>
-  
-    <!-- ➡ Next -->
     <button class="nav-btn next-btn" onclick="nextAnnouncement()">Next →</button>
   </div>
-
-
-
+  
   <script>
-    function closeAnnouncement() {
-      document.getElementById("announcementBox").style.display = "none";
-    }
-    function prevAnnouncement() {
-      alert("Previous announcement clicked");
+    const announcements = [
+      {
+        title: "Welcome!",
+        body: "This is the first announcement."
+      },
+      {
+        title: "New Features Coming",
+        body: "Yield tracking, cargo route optimization, and more!"
+      },
+      {
+        title: "Did You Know?",
+        body: "You can now export your manifest as TXT or CSV."
+      }
+    ];
+  
+    let currentIndex = 0;
+  
+    function updateAnnouncement() {
+      const { title, body } = announcements[currentIndex];
+      document.getElementById("announcementTitle").textContent = title;
+      document.getElementById("announcementBody").textContent = body;
     }
   
     function nextAnnouncement() {
-      alert("Next announcement clicked");
+      currentIndex = (currentIndex + 1) % announcements.length;
+      updateAnnouncement();
     }
+  
+    function prevAnnouncement() {
+      currentIndex = (currentIndex - 1 + announcements.length) % announcements.length;
+      updateAnnouncement();
+    }
+  
+    function closeAnnouncement() {
+      document.getElementById("announcementBox").style.display = "none";
+    }
+  
+    // Initialize on load
+    window.onload = updateAnnouncement;
   </script>
 
 
