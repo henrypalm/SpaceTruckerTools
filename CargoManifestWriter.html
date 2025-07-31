@@ -202,6 +202,17 @@
   <script src="CargoManifestWriterItemPrices.js"></script>
   <script src="itemColors.js"></script>
   <script>
+
+    // Highlight active tab based on current filename
+    const path = window.location.pathname;
+    const page = path.substring(path.lastIndexOf('/') + 1);
+    const tabs = document.querySelectorAll('.nav-tabs a');
+    tabs.forEach(tab => {
+      if (tab.getAttribute('href') === page) {
+        tab.classList.add('active');
+      }
+    });
+    
     window.onload = function () {
       const shipMiningBody = document.getElementById("shipMiningBody");
       const handMiningBody = document.getElementById("handMiningBody");
