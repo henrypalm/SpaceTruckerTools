@@ -5,16 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>App Menu</title>
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: white;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      gap: 30px;
+    }
+
     .nav-tabs {
       display: flex;
       gap: 10px;
       background-color: #222;
-      padding: 10px;
+      padding: 10px 20px;
       border-bottom: 2px solid #444;
       margin-bottom: 20px;
       justify-content: center;
+      width: 100%;
+      max-width: 900px;
     }
-    
+
     .nav-tabs a {
       color: #ccc;
       text-decoration: none;
@@ -23,42 +38,91 @@
       background-color: #333;
       transition: background-color 0.3s;
     }
-    
+
     .nav-tabs a:hover {
       background-color: #555;
       color: white;
     }
-    
+
     .nav-tabs a.active {
       background-color: #2d89ff;
       color: white;
       font-weight: bold;
     }
 
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #111;
+    /* Button container row */
+    .button-row {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    /* Each "button" styled card */
+    .app-button {
+      background-color: #007acc;
+      border-radius: 10px;
+      padding: 15px 20px 25px;
+      width: 200px;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
       color: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      height: 100vh;
-      gap: 20px;
+      user-select: none;
     }
-    button {
-      padding: 15px 30px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      border: none;
-      border-radius: 8px;
-      background-color: #007acc;
-      color: white;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
+    .app-button:hover {
       background-color: #005f99;
     }
+    .app-button img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 12px;
+      filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.7));
+    }
+    .app-button .title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .app-button .description {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    /* Big info box below */
+    .info-box {
+      background-color: #222;
+      border-radius: 12px;
+      max-width: 900px;
+      width: 100%;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    .info-box img {
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+      border-radius: 10px;
+      flex-shrink: 0;
+      filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.7));
+    }
+    .info-box .text-content {
+      flex-grow: 1;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      color: #ddd;
+    }
+    
   </style>
 </head>
 <body>
@@ -68,9 +132,36 @@
     <a href="ProfitSpliter.html">Profit Splitter</a>
   </div>
 
-  <button onclick="location.href='CargoManifestWriter.html'">Cargo Manifest Writer</button>
-  <button onclick="location.href='Yield2Sell.html'">Yield 2 Sell</button>
-  <button onclick="location.href='ProfitSplitter.html'">Profit Splitter</button>
+  <div class="button-row">
+    <div class="app-button" onclick="location.href='CargoManifestWriter.html'">
+      <img src="https://img.icons8.com/ios-filled/100/ffffff/box--v1.png" alt="Cargo Manifest Icon" />
+      <div class="title">Cargo Manifest</div>
+      <div class="description">Manage and export your cargo manifests easily.</div>
+    </div>
+    <div class="app-button" onclick="location.href='Yield2Sell.html'">
+      <img src="https://img.icons8.com/ios-filled/100/ffffff/chart-growth.png" alt="Yield 2 Sell Icon" />
+      <div class="title">Yield 2 Sell</div>
+      <div class="description">Calculate optimal yield and selling prices.</div>
+    </div>
+    <div class="app-button" onclick="location.href='ProfitSplitter.html'">
+      <img src="https://img.icons8.com/ios-filled/100/ffffff/money-bag-euro.png" alt="Profit Splitter Icon" />
+      <div class="title">Profit Splitter</div>
+      <div class="description">Split mission profits fairly among crew members.</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <img src="https://img.icons8.com/ios-filled/150/ffffff/information.png" alt="Info Box Image" />
+    <div class="text-content">
+      <h2>Welcome to the App Suite</h2>
+      <p>
+        Use the buttons above to navigate between different tools. Each tool is designed to help
+        you efficiently manage your Star Citizen cargo, maximize your profits, and split earnings
+        fairly with your team. This dashboard provides a quick overview and easy access to
+        everything you need for your trading and mining operations.
+      </p>
+    </div>
+  </div>
 
   <script>
     // Highlight active tab based on current filename
@@ -83,6 +174,5 @@
       }
     });
   </script>
-
 </body>
 </html>
