@@ -168,6 +168,14 @@
       <textarea id="userdesc" rows="4"></textarea>
     </label>
 
+    <label>Regolith Secret Key:
+      <input type="password" id="regolithKey" />
+    </label>
+    
+    <label>UEX API Key:
+      <input type="password" id="uexKey" />
+    </label>
+
     <label>Discord Webhooks:</label>
     <div class="flex-row">
       <input type="text" id="webhook-name" placeholder="Webhook Name" />
@@ -207,6 +215,8 @@
     <p><strong>In-Game Username:</strong> <span id="view-username"></span></p>
     <p><strong>User Image:</strong><br/><img id="view-userimage" alt="User Image" /></p>
     <p><strong>Description:</strong> <span id="view-userdesc"></span></p>
+    <p><strong>Regolith Key:</strong> <span id="view-regolithKey"></span></p>
+    <p><strong>UEX Key:</strong> <span id="view-uexKey"></span></p>
     <p><strong>Webhooks:</strong></p>
     <ul id="view-webhooks"></ul>
     <p><strong>Additional Data:</strong></p>
@@ -322,6 +332,8 @@
         username: document.getElementById('username').value.trim(),
         userimage: document.getElementById('userimage').value.trim(),
         userdesc: document.getElementById('userdesc').value.trim(),
+        regolithKey: document.getElementById('regolithKey').value.trim(),
+        uexKey: document.getElementById('uexKey').value.trim(),
         discordwebhooks: JSON.parse(localStorage.getItem("webhooks") || "[]"),
         otherdata: document.getElementById('otherdata').value.trim()
       };
@@ -352,6 +364,8 @@
       document.getElementById('username').value = data.username || "";
       document.getElementById('userimage').value = data.userimage || "";
       document.getElementById('userdesc').value = data.userdesc || "";
+      document.getElementById('regolithKey').value = data.regolithKey || "";
+      document.getElementById('uexKey').value = data.uexKey || "";
       document.getElementById('otherdata').value = data.otherdata || "";
       localStorage.setItem("webhooks", JSON.stringify(data.discordwebhooks || []));
       updateWebhookTable();
@@ -391,6 +405,14 @@
         view("view-userimage").style.display = "none";
       }
       view("view-userdesc").textContent = data.userdesc || "";
+      
+      function obscureKey(key) {
+        if (!key || key.length < 5) return "••••••";
+        return key[0] + "••••••" + key.slice(-3);
+      }
+      
+      view("view-regolithKey").textContent = obscureKey(data.regolithKey);
+      view("view-uexKey").textContent = obscureKey(data.uexKey);
       const ul = view("view-webhooks");
       ul.innerHTML = "";
       (data.discordwebhooks || []).forEach(w => {
@@ -440,6 +462,8 @@
         document.getElementById('username').value = data.username || "";
         document.getElementById('userimage').value = data.userimage || "";
         document.getElementById('userdesc').value = data.userdesc || "";
+        document.getElementById('regolithKey').value = data.regolithKey || "";
+        document.getElementById('uexKey').value = data.uexKey || "";
         document.getElementById('otherdata').value = data.otherdata || "";
         localStorage.setItem("webhooks", JSON.stringify(data.discordwebhooks || []));
         updateWebhookTable();
