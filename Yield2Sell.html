@@ -2,13 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Yield 2 Sell</title>
   <link rel="icon" href="logo.ico" type="image/x-icon" />
-  <link rel="stylesheet" href="navbar.css" />
+
+  <!-- Load item data and color mappings -->
   <script src="Yield2SellItemPrices.js"></script>
   <script src="itemColors.js"></script>
+
   <style>
+    body {
+      background-color: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
 
     nav {
       display: flex;
@@ -18,7 +27,7 @@
       padding: 0.5em 0;
       gap: 2em;
     }
-    
+
     nav a {
       color: gold;
       text-decoration: none;
@@ -29,30 +38,26 @@
       border: 1px solid #555;
       border-bottom: none;
     }
-    
+
     nav a:hover {
       background-color: #222;
       color: white;
     }
-    
+
     nav a.active {
       background-color: #222;
       color: white;
       border-bottom: 2px solid #111;
     }
-    
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #111;
-      color: white;
-      margin: 0;
-      padding: 0;
+
+    main {
+      padding: 2rem;
     }
 
     h1 {
       text-align: center;
       color: gold;
-      padding: 1rem 0;
+      margin-bottom: 1rem;
     }
 
     table {
@@ -62,112 +67,62 @@
     }
 
     th, td {
-      padding: 8px;
+      padding: 0.5rem;
+      border: 1px solid #444;
       text-align: left;
     }
 
     th {
-      background-color: #222;
+      background-color: #111;
       color: gold;
     }
 
-    td {
-      border-top: 1px solid #444;
-    }
-
-    input, select {
-      background-color: #222;
-      color: white;
-      border: 1px solid #444;
-      padding: 0.3rem;
-      border-radius: 4px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    button {
-      background-color: #333;
+    input[type="number"] {
+      width: 100px;
+      background-color: #111;
       border: 1px solid #555;
       color: white;
-      padding: 0.6em 1.2em;
-      border-radius: 5px;
-      cursor: pointer;
+      padding: 0.3rem;
+    }
+
+    .total-display {
+      text-align: right;
+      font-size: 1.2rem;
+      color: lightgreen;
+      margin-top: 1rem;
       font-weight: bold;
-    }
-
-    button:hover {
-      background-color: #555;
-    }
-
-    #exportBox {
-      position: sticky;
-      bottom: 0;
-      background: #222;
-      padding: 1em;
-      border-top: 2px solid #555;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1em;
-      z-index: 999;
-    }
-
-    .clear {
-      color: red;
-    }
-
-    .total {
-      font-weight: bold;
-      font-size: 1.2em;
-    }
-
-    nav {
-      background-color: #000;
-      border-bottom: 2px solid #555;
-      padding: 0.5em 1em;
-    }
-
-    nav a {
-      color: gold;
-      text-decoration: none;
-      margin-right: 2em;
-      font-weight: bold;
-    }
-
-    nav a:hover {
-      color: white;
     }
   </style>
 </head>
 <body>
+
   <nav>
+    <a href="index.html">Space Trucker Tools App Suite</a>
     <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
-    <a href="Yield2Sell.html">Yield 2 Sell</a>
+    <a href="Yield2Sell.html" class="active">Yield 2 Sell</a>
     <a href="ProfitSplitter.html">Profit Splitter</a>
   </nav>
 
-  <h1>Yield 2 Sell</h1>
+  <main>
+    <h1>Yield 2 Sell</h1>
 
-  <table id="priceTable">
-    <thead>
-      <tr>
-        <th>Item</th>
-        <th>Destination</th>
-        <th>Price (aUEC / SCU)</th>
-        <th>Yield</th>
-        <th>Total (aUEC)</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <table id="priceTable">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Best Location</th>
+          <th>Price (aUEC)</th>
+          <th>Yield</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dynamically populated -->
+      </tbody>
+    </table>
 
-  <div id="exportBox">
-    <button onclick="exportToFile('txt')">Export to TXT</button>
-    <button onclick="exportToFile('csv')">Export to CSV</button>
-    <button onclick="copyToClipboard()">Copy to Clipboard</button>
-    <button class="clear" onclick="clearAll()">Clear All</button>
-    <div class="total" id="totalDisplayBottom">Total: 0 aUEC</div>
-  </div>
+    <div class="total-display" id="grandTotal">Total: 0 aUEC</div>
+  </main>
 
   <script>
     function populateTable() {
@@ -177,107 +132,63 @@
       Object.entries(itemPrices).forEach(([item, destinations]) => {
         const row = document.createElement('tr');
 
-        const destSelect = document.createElement('select');
-        const priceCell = document.createElement('td');
-        const yieldInput = document.createElement('input');
-        const totalCell = document.createElement('td');
-
-        destSelect.innerHTML = `<option value="">-- Select --</option>`;
-        Object.entries(destinations).forEach(([location, price]) => {
-          const option = document.createElement('option');
-          option.value = price;
-          option.textContent = `${location}`;
-          destSelect.appendChild(option);
-        });
-
-        yieldInput.type = 'number';
-        yieldInput.min = 0;
-
-        function updateRowTotal() {
-          const yieldValue = Math.floor(Number(yieldInput.value) / 100);
-          const price = Number(destSelect.value);
-          const rowTotal = yieldValue * price;
-          totalCell.textContent = isNaN(rowTotal) ? '0' : rowTotal.toFixed(2);
-          updateTotal();
-        }
-
-        destSelect.addEventListener('change', function () {
-          priceCell.textContent = destSelect.value;
-          updateRowTotal();
-        });
-
-        yieldInput.addEventListener('input', updateRowTotal);
-
+        // Create cells
         row.innerHTML = `
           <td>${item}</td>
           <td></td>
-          <td class="priceCell">0</td>
+          <td class="priceCell"></td>
           <td></td>
           <td class="rowTotal">0</td>
         `;
 
-        // Color item name
+        // Apply item color
         row.children[0].style.color = itemColors[item] || 'white';
 
-        row.children[1].appendChild(destSelect);
-        row.children[2] = priceCell;
+        // Best location logic
+        const bestLocation = Object.entries(destinations).reduce((a, b) => (b[1] > a[1] ? b : a));
+        const [bestDest, bestPrice] = bestLocation;
+
+        // Location and price
+        const locationSpan = document.createElement('span');
+        locationSpan.textContent = bestDest;
+        row.children[1].appendChild(locationSpan);
+
+        const priceSpan = document.createElement('span');
+        priceSpan.textContent = bestPrice;
+        row.children[2].appendChild(priceSpan);
+
+        // Yield input
+        const yieldInput = document.createElement('input');
+        yieldInput.type = 'number';
+        yieldInput.min = 0;
+        yieldInput.placeholder = 'Yield';
         row.children[3].appendChild(yieldInput);
-        row.children[4] = totalCell;
+
+        // Calculation on input
+        yieldInput.addEventListener('input', () => {
+          const yieldValue = Math.floor(parseFloat(yieldInput.value) || 0);
+          const scu = Math.floor(yieldValue / 100);
+          const total = scu * bestPrice;
+          row.querySelector('.rowTotal').textContent = total.toFixed(2);
+          calculateTotal();
+        });
 
         tbody.appendChild(row);
       });
     }
 
-    function updateTotal() {
-      const totals = Array.from(document.querySelectorAll('.rowTotal'));
-      const sum = totals.reduce((acc, cell) => acc + parseFloat(cell.textContent) || 0, 0);
-      const formatted = sum.toFixed(2);
-      document.getElementById("totalDisplayBottom").textContent = `Total: ${formatted} aUEC`;
-    }
-
-    function exportToFile(type) {
-      const rows = Array.from(document.querySelectorAll("#priceTable tbody tr"));
-      const output = rows.map(row => {
-        const item = row.children[0].textContent;
-        const destination = row.children[1].querySelector('select')?.selectedOptions[0]?.textContent || '';
-        const price = row.children[2].textContent;
-        const yieldVal = row.children[3].querySelector('input')?.value || '';
-        const total = row.children[4].textContent;
-        return type === 'csv'
-          ? `"${item}","${destination}","${price}","${yieldVal}","${total}"`
-          : `${item} | ${destination} | ${price} | ${yieldVal} | ${total}`;
+    function calculateTotal() {
+      const totalCells = document.querySelectorAll('.rowTotal');
+      let total = 0;
+      totalCells.forEach(cell => {
+        total += parseFloat(cell.textContent) || 0;
       });
-
-      const blob = new Blob([output.join(type === 'csv' ? '\n' : '\r\n')], { type: 'text/plain' });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `Yield2Sell_${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}.${type}`;
-      a.click();
+      document.getElementById('grandTotal').textContent = `Total: ${total.toFixed(2)} aUEC`;
     }
 
-    function copyToClipboard() {
-      const rows = Array.from(document.querySelectorAll("#priceTable tbody tr"));
-      const output = rows.map(row => {
-        const item = row.children[0].textContent;
-        const destination = row.children[1].querySelector('select')?.selectedOptions[0]?.textContent || '';
-        const price = row.children[2].textContent;
-        const yieldVal = row.children[3].querySelector('input')?.value || '';
-        const total = row.children[4].textContent;
-        return `${item} | ${destination} | ${price} | ${yieldVal} | ${total}`;
-      }).join('\n');
-
-      navigator.clipboard.writeText(output);
-      alert("Copied to clipboard!");
-    }
-
-    function clearAll() {
-      document.querySelectorAll("select").forEach(sel => sel.selectedIndex = 0);
-      document.querySelectorAll("input").forEach(inp => inp.value = "");
-      document.querySelectorAll(".priceCell, .rowTotal").forEach(cell => cell.textContent = "0");
-      updateTotal();
-    }
-
+    // Initial population
     populateTable();
   </script>
+
 </body>
 </html>
