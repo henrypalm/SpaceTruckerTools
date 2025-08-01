@@ -126,16 +126,16 @@
 
     .announcement {
       display: flex;
-      align-items: flex-start;
+      flex-direction: column;
       gap: 1rem;
       background-color: #1a1a1a;
-      padding: 1rem 1 rem 3 rem;
+      padding: 1rem 1rem 3rem;
       border: 1px solid #444;
       border-radius: 8px;
       position: relative;
       margin-bottom: 1rem;
-      flex-direction: row;
-      flex-wrap: wrap;
+      max-width: 900px;
+      width: 100%;
     }
     
     .announcement img {
@@ -148,9 +148,29 @@
     }
     
     .text-content p {
-      margin: 1rem;
-      margin-bottom: 1rem;
+      margin: 0;
       color: #ccc;
+    }
+    
+    .announcement-nav {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #444;
+      padding-top: 0.75rem;
+    }
+    
+    .nav-btn {
+      background: #333;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    
+    .nav-btn:hover {
+      background-color: #555;
     }
     
     .close-btn {
@@ -168,31 +188,7 @@
     .close-btn:hover {
       color: #f00;
     }
-    
-    .nav-btn {
-      position: absolute;
-      bottom: 12px;
-      background: #333;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-    
-    .prev-btn {
-      left: 12px;
-    }
-    
-    .next-btn {
-      right: 12px;
-    }
-    
-    .nav-btn:hover {
-      background-color: #555;
-    }
-    
+   
   </style>
 </head>
 <body>
@@ -210,8 +206,10 @@
       <h2 id="announcementTitle">Welcome!</h2>
       <p id="announcementBody">This is the first announcement.</p>
     </div>
-    <button class="nav-btn prev-btn" onclick="prevAnnouncement()">←</button>
-    <button class="nav-btn next-btn" onclick="nextAnnouncement()">→</button>
+    <div class="announcement-nav">
+      <button class="nav-btn prev-btn" onclick="prevAnnouncement()">←</button>
+      <button class="nav-btn next-btn" onclick="nextAnnouncement()">→</button>
+    </div>
   </div>
   
   <script>
