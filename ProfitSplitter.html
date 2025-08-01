@@ -6,6 +6,17 @@
   <title>Profit Splitter</title>
   <link rel="icon" href="ProfitSplitterIcon.ico" type="image/x-icon" />
   <style>
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.75); /* semi-transparent dark background */
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 700px;
+      width: 90%;
+      margin: 2rem auto;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    
     .nav-tabs {
       display: flex;
       gap: 10px;
@@ -100,27 +111,29 @@
   <a href="Profile.html">Profile</a>
 </div>
 
-<h2>Profit Splitter</h2>
-
-<label>Total Pool: $<input id="pool" type="number" min="0" step="0.01" value="0"></label><br><br>
-
-<div id="entries"></div>
-<button onclick="addEntry()">+ Add Entry</button>
-<br><br>
-<button onclick="calculate()">Calculate</button>
-<button onclick="copyToClipboard()">Copy to Clipboard</button>
-
-<table id="results">
-  <thead>
-    <tr>
-      <th>Name</th><th>Type</th><th>Value</th><th>Mission Expenses</th><th>Amount</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-  <tfoot>
-    <tr><td colspan="4"><b>Total Distributed</b></td><td id="total">$0.00</td></tr>
-  </tfoot>
-</table>
+<div class="container">
+  <h2>Profit Splitter</h2>
+  
+  <label>Total Pool: $<input id="pool" type="number" min="0" step="0.01" value="0"></label><br><br>
+  
+  <div id="entries"></div>
+  <button onclick="addEntry()">+ Add Entry</button>
+  <br><br>
+  <button onclick="calculate()">Calculate</button>
+  <button onclick="copyToClipboard()">Copy to Clipboard</button>
+  
+  <table id="results">
+    <thead>
+      <tr>
+        <th>Name</th><th>Type</th><th>Value</th><th>Mission Expenses</th><th>Amount</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot>
+      <tr><td colspan="4"><b>Total Distributed</b></td><td id="total">$0.00</td></tr>
+    </tfoot>
+  </table>
+</div>
 
 <script>
   // Highlight active tab based on current filename
