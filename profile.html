@@ -46,9 +46,16 @@
       margin-top: 2rem;
       border-top: 1px solid #444;
       padding-top: 1rem;
-      max-width: 500px;
+      max-width: 600px;
       background: #222;
       border-radius: 8px;
+    }
+    .profile-view img {
+      max-width: 120px;
+      margin-right: 1rem;
+    }
+    .field-group {
+      margin-bottom: 1rem;
     }
   </style>
 </head>
@@ -62,8 +69,18 @@
     </label>
 
     <label>
+      Organization URL:
+      <input type="url" id="orgurl" name="orgurl" placeholder="https://example.org" />
+    </label>
+
+    <label>
       Organization Image URL:
       <input type="url" id="orgimage" name="orgimage" placeholder="Image URL for organization" />
+    </label>
+
+    <label>
+      In-Game User Name:
+      <input type="text" id="username" name="username" placeholder="Your in-game username" />
     </label>
 
     <label>
@@ -74,6 +91,11 @@
     <label>
       User Description:
       <textarea id="userdesc" name="userdesc" rows="4" placeholder="Describe yourself"></textarea>
+    </label>
+
+    <label>
+      Discord Webhook URL:
+      <input type="url" id="discordwebhook" name="discordwebhook" placeholder="Discord webhook URL" />
     </label>
 
     <label>
@@ -89,9 +111,18 @@
   <div class="profile-view" id="profile-view" style="display:none;">
     <h2>Current Profile</h2>
     <p><strong>Organization Name:</strong> <span id="view-orgname"></span></p>
-    <p><strong>Organization Image:</strong><br/><img id="view-orgimage" alt="Org Image" /></p>
-    <p><strong>User Image:</strong><br/><img id="view-userimage" alt="User Image" /></p>
+    <p><strong>Organization URL:</strong> <a href="#" id="view-orgurl" target="_blank" rel="noopener noreferrer"></a></p>
+    <p>
+      <strong>Organization Image:</strong><br/>
+      <img id="view-orgimage" alt="Org Image" />
+    </p>
+    <p><strong>In-Game User Name:</strong> <span id="view-username"></span></p>
+    <p>
+      <strong>User Image:</strong><br/>
+      <img id="view-userimage" alt="User Image" />
+    </p>
     <p><strong>User Description:</strong> <span id="view-userdesc"></span></p>
+    <p><strong>Discord Webhook URL:</strong> <a href="#" id="view-discordwebhook" target="_blank" rel="noopener noreferrer"></a></p>
     <p><strong>Additional Data:</strong></p>
     <pre id="view-otherdata" style="background:#111; padding:0.5rem; border-radius:4px;"></pre>
   </div>
@@ -129,7 +160,18 @@
         return;
       }
       profileView.style.display = 'block';
+
       document.getElementById('view-orgname').textContent = data.orgname || '';
+
+      const orgurlEl = document.getElementById('view-orgurl');
+      if (data.orgurl) {
+        orgurlEl.textContent = data.orgurl;
+        orgurlEl.href = data.orgurl;
+        orgurlEl.style.display = 'inline';
+      } else {
+        orgurlEl.style.display = 'none';
+      }
+
       const orgImg = document.getElementById('view-orgimage');
       if (data.orgimage) {
         orgImg.src = data.orgimage;
@@ -137,6 +179,9 @@
       } else {
         orgImg.style.display = 'none';
       }
+
+      document.getElementById('view-username').textContent = data.username || '';
+
       const userImg = document.getElementById('view-userimage');
       if (data.userimage) {
         userImg.src = data.userimage;
@@ -144,7 +189,18 @@
       } else {
         userImg.style.display = 'none';
       }
+
       document.getElementById('view-userdesc').textContent = data.userdesc || '';
+
+      const webhookEl = document.getElementById('view-discordwebhook');
+      if (data.discordwebhook) {
+        webhookEl.textContent = data.discordwebhook;
+        webhookEl.href = data.discordwebhook;
+        webhookEl.style.display = 'inline';
+      } else {
+        webhookEl.style.display = 'none';
+      }
+
       if (data.otherdata) {
         try {
           const parsed = typeof data.otherdata === 'string' ? JSON.parse(data.otherdata) : data.otherdata;
@@ -159,12 +215,14 @@
 
     saveBtn.addEventListener('click', () => {
       const orgname = document.getElementById('orgname').value.trim();
+      const orgurl = document.getElementById('orgurl').value.trim();
       const orgimage = document.getElementById('orgimage').value.trim();
+      const username = document.getElementById('username').value.trim();
       const userimage = document.getElementById('userimage').value.trim();
       const userdesc = document.getElementById('userdesc').value.trim();
+      const discordwebhook = document.getElementById('discordwebhook').value.trim();
       const otherdata = document.getElementById('otherdata').value.trim();
 
-      // Validate otherdata JSON
       if (otherdata) {
         try {
           JSON.parse(otherdata);
@@ -176,9 +234,12 @@
 
       const profileData = {
         orgname,
+        orgurl,
         orgimage,
+        username,
         userimage,
         userdesc,
+        discordwebhook,
         otherdata
       };
 
@@ -195,11 +256,13 @@
       }
       try {
         const data = JSON.parse(saved);
-        // Populate form
         document.getElementById('orgname').value = data.orgname || '';
+        document.getElementById('orgurl').value = data.orgurl || '';
         document.getElementById('orgimage').value = data.orgimage || '';
+        document.getElementById('username').value = data.username || '';
         document.getElementById('userimage').value = data.userimage || '';
         document.getElementById('userdesc').value = data.userdesc || '';
+        document.getElementById('discordwebhook').value = data.discordwebhook || '';
         document.getElementById('otherdata').value = data.otherdata || '';
         showProfile(data);
       } catch {
@@ -214,17 +277,18 @@
       alert("Profile cleared.");
     });
 
-    // On page load, try to load existing profile automatically
     window.addEventListener('load', () => {
       const saved = getCookie('profileData');
       if (saved) {
         try {
           const data = JSON.parse(saved);
-          // Populate form and show profile
           document.getElementById('orgname').value = data.orgname || '';
+          document.getElementById('orgurl').value = data.orgurl || '';
           document.getElementById('orgimage').value = data.orgimage || '';
+          document.getElementById('username').value = data.username || '';
           document.getElementById('userimage').value = data.userimage || '';
           document.getElementById('userdesc').value = data.userdesc || '';
+          document.getElementById('discordwebhook').value = data.discordwebhook || '';
           document.getElementById('otherdata').value = data.otherdata || '';
           showProfile(data);
         } catch {
