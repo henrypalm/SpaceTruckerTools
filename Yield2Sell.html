@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Yield 2 Sell</title>
   <link rel="icon" href="Yield2SellIogo.ico" type="image/x-icon" />
   <style>
@@ -14,41 +14,65 @@
       padding-bottom: 120px;
     }
 
+    nav {
+      background-color: #000;
+      border-bottom: 2px solid #333;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav h2 {
+      color: gold;
+      margin: 0;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 1rem;
+    }
+
     h1 {
       text-align: center;
       color: gold;
-      padding-top: 1rem;
+      margin-top: 1rem;
     }
 
     .container {
       max-width: 1000px;
       margin: 1rem auto;
-      padding: 0 1rem;
-    }
-
-    .item {
-      background: #1a1a1a;
-      padding: 10px;
-      border-radius: 8px;
+      padding: 1rem;
+      background-color: #1a1a1a;
       border: 1px solid #444;
-      margin-bottom: 0.8rem;
+      border-radius: 8px;
     }
 
-    .item label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 0.3rem;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
     }
 
-    input, select {
+    th, td {
+      padding: 0.5rem;
+      border: 1px solid #333;
+      text-align: center;
+    }
+
+    th {
+      background-color: #222;
+      color: gold;
+    }
+
+    input[type="number"] {
+      width: 80px;
       background-color: #222;
       color: white;
       border: 1px solid #444;
       padding: 0.3rem;
       border-radius: 4px;
-      width: 100%;
-      box-sizing: border-box;
-      margin-bottom: 0.6rem;
     }
 
     button {
@@ -65,13 +89,6 @@
       background-color: #555;
     }
 
-    .value {
-      text-align: right;
-      color: gold;
-      font-weight: bold;
-      margin-top: 0.5rem;
-    }
-
     #exportBox {
       position: sticky;
       bottom: 0;
@@ -85,22 +102,46 @@
       z-index: 999;
     }
 
+    .clear {
+      background-color: darkred;
+    }
+
     .total {
       font-size: 1.2rem;
       font-weight: bold;
       color: gold;
       text-align: center;
     }
-
-    .clear {
-      background-color: darkred;
-    }
   </style>
+  <script src="Yield2SellItemPrices.js"></script>
 </head>
 <body>
+  <nav>
+    <h2>Space Trucker Tools</h2>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="CargoManifestWriter.html">Manifest Writer</a>
+      <a href="ProfitSplitter.html">Profit Splitter</a>
+      <a href="Yield2Sell.html">Yield 2 Sell</a>
+    </div>
+  </nav>
+
   <h1>Yield 2 Sell</h1>
-  <div class="container" id="itemContainer">
-    <!-- Items will be added here dynamically -->
+
+  <div class="container">
+    <table id="yieldTable">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Price per SCU</th>
+          <th>Amount</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- Rows generated via JS -->
+      </tbody>
+    </table>
   </div>
 
   <div id="exportBox">
@@ -112,20 +153,6 @@
   </div>
 
   <script>
-    const itemData = [
-      { name: "Bexalite", price: 37000 },
-      { name: "Taranite", price: 31250 },
-      { name: "Borase", price: 24750 },
-      { name: "Agricium", price: 22000 },
-      { name: "Hephaestanite", price: 8800 },
-      { name: "Titanium", price: 7700 },
-      { name: "Diamond", price: 7000 },
-      { name: "Gold", price: 6600 },
-      { name: "Copper", price: 4950 },
-      { name: "Aluminum", price: 4400 },
-      { name: "Inert Material", price: 0 }
-    ];
-
     function formatCurrency(value) {
       return value.toLocaleString('en-US', {
         style: 'currency',
@@ -134,75 +161,78 @@
       }).replace('$', '').trim();
     }
 
-    function createItemRow(item) {
-      const container = document.createElement("div");
-      container.className = "item";
+    function generateTable() {
+      const tableBody = document.getElementById('tableBody');
+      for (const item in itemPrices) {
+        const price = itemPrices[item];
 
-      const label = document.createElement("label");
-      label.textContent = item.name;
-      container.appendChild(label);
+        const row = document.createElement('tr');
 
-      const input = document.createElement("input");
-      input.type = "number";
-      input.min = "0";
-      input.placeholder = "Enter amount in SCU";
-      input.addEventListener("input", calculateTotal);
-      container.appendChild(input);
+        const nameCell = document.createElement('td');
+        nameCell.textContent = item;
 
-      const value = document.createElement("div");
-      value.className = "value";
-      value.textContent = "0.00 aUEC";
-      container.appendChild(value);
+        const priceCell = document.createElement('td');
+        priceCell.textContent = formatCurrency(price);
 
-      container.dataset.price = item.price;
-      container.dataset.valueDisplay = value;
+        const inputCell = document.createElement('td');
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = 0;
+        input.dataset.price = price;
+        input.addEventListener('input', updateTotals);
+        inputCell.appendChild(input);
 
-      document.getElementById("itemContainer").appendChild(container);
+        const totalCell = document.createElement('td');
+        totalCell.textContent = '0.00 aUEC';
+        totalCell.classList.add('itemTotal');
+
+        row.appendChild(nameCell);
+        row.appendChild(priceCell);
+        row.appendChild(inputCell);
+        row.appendChild(totalCell);
+
+        tableBody.appendChild(row);
+      }
     }
 
-    function calculateTotal() {
-      const items = document.querySelectorAll(".item");
-      let total = 0;
+    function updateTotals() {
+      let grandTotal = 0;
+      const rows = document.querySelectorAll('#yieldTable tbody tr');
 
-      items.forEach(item => {
-        const price = parseFloat(item.dataset.price);
-        const input = item.querySelector("input");
-        const valueDisplay = item.querySelector(".value");
-
+      rows.forEach(row => {
+        const input = row.querySelector('input');
         const quantity = parseFloat(input.value) || 0;
-        const itemTotal = quantity * price;
-
-        valueDisplay.textContent = `${formatCurrency(itemTotal)} aUEC`;
-        total += itemTotal;
+        const price = parseFloat(input.dataset.price);
+        const total = quantity * price;
+        row.querySelector('.itemTotal').textContent = `${formatCurrency(total)} aUEC`;
+        grandTotal += total;
       });
 
-      const formattedTotal = formatCurrency(total);
-      document.getElementById("totalDisplayBottom").textContent = `Total: ${formattedTotal} aUEC`;
+      document.getElementById('totalDisplayBottom').textContent = `Total: ${formatCurrency(grandTotal)} aUEC`;
     }
 
     function exportToFile(type) {
-      const lines = [];
+      const rows = document.querySelectorAll('#yieldTable tbody tr');
+      let content = '';
       let total = 0;
 
-      document.querySelectorAll(".item").forEach(item => {
-        const name = item.querySelector("label").textContent;
-        const quantity = parseFloat(item.querySelector("input").value) || 0;
-        const price = parseFloat(item.dataset.price);
-        const lineTotal = quantity * price;
+      rows.forEach(row => {
+        const item = row.cells[0].textContent;
+        const price = row.cells[1].textContent;
+        const quantity = row.querySelector('input').value;
+        const itemTotal = row.cells[3].textContent;
 
-        if (quantity > 0) {
-          lines.push(`${name}, ${quantity}, ${formatCurrency(price)}, ${formatCurrency(lineTotal)}`);
-          total += lineTotal;
+        if (quantity && parseFloat(quantity) > 0) {
+          content += `${item}, ${quantity}, ${price}, ${itemTotal}\n`;
+          total += parseFloat(itemTotal.replace(/[^\d.]/g, ''));
         }
       });
 
-      lines.push(`Total,, ,${formatCurrency(total)} aUEC`);
-      const content = lines.join(type === 'csv' ? "\n" : "\n");
+      content += `\nTotal,, ,${formatCurrency(total)} aUEC`;
 
       const blob = new Blob([content], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
+      const a = document.createElement('a');
       a.href = url;
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       a.download = `Yield2Sell_${timestamp}.${type}`;
@@ -212,18 +242,19 @@
     }
 
     function copyToClipboard() {
-      let text = "";
+      let text = '';
       let total = 0;
+      const rows = document.querySelectorAll('#yieldTable tbody tr');
 
-      document.querySelectorAll(".item").forEach(item => {
-        const name = item.querySelector("label").textContent;
-        const quantity = parseFloat(item.querySelector("input").value) || 0;
-        const price = parseFloat(item.dataset.price);
-        const lineTotal = quantity * price;
+      rows.forEach(row => {
+        const item = row.cells[0].textContent;
+        const price = row.cells[1].textContent;
+        const quantity = row.querySelector('input').value;
+        const itemTotal = row.cells[3].textContent;
 
-        if (quantity > 0) {
-          text += `${name}: ${quantity} x ${formatCurrency(price)} = ${formatCurrency(lineTotal)} aUEC\n`;
-          total += lineTotal;
+        if (quantity && parseFloat(quantity) > 0) {
+          text += `${item}: ${quantity} x ${price} = ${itemTotal}\n`;
+          total += parseFloat(itemTotal.replace(/[^\d.]/g, ''));
         }
       });
 
@@ -235,12 +266,13 @@
     }
 
     function clearAll() {
-      document.querySelectorAll(".item input").forEach(input => input.value = "");
-      calculateTotal();
+      document.querySelectorAll('#yieldTable input').forEach(input => input.value = '');
+      document.querySelectorAll('.itemTotal').forEach(cell => cell.textContent = '0.00 aUEC');
+      updateTotals();
     }
 
     window.onload = () => {
-      itemData.forEach(createItemRow);
+      generateTable();
     };
   </script>
 </body>
