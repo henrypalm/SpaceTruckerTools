@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profit Splitter</title>
+  <link rel="icon" href="ProfitSplitterIcon.ico" type="image/x-icon" />
+  <style>
+
+    .entry { 
+      border: 1px solid #444; 
+      padding: 10px; 
+      margin: 5px 0; 
+      border-radius: 5px;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;              
+      gap: 30px;
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.75); /* semi-transparent dark background */
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 700px;
+      width: 90%;
+      margin: 2rem auto;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      background-color: #222;
+      padding: 10px;
+      border-bottom: 2px solid #444;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    
+    .nav-tabs a {
+      color: #ccc;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      background-color: #333;
+      transition: background-color 0.3s;
+    }
+    
+    .nav-tabs a:hover {
+      background-color: #555;
+      color: white;
+    }
+    
+    .nav-tabs a.active {
+      background-color: #2d89ff;
+      color: white;
+      font-weight: bold;
+    }
+
+    body { 
+      background-color: #111;         
+      background-image: url('SplittingProfitsBackground.png'); 
+      background-size: cover;         
+      background-repeat: no-repeat;   
+      background-attachment: fixed;
+      color:white; 
+      font-family:sans-serif; 
+      padding:20px; 
+    }
+    
+    .entry > div:first-child {
+      display:flex; 
+      gap:10px; 
+      align-items: center;
+    }
+    input, select { padding:5px; font-size:1rem; }
+    button { padding:6px 10px; margin-top:10px; cursor:pointer; }
+    table { width:100%; border-collapse:collapse; margin-top:20px; }
+    td, th { border:1px solid #444; padding:8px; text-align:center; }
+    #results { display:none; }
+
+    .expenses {
+      margin-top: 10px;
+      background: #333;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .expense-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 5px;
+      align-items: center;
+    }
+    .expense-item input {
+      flex: 1;
+    }
+    .expense-item input[type=number] {
+      max-width: 100px;
+    }
+    .add-expense-btn {
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="nav-tabs">
+  <a href="index.html">Space Trucker Tools</a>
+  <a href="Yield2Sell.html">Yield 2 Sell</a>
+  <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
+  <a href="ProfitSplitter.html" class="active">Profit Splitter</a>
+  <a href="Profile.html">Profile</a>
+</div>
+
+<div class="container">
+  <h2>Profit Splitter</h2>
+  
+  <label>Total Pool: $<input id="pool" type="number" min="0" step="0.01" value="0"></label><br><br>
+  
+  <div id="entries"></div>
+  <button onclick="addEntry()">+ Add Entry</button>
+  <br><br>
+  <button onclick="calculate()">Calculate</button>
+  <button onclick="copyToClipboard()">Copy to Clipboard</button>
+  
+  <table id="results">
+    <thead>
+      <tr>
+        <th>Name</th><th>Type</th><th>Value</th><th>Mission Expenses</th><th>Amount</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot>
+      <tr><td colspan="4"><b>Total Distributed</b></td><td id="total">$0.00</td></tr>
+    </tfoot>
+  </table>
+</div>
+
+<script>
+  // Highlight active tab based on current filename
+  const path = window.location.pathname;
+  const page = path.substring(path.lastIndexOf('/') + 1);
+  const tabs = document.querySelectorAll('.nav-tabs a');
+  tabs.forEach(tab => {
+    if (tab.getAttribute('href') === page) {
+      tab.classList.add('active');
+    }
+  });
+
+  let entriesDiv = document.getElementById("entries");
+
+  function createExpenseItem(expName = '', expAmount = '') {
+    const div = document.createElement('div');
+    div.className = 'expense-item';
+    div.innerHTML = `
+      <input type="text" placeholder="Expense Name" value="${expName}" />
+      <input type="number" placeholder="Amount" min="0" step="0.01" value="${expAmount}" />
+      <button type="button" onclick="this.parentElement.remove(); calculate();">Remove</button>
+    `;
+    // On change recalc
+    div.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', () => calculate());
+    });
+    return div;
+  }
+
+  function addEntry(name='', type='Flat Rate', val='') {
+    const div = document.createElement("div");
+    div.className = "entry";
+
+    div.innerHTML = `
+      <div>
+        <input type="text" placeholder="Name" value="${name}" />
+        <select>
+          <option${type === "Flat Rate" ? ' selected' : ''}>Flat Rate</option>
+          <option${type === "Percentage" ? ' selected' : ''}>Percentage</option>
+          <option${type === "Shares" ? ' selected' : ''}>Shares</option>
+        </select>
+        <input type="number" placeholder="Value" step="any" min="0" value="${val}" />
+        <button type="button" onclick="this.closest('.entry').remove(); calculate();">Remove</button>
+      </div>
+      <div class="expenses">
+        <b>Mission Expenses:</b>
+        <div class="expense-items"></div>
+        <button type="button" class="add-expense-btn">+ Add Expense</button>
+      </div>
+    `;
+
+    // Add expense button handler
+    const addExpenseBtn = div.querySelector('.add-expense-btn');
+    const expenseItemsDiv = div.querySelector('.expense-items');
+
+    addExpenseBtn.addEventListener('click', () => {
+      const expenseItem = createExpenseItem();
+      expenseItemsDiv.appendChild(expenseItem);
+    });
+
+    // Recalculate on any input change inside this entry
+    div.querySelectorAll('input, select').forEach(input => {
+      input.addEventListener('input', () => calculate());
+    });
+
+    entriesDiv.appendChild(div);
+  }
+
+  function calculate() {
+    const pool = parseFloat(document.getElementById("pool").value) || 0;
+
+    const entryDivs = entriesDiv.querySelectorAll(".entry");
+    let people = [];
+
+    let totalExpenses = 0;
+
+    // Collect people data including mission expenses per person
+    entryDivs.forEach(entry => {
+      const inputs = entry.querySelectorAll('div:first-child input, div:first-child select');
+      const name = inputs[0].value.trim();
+      const type = inputs[1].value;
+      const value = parseFloat(inputs[2].value);
+
+      if (!name || isNaN(value)) return; // skip invalid
+
+      // Sum expenses for this person
+      const expenseItems = entry.querySelectorAll('.expense-item');
+      let personExpenses = 0;
+      expenseItems.forEach(expDiv => {
+        const amountInput = expDiv.querySelector('input[type=number]');
+        const amount = parseFloat(amountInput.value);
+        if (!isNaN(amount)) personExpenses += amount;
+      });
+
+      totalExpenses += personExpenses;
+
+      people.push({ name, type, value, expenses: personExpenses });
+    });
+
+    // Available pool after subtracting all mission expenses
+    let available = pool - totalExpenses;
+    if (available < 0) available = 0;
+
+    let flatTotal = 0;
+    let percentTotal = 0;
+    let shareUnits = 0;
+
+    const results = [];
+
+    // Flat Rate first
+    people.filter(p => p.type === "Flat Rate").forEach(p => {
+      flatTotal += p.value;
+      results.push({ ...p, amount: p.value });
+    });
+    available -= flatTotal;
+    if (available < 0) available = 0;
+
+    // Percentage next
+    people.filter(p => p.type === "Percentage").forEach(p => {
+      const amt = available * (p.value / 100);
+      percentTotal += amt;
+      results.push({ ...p, amount: amt });
+    });
+    available -= percentTotal;
+    if (available < 0) available = 0;
+
+    // Shares last
+    people.filter(p => p.type === "Shares").forEach(p => {
+      shareUnits += p.value;
+    });
+
+    const shareValue = shareUnits > 0 ? available / shareUnits : 0;
+
+    people.filter(p => p.type === "Shares").forEach(p => {
+      const amt = p.value * shareValue;
+      results.push({ ...p, amount: amt });
+    });
+
+    // Output table
+    const tbody = document.querySelector("#results tbody");
+    const totalTd = document.getElementById("total");
+    tbody.innerHTML = '';
+    let totalDistributed = 0;
+
+    results.forEach(r => {
+      totalDistributed += r.amount;
+      const row = `<tr>
+        <td>${r.name}</td>
+        <td>${r.type}</td>
+        <td>${r.value}</td>
+        <td>$${r.expenses.toFixed(2)}</td>
+        <td>$${r.amount.toFixed(2)}</td>
+      </tr>`;
+      tbody.insertAdjacentHTML('beforeend', row);
+    });
+
+    totalTd.textContent = `$${totalDistributed.toFixed(2)}`;
+    document.getElementById("results").style.display = "table";
+  }
+
+  function copyToClipboard() {
+    const table = document.getElementById("results");
+    if (!table || table.style.display === "none") return alert("Run a calculation first.");
+    let txt = "Name\tType\tValue\tMission Expenses\tAmount\n";
+    table.querySelectorAll("tbody tr").forEach(tr => {
+      const cells = tr.querySelectorAll("td");
+      txt += `${cells[0].textContent}\t${cells[1].textContent}\t${cells[2].textContent}\t${cells[3].textContent}\t${cells[4].textContent}\n`;
+    });
+    navigator.clipboard.writeText(txt).then(() => alert("Copied to clipboard!"));
+  }
+
+  // Initialize with one empty entry for convenience
+  addEntry();
+
+</script>
+
+</body>
+</html>
