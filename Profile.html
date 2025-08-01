@@ -3,8 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="Profile.ico" type="image/x-icon" />
   <title>Profile Setup</title>
   <style>
+
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      background-color: #222;
+      padding: 10px;
+      border-bottom: 2px solid #444;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    
+    .nav-tabs a {
+      color: #ccc;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      background-color: #333;
+      transition: background-color 0.3s;
+    }
+    
+    .nav-tabs a:hover {
+      background-color: #555;
+      color: white;
+    }
+    
+    .nav-tabs a.active {
+      background-color: #2d89ff;
+      color: white;
+      font-weight: bold;
+    }
+    
     body {
       font-family: Arial, sans-serif;
       margin: 1rem;
@@ -71,6 +103,15 @@
   </style>
 </head>
 <body>
+
+  <div class="nav-tabs">
+    <a href="index.html">Space Trucker Tools</a>
+    <a href="Yield2Sell.html">Yield 2 Sell</a>
+    <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
+    <a href="ProfitSpliter.html">Profit Splitter</a>
+    <a href="Profile.html">Profile</a>
+  </div>
+  
   <h1>Profile Setup</h1>
 
   <form id="profile-form">
