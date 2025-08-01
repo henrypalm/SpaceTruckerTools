@@ -141,29 +141,37 @@
       Object.entries(itemPrices).forEach(([item, destinations]) => {
         const row = document.createElement('tr');
 
+        // Set up cells in the order matching headers:
+        // 0: Item name
+        // 1: Yield input
+        // 2: Location dropdown
+        // 3: Price per SCU
+        // 4: Item total
         row.innerHTML = `
-          <td>${item}</td>
-          <td></td>
-          <td class="priceCell"></td>
-          <td></td>
-          <td class="rowTotal">0</td>
+          <td>${item}</td>    <!-- Item -->
+          <td></td>           <!-- Yield input -->
+          <td></td>           <!-- Location dropdown -->
+          <td class="priceCell"></td>  <!-- Price per SCU -->
+          <td class="rowTotal">0</td>  <!-- Item total -->
         `;
 
+        // Apply item color to item name cell
         row.children[0].style.color = itemColors[item] || 'white';
 
         const entries = Object.entries(destinations);
         const bestLocation = entries.reduce((a, b) => (b[1] > a[1] ? b : a));
         const [bestDest, bestPrice] = bestLocation;
 
+        // Create location dropdown with best location first & selected
         const select = document.createElement('select');
 
-        // Add best location first and select it
+        // Add best location first, selected by default
         const bestOption = document.createElement('option');
         bestOption.value = bestDest;
         bestOption.textContent = bestDest;
         select.appendChild(bestOption);
 
-        // Add other locations except the best to avoid duplicates
+        // Add other locations (except best location)
         entries.forEach(([loc]) => {
           if (loc !== bestDest) {
             const option = document.createElement('option');
@@ -173,21 +181,24 @@
           }
         });
 
-        row.children[1].appendChild(select);
+        // Append dropdown to Location cell (3rd cell)
+        row.children[2].appendChild(select);
 
-        // Set initial price with commas, no decimals
-        row.children[2].textContent = bestPrice.toLocaleString();
+        // Set initial price in Price per SCU cell (4th cell)
+        row.children[3].textContent = bestPrice.toLocaleString();
 
+        // Create yield input and append to Yield cell (2nd cell)
         const yieldInput = document.createElement('input');
         yieldInput.type = 'number';
         yieldInput.min = 0;
         yieldInput.placeholder = 'Yield';
-        row.children[3].appendChild(yieldInput);
+        row.children[1].appendChild(yieldInput);
 
+        // Function to update price and totals on input or location change
         function updateRow() {
           const selectedLoc = select.value;
           const price = destinations[selectedLoc] || 0;
-          row.children[2].textContent = price.toLocaleString();
+          row.children[3].textContent = price.toLocaleString();
 
           const yieldVal = Math.floor(parseFloat(yieldInput.value) || 0);
           const scu = Math.floor(yieldVal / 100);
@@ -213,6 +224,7 @@
       document.getElementById('grandTotal').textContent = `Total: ${total.toLocaleString()} aUEC`;
     }
 
+    // Initial population
     populateTable();
   </script>
 
