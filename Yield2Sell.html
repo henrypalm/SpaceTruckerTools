@@ -60,13 +60,13 @@
       background-color: #111;
     }
 
-    input[type="number"] {
-      width: 80px;
+    input[type="number"], select {
       background-color: #222;
       color: white;
       border: 1px solid #555;
       border-radius: 4px;
       padding: 4px;
+      width: 100%;
     }
 
     button {
@@ -122,7 +122,7 @@
         <th>Item</th>
         <th>Destination</th>
         <th>Price (aUEC)</th>
-        <th>SCU</th>
+        <th>Yield</th>
         <th>Total (aUEC)</th>
       </tr>
     </thead>
@@ -143,21 +143,39 @@
     const tbody = document.querySelector('#priceTable tbody');
     tbody.innerHTML = '';
 
-    Object.entries(itemPrices).forEach(([item, locations]) => {
-      Object.entries(locations).forEach(([location, price]) => {
-        const row = document.createElement('tr');
+    Object.entries(itemPrices).forEach(([item, destinations]) => {
+      const row = document.createElement('tr');
 
-        row.innerHTML = `
-          <td>${item}</td>
-          <td>${location}</td>
-          <td>${price.toLocaleString()}</td>
-          <td><input type="number" min="0" value="0" onchange="calculateTotals()" /></td>
-          <td class="rowTotal">0</td>
-        `;
-
-        tbody.appendChild(row);
+      const dropdown = document.createElement('select');
+      Object.entries(destinations).forEach(([location, price]) => {
+        const option = document.createElement('option');
+        option.value = location;
+        option.textContent = location;
+        dropdown.appendChild(option);
       });
+
+      dropdown.addEventListener('change', () => calculateTotals());
+
+      const yieldInput = document.createElement('input');
+      yieldInput.type = 'number';
+      yieldInput.min = '0';
+      yieldInput.value = '0';
+      yieldInput.addEventListener('input', () => calculateTotals());
+
+      row.innerHTML = `
+        <td>${item}</td>
+        <td></td>
+        <td class="priceCell">0</td>
+        <td></td>
+        <td class="rowTotal">0</td>
+      `;
+
+      row.children[1].appendChild(dropdown);
+      row.children[3].appendChild(yieldInput);
+      tbody.appendChild(row);
     });
+
+    calculateTotals();
   }
 
   function calculateTotals() {
@@ -165,11 +183,18 @@
     const rows = document.querySelectorAll('#priceTable tbody tr');
 
     rows.forEach(row => {
-      const price = parseFloat(row.children[2].textContent.replace(/,/g, ''));
-      const scuInput = row.querySelector('input');
-      const scu = parseFloat(scuInput.value) || 0;
-      const total = price * scu;
+      const item = row.children[0].textContent;
+      const select = row.querySelector('select');
+      const yieldInput = row.querySelector('input');
+      const location = select.value;
+      const yieldVal = parseFloat(yieldInput.value) || 0;
+      const price = itemPrices[item][location];
+      const scu = Math.floor(yieldVal / 100);
+      const total = scu * price;
+
+      row.querySelector('.priceCell').textContent = price.toLocaleString();
       row.querySelector('.rowTotal').textContent = total.toLocaleString(undefined, { minimumFractionDigits: 2 });
+
       grandTotal += total;
     });
 
@@ -182,16 +207,16 @@
 
     rows.forEach(row => {
       const item = row.children[0].textContent;
-      const location = row.children[1].textContent;
-      const price = row.children[2].textContent;
-      const scu = row.querySelector('input').value;
+      const location = row.querySelector('select').value;
+      const price = row.querySelector('.priceCell').textContent;
+      const yieldVal = row.querySelector('input').value;
       const total = row.querySelector('.rowTotal').textContent;
 
-      if (parseFloat(scu) > 0) {
+      if (parseFloat(yieldVal) > 0) {
         if (type === 'csv') {
-          output += `"${item}","${location}",${price},${scu},${total}\n`;
+          output += `"${item}","${location}",${price},${yieldVal},${total}\n`;
         } else {
-          output += `${item} @ ${location} — ${price} aUEC x ${scu} SCU = ${total} aUEC\n`;
+          output += `${item} to ${location} — ${price} aUEC per SCU from ${yieldVal} yield = ${total} aUEC\n`;
         }
       }
     });
@@ -209,13 +234,13 @@
 
     rows.forEach(row => {
       const item = row.children[0].textContent;
-      const location = row.children[1].textContent;
-      const price = row.children[2].textContent;
-      const scu = row.querySelector('input').value;
+      const location = row.querySelector('select').value;
+      const price = row.querySelector('.priceCell').textContent;
+      const yieldVal = row.querySelector('input').value;
       const total = row.querySelector('.rowTotal').textContent;
 
-      if (parseFloat(scu) > 0) {
-        output += `${item} @ ${location} — ${price} aUEC x ${scu} SCU = ${total} aUEC\n`;
+      if (parseFloat(yieldVal) > 0) {
+        output += `${item} to ${location} — ${price} aUEC per SCU from ${yieldVal} yield = ${total} aUEC\n`;
       }
     });
 
@@ -229,7 +254,6 @@
 
   window.onload = () => {
     populateTable();
-    calculateTotals();
   };
 </script>
 
