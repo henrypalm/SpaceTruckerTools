@@ -102,12 +102,7 @@
           <label><input type="checkbox" class="taxed" onchange="updateCalculations()" /> Receives Money (5% Tax)</label>
           <button class="btn" onclick="addExpense(this)">+ Add Expense</button>
         </div>
-        <div class="expenses">
-          <div class="expenseRow">
-            <label>Deaths: <input type="number" class="expenseValue" value="0" /></label>
-            <input type="hidden" class="expenseLabel" value="Deaths" />
-          </div>
-        </div>
+        <div class="expenses"></div>
       `;
 
       document.getElementById('players').appendChild(container);
@@ -156,33 +151,49 @@
         });
 
         entries.push({ name, type, value, taxed, expenses, expenseTotal });
-        if (type === "flat") flatTotal += value;
+
+        if (type === "flat") flatTotal += taxed ? value / 0.95 : value;
         else if (type === "percent") percentTotal += value;
         else if (type === "share") sharesTotal += value;
       });
 
-      const postExpensesProfit = profit - entries.reduce((sum, e) => sum + e.expenseTotal, 0);
-      const afterFlat = postExpensesProfit - flatTotal;
-      const afterPercent = afterFlat - (percentTotal / 100 * postExpensesProfit);
-      const valuePerShare = sharesTotal ? afterPercent / sharesTotal : 0;
+      // Total available after expenses
+      const totalExpenses = entries.reduce((sum, e) => sum + e.expenseTotal, 0);
+      const postExpensesProfit = profit - totalExpenses;
+
+      // Apply Flat & Percent first
+      const flatDeductions = entries
+        .filter(e => e.type === "flat")
+        .reduce((sum, e) => sum + (e.taxed ? e.value / 0.95 : e.value), 0);
+
+      const percentDeductions = entries
+        .filter(e => e.type === "percent")
+        .reduce((sum, e) => {
+          const amount = e.value / 100 * postExpensesProfit;
+          return sum + (e.taxed ? amount / 0.95 : amount);
+        }, 0);
+
+      const afterFlatPercent = postExpensesProfit - flatDeductions - percentDeductions;
+      const valuePerShare = sharesTotal > 0 ? afterFlatPercent / sharesTotal : 0;
 
       let output = '';
 
       entries.forEach(entry => {
         let raw = 0;
         if (entry.type === "flat") raw = entry.value;
-        else if (entry.type === "percent") raw = entry.value / 100 * postExpensesProfit;
+        else if (entry.type === "percent") raw = (entry.value / 100) * postExpensesProfit;
         else if (entry.type === "share") raw = entry.value * valuePerShare;
 
-        let taxedAmount = entry.taxed ? raw * 0.05 : 0;
-        let final = raw - taxedAmount - entry.expenseTotal;
+        let taxedPortion = entry.taxed ? raw / 0.95 : raw;
+        let taxAmount = entry.taxed ? taxedPortion - raw : 0;
+        let finalPayout = taxedPortion - entry.expenseTotal;
 
         output += `${entry.name}\n`;
         output += `  Type: ${entry.type} | Value: ${entry.value}\n`;
         output += `  Expenses:\n`;
         entry.expenses.forEach(e => output += `    ${e.label}: ${e.value}\n`);
-        if (entry.taxed) output += `  Tax (5%): ${taxedAmount.toFixed(2)}\n`;
-        output += `  Final Payout: ${final.toFixed(2)}\n\n`;
+        if (entry.taxed) output += `  Transfer Tax (5%): ${taxAmount.toFixed(2)}\n`;
+        output += `  Final Payout (taken from pool): ${finalPayout.toFixed(2)}\n\n`;
       });
 
       document.getElementById('output').value = output;
@@ -207,7 +218,7 @@
       navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
     }
 
-    // Add initial player
+    // Start with one player
     addPlayer();
   </script>
 
