@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Yield 2 Sell</title>
+  <link rel="icon" href="Yield2SellIcon.ico" type="image/x-icon" />
+  <script src="Yield2SellItemPrices.js"></script>
+  <script src="itemColors.js"></script>
+  <style>
+    body {
+      background-color: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background-color: #000;
+      border-bottom: 2px solid #555;
+      padding: 0.5em 0;
+      gap: 2em;
+    }
+
+    nav a {
+      color: gold;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 0.5em 1em;
+      border-radius: 8px 8px 0 0;
+      background-color: #111;
+      border: 1px solid #555;
+      border-bottom: none;
+    }
+
+    nav a:hover {
+      background-color: #222;
+      color: white;
+    }
+
+    nav a.active {
+      background-color: #222;
+      color: white;
+      border-bottom: 2px solid #111;
+    }
+
+    main {
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: gold;
+      margin-bottom: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th, td {
+      padding: 0.5rem;
+      border: 1px solid #444;
+      text-align: left;
+    }
+
+    th {
+      background-color: #111;
+      color: gold;
+    }
+
+    input[type="number"] {
+      width: 100px;
+      background-color: #111;
+      border: 1px solid #555;
+      color: white;
+      padding: 0.3rem;
+    }
+
+    select {
+      background-color: #111;
+      border: 1px solid #555;
+      color: white;
+      padding: 0.3rem;
+      width: 100%;
+    }
+
+    .total-display {
+      text-align: right;
+      font-size: 1.2rem;
+      color: lightgreen;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html">Space Trucker Tools</a>
+    <a href="Yield2Sell.html" class="active">Yield 2 Sell</a>
+    <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
+    <a href="ProfitSplitter.html">Profit Splitter</a>
+    <a href="Profile.html">Profile</a>
+  </nav>
+
+  <main>
+    <h1>Yield 2 Sell</h1>
+
+    <table id="priceTable">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Yield</th>
+          <th>Location</th>
+          <th>Price Per SCU (aUEC)</th>
+          <th>Item Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dynamic rows go here -->
+      </tbody>
+    </table>
+
+    <div class="total-display" id="grandTotal">Total: 0 aUEC</div>
+  </main>
+
+  <script>
+    function populateTable() {
+      const tbody = document.querySelector('#priceTable tbody');
+      tbody.innerHTML = '';
+
+      Object.entries(itemPrices).forEach(([item, destinations]) => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+          <td style="color: ${itemColors[item] || 'white'}">${item}</td>
+          <td></td>
+          <td></td>
+          <td class="priceCell"></td>
+          <td class="rowTotal">0</td>
+        `;
+
+        const entries = Object.entries(destinations);
+        const [bestDest, bestPrice] = entries.reduce((a, b) => (b[1] > a[1] ? b : a));
+
+        // Yield input
+        const yieldInput = document.createElement('input');
+        yieldInput.type = 'number';
+        yieldInput.min = 0;
+        yieldInput.placeholder = 'Yield';
+        row.children[1].appendChild(yieldInput);
+
+        // Location dropdown
+        const select = document.createElement('select');
+        const bestOption = new Option(bestDest, bestDest);
+        select.appendChild(bestOption);
+
+        entries.forEach(([loc]) => {
+          if (loc !== bestDest) {
+            select.appendChild(new Option(loc, loc));
+          }
+        });
+
+        row.children[2].appendChild(select);
+
+        // Initial price
+        row.children[3].textContent = bestPrice.toLocaleString();
+
+        function updateRow() {
+          const selectedLoc = select.value;
+          const price = destinations[selectedLoc] || 0;
+          row.children[3].textContent = price.toLocaleString();
+
+          const yieldVal = Math.floor(parseFloat(yieldInput.value) || 0);
+          const scu = Math.floor(yieldVal / 100);
+          const total = scu * price;
+
+          row.querySelector('.rowTotal').textContent = total.toLocaleString('en-US');
+          calculateTotal();
+        }
+
+        yieldInput.addEventListener('input', updateRow);
+        select.addEventListener('change', updateRow);
+
+        tbody.appendChild(row);
+      });
+    }
+
+    function calculateTotal() {
+      const totalCells = document.querySelectorAll('.rowTotal');
+      let total = 0;
+      totalCells.forEach(cell => {
+        total += parseInt(cell.textContent.replace(/,/g, '')) || 0;
+      });
+      document.getElementById('grandTotal').textContent =
+        `Total: ${total.toLocaleString('en-US')} aUEC`;
+    }
+
+    populateTable();
+  </script>
+
+</body>
+</html>
