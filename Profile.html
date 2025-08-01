@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Profile Setup</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 1rem;
+      background-color: #121212;
+      color: #eee;
+    }
+    label {
+      display: block;
+      margin-top: 0.75rem;
+    }
+    input, textarea {
+      width: 100%;
+      max-width: 400px;
+      padding: 0.4rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      background: #222;
+      color: #eee;
+    }
+    img {
+      max-width: 150px;
+      margin-top: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #444;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      background: #0078d7;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005a9e;
+    }
+    .profile-view {
+      margin-top: 2rem;
+      border-top: 1px solid #444;
+      padding-top: 1rem;
+      max-width: 600px;
+      background: #222;
+      border-radius: 8px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    th, td {
+      padding: 0.5rem;
+      border: 1px solid #444;
+    }
+    .delete-btn {
+      color: red;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .flex-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Profile Setup</h1>
+
+  <form id="profile-form">
+    <label>Organization Name:
+      <input type="text" id="orgname" />
+    </label>
+
+    <label>Organization URL:
+      <input type="url" id="orgurl" />
+    </label>
+
+    <label>Organization Image URL:
+      <input type="url" id="orgimage" />
+    </label>
+
+    <label>In-Game User Name:
+      <input type="text" id="username" />
+    </label>
+
+    <label>User Image URL:
+      <input type="url" id="userimage" />
+    </label>
+
+    <label>User Description:
+      <textarea id="userdesc" rows="4"></textarea>
+    </label>
+
+    <label>Discord Webhooks:</label>
+    <div class="flex-row">
+      <input type="text" id="webhook-name" placeholder="Webhook Name" />
+      <input type="url" id="webhook-url" placeholder="Webhook URL" />
+      <button type="button" onclick="addWebhook()">+</button>
+    </div>
+    <table id="webhook-table" style="display:none;">
+      <thead>
+        <tr><th>Name</th><th>URL</th><th>Remove</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <label>Additional Data (JSON format):
+      <textarea id="otherdata" rows="4" placeholder='{"role":"Leader","level":10}'></textarea>
+    </label>
+
+    <button type="button" id="save-btn">Save Profile</button>
+    <button type="button" id="load-btn">Load Profile</button>
+    <button type="button" id="clear-btn">Clear Profile</button>
+    <button type="button" id="export-btn">Export Profile</button>
+  </form>
+
+  <div class="profile-view" id="profile-view" style="display:none;">
+    <h2>Current Profile</h2>
+    <p><strong>Organization Name:</strong> <span id="view-orgname"></span></p>
+    <p><strong>Organization URL:</strong> <a href="#" id="view-orgurl" target="_blank"></a></p>
+    <p><strong>Organization Image:</strong><br/><img id="view-orgimage" /></p>
+    <p><strong>In-Game Username:</strong> <span id="view-username"></span></p>
+    <p><strong>User Image:</strong><br/><img id="view-userimage" /></p>
+    <p><strong>Description:</strong> <span id="view-userdesc"></span></p>
+    <p><strong>Webhooks:</strong></p>
+    <ul id="view-webhooks"></ul>
+    <p><strong>Additional Data:</strong></p>
+    <pre id="view-otherdata"></pre>
+  </div>
+
+  <script>
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + (days*24*60*60*1000));
+      document.cookie = name + "=" + encodeURIComponent(value) + ";expires=" + d.toUTCString() + ";path=/";
+    }
+
+    function getCookie(name) {
+      const nameEQ = name + "=";
+      const ca = decodeURIComponent(document.cookie).split(';');
+      for (let c of ca) {
+        c = c.trim();
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length);
+      }
+      return null;
+    }
+
+    function updateWebhookTable() {
+      const webhooks = JSON.parse(localStorage.getItem("webhooks") || "[]");
+      const table = document.getElementById("webhook-table");
+      const tbody = table.querySelector("tbody");
+      tbody.innerHTML = "";
+      if (webhooks.length === 0) {
+        table.style.display = "none";
+        return;
+      }
+      table.style.display = "table";
+      webhooks.forEach((wh, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${wh.name}</td>
+          <td><a href="${wh.url}" target="_blank">${wh.url}</a></td>
+          <td><span class="delete-btn" onclick="removeWebhook(${index})">❌</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function addWebhook() {
+      const name = document.getElementById("webhook-name").value.trim();
+      const url = document.getElementById("webhook-url").value.trim();
+      if (!name || !url) {
+        alert("Please enter both a name and a URL.");
+        return;
+      }
+      const webhooks = JSON.parse(localStorage.getItem("webhooks") || "[]");
+      webhooks.push({ name, url });
+      localStorage.setItem("webhooks", JSON.stringify(webhooks));
+      document.getElementById("webhook-name").value = "";
+      document.getElementById("webhook-url").value = "";
+      updateWebhookTable();
+    }
+
+    function removeWebhook(index) {
+      const webhooks = JSON.parse(localStorage.getItem("webhooks") || "[]");
+      webhooks.splice(index, 1);
+      localStorage.setItem("webhooks", JSON.stringify(webhooks));
+      updateWebhookTable();
+    }
+
+    function saveProfile() {
+      const profile = {
+        orgname: document.getElementById('orgname').value.trim(),
+        orgurl: document.getElementById('orgurl').value.trim(),
+        orgimage: document.getElementById('orgimage').value.trim(),
+        username: document.getElementById('username').value.trim(),
+        userimage: document.getElementById('userimage').value.trim(),
+        userdesc: document.getElementById('userdesc').value.trim(),
+        discordwebhooks: JSON.parse(localStorage.getItem("webhooks") || "[]"),
+        otherdata: document.getElementById('otherdata').value.trim()
+      };
+      setCookie('profileData', JSON.stringify(profile), 365);
+      alert("Profile saved.");
+      showProfile(profile);
+    }
+
+    function loadProfile() {
+      const cookie = getCookie("profileData");
+      if (!cookie) return;
+      const data = JSON.parse(cookie);
+      document.getElementById('orgname').value = data.orgname || "";
+      document.getElementById('orgurl').value = data.orgurl || "";
+      document.getElementById('orgimage').value = data.orgimage || "";
+      document.getElementById('username').value = data.username || "";
+      document.getElementById('userimage').value = data.userimage || "";
+      document.getElementById('userdesc').value = data.userdesc || "";
+      document.getElementById('otherdata').value = data.otherdata || "";
+      localStorage.setItem("webhooks", JSON.stringify(data.discordwebhooks || []));
+      updateWebhookTable();
+      showProfile(data);
+    }
+
+    function clearProfile() {
+      setCookie("profileData", "", -1);
+      localStorage.removeItem("webhooks");
+      document.getElementById("profile-form").reset();
+      updateWebhookTable();
+      document.getElementById("profile-view").style.display = "none";
+    }
+
+    function showProfile(data) {
+      const view = id => document.getElementById(id);
+      view("profile-view").style.display = "block";
+      view("view-orgname").textContent = data.orgname || "";
+      view("view-orgurl").textContent = data.orgurl || "";
+      view("view-orgurl").href = data.orgurl || "#";
+      view("view-orgimage").src = data.orgimage || "";
+      view("view-username").textContent = data.username || "";
+      view("view-userimage").src = data.userimage || "";
+      view("view-userdesc").textContent = data.userdesc || "";
+      const ul = view("view-webhooks");
+      ul.innerHTML = "";
+      (data.discordwebhooks || []).forEach(w => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${w.name}:</strong> <a href="${w.url}" target="_blank">${w.url}</a>`;
+        ul.appendChild(li);
+      });
+      try {
+        view("view-otherdata").textContent = JSON.stringify(JSON.parse(data.otherdata), null, 2);
+      } catch {
+        view("view-otherdata").textContent = data.otherdata || "";
+      }
+    }
+
+    function exportProfile() {
+      const profile = {
+        orgname: document.getElementById('orgname').value.trim(),
+        orgurl: document.getElementById('orgurl').value.trim(),
+        orgimage: document.getElementById('orgimage').value.trim(),
+        username: document.getElementById('username').value.trim(),
+        userimage: document.getElementById('userimage').value.trim(),
+        userdesc: document.getElementById('userdesc').value.trim(),
+        discordwebhooks: JSON.parse(localStorage.getItem("webhooks") || "[]"),
+        otherdata: document.getElementById('otherdata').value.trim()
+      };
+      const blob = new Blob([JSON.stringify(profile, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "profileData.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById('save-btn').onclick = saveProfile;
+    document.getElementById('load-btn').onclick = loadProfile;
+    document.getElementById('clear-btn').onclick = clearProfile;
+    document.getElementById('export-btn').onclick = exportProfile;
+
+    // Auto-load on page open
+    window.addEventListener("load", () => {
+      loadProfile();
+      updateWebhookTable();
+    });
+  </script>
+</body>
+</html>
