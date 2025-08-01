@@ -2,116 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Yield 2 Sell</title>
-  <link rel="icon" href="Yield2SellIcon.ico" type="image/x-icon" />
-  <script src="Yield2SellItemPrices.js"></script>
-  <script src="itemColors.js"></script>
+  <title>Yield2Sell</title>
   <style>
     body {
-      background-color: #000;
-      color: white;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    nav {
-      display: flex;
-      justify-content: center;
-      background-color: #000;
-      border-bottom: 2px solid #555;
-      padding: 0.5em 0;
-      gap: 2em;
-    }
-
-    nav a {
-      color: gold;
-      text-decoration: none;
-      font-weight: bold;
-      padding: 0.5em 1em;
-      border-radius: 8px 8px 0 0;
-      background-color: #111;
-      border: 1px solid #555;
-      border-bottom: none;
-    }
-
-    nav a:hover {
-      background-color: #222;
-      color: white;
-    }
-
-    nav a.active {
-      background-color: #222;
-      color: white;
-      border-bottom: 2px solid #111;
-    }
-
-    main {
+      background-color: #1e1e1e;
+      color: #fff;
+      font-family: sans-serif;
       padding: 2rem;
     }
-
-    h1 {
-      text-align: center;
-      color: gold;
-      margin-bottom: 1rem;
-    }
-
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 1rem;
+      margin-bottom: 1.5rem;
     }
-
     th, td {
-      padding: 0.5rem;
       border: 1px solid #444;
-      text-align: left;
+      padding: 0.5rem;
+      text-align: center;
     }
-
-    th {
-      background-color: #111;
-      color: gold;
-    }
-
-    input[type="number"] {
-      width: 100px;
-      background-color: #111;
-      border: 1px solid #555;
-      color: white;
-      padding: 0.3rem;
-    }
-
-    select {
-      background-color: #111;
-      border: 1px solid #555;
-      color: white;
-      padding: 0.3rem;
+    input, select {
       width: 100%;
+      padding: 0.25rem;
+      font-size: 1rem;
     }
-
-    .total-display {
-      text-align: right;
-      font-size: 1.2rem;
-      color: lightgreen;
-      margin-top: 1rem;
+    .highlighted-text {
       font-weight: bold;
+      color: #fff;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      margin: 0.25rem;
+      font-weight: bold;
+      background-color: #333;
+      color: white;
+      border: 1px solid #666;
+      cursor: pointer;
+    }
+    .total-display {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-top: 1rem;
     }
   </style>
 </head>
 <body>
-
-  <nav>
-    <a href="index.html">Space Trucker Tools</a>
-    <a href="Yield2Sell.html" class="active">Yield 2 Sell</a>
-    <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
-    <a href="ProfitSplitter.html">Profit Splitter</a>
-    <a href="Profile.html">Profile</a>
-  </nav>
-
   <main>
-    <h1>Yield 2 Sell</h1>
-
+    <h1>Yield2Sell Calculator</h1>
     <table id="priceTable">
       <thead>
         <tr>
@@ -122,88 +58,160 @@
           <th>Item Total</th>
         </tr>
       </thead>
-      <tbody>
-        <!-- Dynamic rows go here -->
-      </tbody>
+      <tbody id="tableBody"></tbody>
     </table>
 
-    <div class="total-display" id="grandTotal">Total: 0 aUEC</div>
+    <div class="total-display" id="grandTotalDisplay">Total: 0 aUEC</div>
+
+    <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+      <button onclick="copyToClipboard()">Copy to Clipboard</button>
+      <button onclick="exportToTXT()">Export to TXT</button>
+      <button onclick="exportToCSV()">Export to CSV</button>
+    </div>
   </main>
 
   <script>
+    const items = ["Quantanium", "Bexalite", "Taranite"];
+    const locations = {
+      "Quantanium": { "Area18": 450, "Lorville": 500 },
+      "Bexalite": { "Area18": 800, "Lorville": 850 },
+      "Taranite": { "Area18": 1000, "Lorville": 1050 }
+    };
+
+    function formatNum(num) {
+      return Number(num).toLocaleString(undefined, { maximumFractionDigits: 0 });
+    }
+
     function populateTable() {
-      const tbody = document.querySelector('#priceTable tbody');
-      tbody.innerHTML = '';
+      const tbody = document.getElementById("tableBody");
 
-      Object.entries(itemPrices).forEach(([item, destinations]) => {
-        const row = document.createElement('tr');
-
+      items.forEach(item => {
+        const row = document.createElement("tr");
         row.innerHTML = `
-          <td style="color: ${itemColors[item] || 'white'}">${item}</td>
-          <td></td>
-          <td></td>
+          <td>${item}</td>
+          <td><input type="number" min="0" /></td>
+          <td>
+            <select>
+              ${Object.keys(locations[item]).map(loc => `<option value="${loc}">${loc}</option>`).join('')}
+            </select>
+          </td>
           <td class="priceCell"></td>
           <td class="rowTotal">0</td>
         `;
 
-        const entries = Object.entries(destinations);
-        const [bestDest, bestPrice] = entries.reduce((a, b) => (b[1] > a[1] ? b : a));
-
-        // Yield input
-        const yieldInput = document.createElement('input');
-        yieldInput.type = 'number';
-        yieldInput.min = 0;
-        yieldInput.placeholder = 'Yield';
-        row.children[1].appendChild(yieldInput);
-
-        // Location dropdown
-        const select = document.createElement('select');
-        const bestOption = new Option(bestDest, bestDest);
-        select.appendChild(bestOption);
-
-        entries.forEach(([loc]) => {
-          if (loc !== bestDest) {
-            select.appendChild(new Option(loc, loc));
-          }
-        });
-
-        row.children[2].appendChild(select);
-
-        // Initial price
-        row.children[3].textContent = bestPrice.toLocaleString();
+        const input = row.querySelector("input");
+        const select = row.querySelector("select");
+        const priceCell = row.querySelector(".priceCell");
+        const rowTotal = row.querySelector(".rowTotal");
 
         function updateRow() {
-          const selectedLoc = select.value;
-          const price = destinations[selectedLoc] || 0;
-          row.children[3].textContent = price.toLocaleString();
+          const location = select.value;
+          const price = locations[item][location] || 0;
+          priceCell.textContent = formatNum(price);
 
-          const yieldVal = Math.floor(parseFloat(yieldInput.value) || 0);
-          const scu = Math.floor(yieldVal / 100);
-          const total = scu * price;
+          const yieldAmount = parseFloat(input.value) || 0;
+          const total = yieldAmount * price;
+          rowTotal.textContent = formatNum(total);
 
-          row.querySelector('.rowTotal').textContent = total.toLocaleString('en-US');
-          calculateTotal();
+          updateGrandTotal();
         }
 
-        yieldInput.addEventListener('input', updateRow);
-        select.addEventListener('change', updateRow);
+        input.addEventListener("input", updateRow);
+        select.addEventListener("change", updateRow);
 
+        updateRow();
         tbody.appendChild(row);
       });
     }
 
-    function calculateTotal() {
-      const totalCells = document.querySelectorAll('.rowTotal');
+    function updateGrandTotal() {
       let total = 0;
-      totalCells.forEach(cell => {
-        total += parseInt(cell.textContent.replace(/,/g, '')) || 0;
+      document.querySelectorAll(".rowTotal").forEach(cell => {
+        total += parseFloat(cell.textContent.replace(/,/g, "")) || 0;
       });
-      document.getElementById('grandTotal').textContent =
-        `Total: ${total.toLocaleString('en-US')} aUEC`;
+      document.getElementById("grandTotalDisplay").textContent = "Total: " + formatNum(total) + " aUEC";
+    }
+
+    function exportToTXT() {
+      let txt = "Item | Yield | Location | Unit Price | Total\n";
+      const rows = document.querySelectorAll("#priceTable tbody tr");
+      let grandTotal = 0;
+
+      rows.forEach(row => {
+        const item = row.cells[0].textContent;
+        const yieldVal = row.cells[1].querySelector("input").value || "0";
+        const location = row.cells[2].querySelector("select").value;
+        const price = row.cells[3].textContent;
+        const total = row.cells[4].textContent;
+
+        const parsedTotal = parseFloat(total.replace(/,/g, "")) || 0;
+        txt += `${item} | ${yieldVal} | ${location} | ${price} | ${total}\n`;
+        grandTotal += parsedTotal;
+      });
+
+      txt += `\nGrand Total: ${formatNum(grandTotal)} aUEC`;
+      downloadFile(txt, `Yield2Sell_${timestamp()}.txt`);
+    }
+
+    function exportToCSV() {
+      let csv = "Item,Yield,Location,Unit Price,Total\n";
+      const rows = document.querySelectorAll("#priceTable tbody tr");
+      let grandTotal = 0;
+
+      rows.forEach(row => {
+        const item = row.cells[0].textContent;
+        const yieldVal = row.cells[1].querySelector("input").value || "0";
+        const location = row.cells[2].querySelector("select").value;
+        const price = row.cells[3].textContent.replace(/,/g, "");
+        const total = row.cells[4].textContent.replace(/,/g, "");
+
+        grandTotal += parseFloat(total) || 0;
+        csv += `"${item}",${yieldVal},"${location}",${price},${total}\n`;
+      });
+
+      csv += `\nGrand Total,,,\,"${formatNum(grandTotal)}"`;
+      downloadFile(csv, `Yield2Sell_${timestamp()}.csv`);
+    }
+
+    function copyToClipboard() {
+      let text = "Item | Yield | Location | Unit Price | Total\n";
+      const rows = document.querySelectorAll("#priceTable tbody tr");
+      let grandTotal = 0;
+
+      rows.forEach(row => {
+        const item = row.cells[0].textContent;
+        const yieldVal = row.cells[1].querySelector("input").value || "0";
+        const location = row.cells[2].querySelector("select").value;
+        const price = row.cells[3].textContent;
+        const total = row.cells[4].textContent;
+
+        const parsedTotal = parseFloat(total.replace(/,/g, "")) || 0;
+        text += `${item} | ${yieldVal} | ${location} | ${price} | ${total}\n`;
+        grandTotal += parsedTotal;
+      });
+
+      text += `\nGrand Total: ${formatNum(grandTotal)} aUEC`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied to clipboard!");
+      }).catch(() => {
+        alert("Failed to copy.");
+      });
+    }
+
+    function downloadFile(content, filename) {
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
+
+    function timestamp() {
+      return new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
     }
 
     populateTable();
   </script>
-
 </body>
 </html>
