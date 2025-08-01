@@ -37,20 +37,6 @@
       align-items: center;
       gap: 10px;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background-color: #222;
-    }
-    th, td {
-      border: 1px solid #444;
-      padding: 8px;
-      text-align: left;
-    }
-    th {
-      background-color: #333;
-    }
     .btn {
       background-color: #444;
       color: #fff;
@@ -60,200 +46,197 @@
     .btn:hover {
       background-color: #666;
     }
-    .remaining-pool {
-      text-align: center;
-      margin-top: 10px;
-      font-size: 1.2em;
-      font-weight: bold;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #000;
+      color: #0f0;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #222;
     }
   </style>
 </head>
 <body>
 
-<h1>Profit Splitter</h1>
+  <h1>Profit Splitter</h1>
 
-<div class="input-section">
-  <label>Title: <input type="text" id="splitTitle" placeholder="Mission Name" /></label>
-  <label>Total Profit: <input type="number" id="totalProfit" oninput="updateCalculations()" /></label>
-</div>
+  <div class="input-section">
+    <label>Title: <input type="text" id="splitTitle" placeholder="Mission Name" /></label>
+    <label>Total Profit: <input type="number" id="totalProfit" oninput="updateCalculations()" /></label>
+    <label>Accounting Buffer: <input type="number" id="accountingBuffer" value="0" oninput="updateCalculations()" /></label>
+  </div>
 
-<div id="players"></div>
-<button class="btn" onclick="addPlayer()">+ Add Player</button>
+  <div id="players"></div>
+  <button class="btn" onclick="addPlayer()">+ Add Player</button>
 
-<h2>Itemized Breakdown</h2>
-<table id="breakdownTable">
-  <thead>
-    <tr>
-      <th>Player</th>
-      <th>Type</th>
-      <th>Value</th>
-      <th>Expenses</th>
-      <th>Tax</th>
-      <th>Final Payout</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+  <h2>Itemized Breakdown</h2>
+  <table id="resultTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Value</th>
+        <th>Expenses</th>
+        <th>Tax</th>
+        <th>Payout</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-<div class="remaining-pool" id="remainingPool"></div>
+  <div class="export-buttons">
+    <button class="btn" onclick="exportTable()">Export as CSV</button>
+    <button class="btn" onclick="copyTable()">Copy to Clipboard</button>
+  </div>
 
-<div class="export-buttons">
-  <button class="btn" onclick="exportData('csv')">Export as CSV</button>
-  <button class="btn" onclick="exportData('txt')">Export as TXT</button>
-  <button class="btn" onclick="copyToClipboard()">Copy to Clipboard</button>
-</div>
+  <script>
+    let playerCount = 0;
 
-<script>
-  let playerCount = 0;
+    function addPlayer() {
+      const container = document.createElement('div');
+      container.className = 'player';
+      container.dataset.playerIndex = playerCount;
 
-  function addPlayer() {
-    const container = document.createElement('div');
-    container.className = 'player';
+      container.innerHTML = `
+        <div class="flex-row">
+          <label>Player Name: <input type="text" class="playerName" oninput="updateCalculations()" /></label>
+          <label>Split Type: 
+            <select class="splitType" onchange="updateCalculations()">
+              <option value="flat">Flat</option>
+              <option value="percent">Percent</option>
+              <option value="share">Share</option>
+            </select>
+          </label>
+          <label>Value: <input type="number" class="splitValue" value="1" oninput="updateCalculations()" /></label>
+          <label><input type="checkbox" class="taxed" onchange="updateCalculations()" /> Receives Money (5% Tax)</label>
+          <button class="btn" onclick="addExpense(this)">+ Add Expense</button>
+        </div>
+        <div class="expenses"></div>
+      `;
 
-    container.innerHTML = `
-      <div class="flex-row">
-        <label>Player Name: <input type="text" class="playerName" oninput="updateCalculations()" /></label>
-        <label>Split Type: 
-          <select class="splitType" onchange="updateCalculations()">
-            <option value="flat">Flat</option>
-            <option value="percent">Percent</option>
-            <option value="share">Share</option>
-          </select>
-        </label>
-        <label>Value: <input type="number" class="splitValue" oninput="updateCalculations()" /></label>
-        <label><input type="checkbox" class="taxed" onchange="updateCalculations()" /> Receives Money (5% Tax)</label>
-        <button class="btn" onclick="addExpense(this)">+ Add Expense</button>
-      </div>
-      <div class="expenses"></div>
-    `;
+      document.getElementById('players').appendChild(container);
+      playerCount++;
+      updateCalculations();
+    }
 
-    document.getElementById('players').appendChild(container);
-    playerCount++;
-    updateCalculations();
-  }
+    function addExpense(button) {
+      const expenseDiv = document.createElement('div');
+      expenseDiv.className = 'expenseRow';
+      expenseDiv.innerHTML = `
+        <label>Label: <input type="text" class="expenseLabel" value="Expense" oninput="updateCalculations()" /></label>
+        <label>Amount: <input type="number" class="expenseValue" value="0" oninput="updateCalculations()" /></label>
+        <button class="btn" onclick="this.parentElement.remove(); updateCalculations()">✖</button>
+      `;
+      button.parentElement.nextElementSibling.appendChild(expenseDiv);
+      updateCalculations();
+    }
 
-  function addExpense(button) {
-    const expenseDiv = document.createElement('div');
-    expenseDiv.className = 'expenseRow';
-    expenseDiv.innerHTML = `
-      <label>Label: <input type="text" class="expenseLabel" value="New Expense" oninput="updateCalculations()" /></label>
-      <label>Amount: <input type="number" class="expenseValue" value="0" oninput="updateCalculations()" /></label>
-      <button class="btn" onclick="this.parentElement.remove(); updateCalculations()">✖</button>
-    `;
-    button.parentElement.nextElementSibling.appendChild(expenseDiv);
-  }
+    function updateCalculations() {
+      const profit = parseFloat(document.getElementById('totalProfit').value) || 0;
+      const buffer = parseFloat(document.getElementById('accountingBuffer').value) || 0;
+      const players = Array.from(document.getElementsByClassName('player'));
+      const tbody = document.querySelector('#resultTable tbody');
+      tbody.innerHTML = '';
 
-  function updateCalculations() {
-    const profit = parseFloat(document.getElementById('totalProfit').value) || 0;
-    const players = Array.from(document.getElementsByClassName('player'));
-    const tbody = document.querySelector("#breakdownTable tbody");
-    tbody.innerHTML = "";
+      let entries = [];
+      let flatTotal = 0;
+      let percentTotal = 0;
+      let sharesTotal = 0;
+      let totalExpenses = 0;
 
-    let entries = [];
-    let flatTotal = 0, percentTotal = 0, sharesTotal = 0;
+      players.forEach((playerDiv, index) => {
+        const name = playerDiv.querySelector('.playerName').value || `Player ${index + 1}`;
+        const type = playerDiv.querySelector('.splitType').value;
+        const value = parseFloat(playerDiv.querySelector('.splitValue').value) || 0;
+        const taxed = playerDiv.querySelector('.taxed').checked;
+        const expenseRows = playerDiv.querySelectorAll('.expenseRow');
 
-    players.forEach((playerDiv, index) => {
-      const name = playerDiv.querySelector('.playerName').value || `Player ${index + 1}`;
-      const type = playerDiv.querySelector('.splitType').value;
-      const value = parseFloat(playerDiv.querySelector('.splitValue').value) || 0;
-      const taxed = playerDiv.querySelector('.taxed').checked;
+        let expenses = [];
+        let expenseTotal = 0;
+        expenseRows.forEach(row => {
+          const label = row.querySelector('.expenseLabel').value;
+          const val = parseFloat(row.querySelector('.expenseValue').value) || 0;
+          expenses.push({ label, value: val });
+          expenseTotal += val;
+        });
 
-      let expenseTotal = 0;
-      let expensesText = "";
-      playerDiv.querySelectorAll('.expenseRow').forEach(row => {
-        const label = row.querySelector('.expenseLabel').value;
-        const amount = parseFloat(row.querySelector('.expenseValue').value) || 0;
-        expenseTotal += amount;
-        expensesText += `${label}: ${amount}\n`;
+        totalExpenses += expenseTotal;
+        entries.push({ name, type, value, taxed, expenses, expenseTotal });
+
+        if (type === "flat") flatTotal += value;
+        else if (type === "percent") percentTotal += value;
+        else if (type === "share") sharesTotal += value;
       });
 
-      entries.push({ name, type, value, taxed, expenseTotal, expensesText });
+      const availablePool = profit - buffer - totalExpenses;
+      const taxPool = entries.some(e => e.taxed) ? availablePool * 0.05 : 0;
+      const netPool = availablePool - taxPool;
 
-      if (type === "flat") flatTotal += taxed ? value / 0.95 : value;
-      if (type === "percent") percentTotal += value;
-      if (type === "share") sharesTotal += value;
-    });
+      const flatDeductions = entries.filter(e => e.type === "flat").reduce((sum, e) => sum + e.value, 0);
+      const percentDeductions = entries.filter(e => e.type === "percent").reduce((sum, e) => sum + (e.value / 100 * netPool), 0);
+      const remainingPool = netPool - flatDeductions - percentDeductions;
+      const valuePerShare = sharesTotal > 0 ? remainingPool / sharesTotal : 0;
 
-    const totalExpenses = entries.reduce((sum, e) => sum + e.expenseTotal, 0);
-    const postExpensesProfit = profit - totalExpenses;
+      entries.forEach(entry => {
+        let raw = 0;
+        if (entry.type === "flat") raw = entry.value;
+        else if (entry.type === "percent") raw = (entry.value / 100) * netPool;
+        else if (entry.type === "share") raw = entry.value * valuePerShare;
 
-    const flatDeductions = entries
-      .filter(e => e.type === "flat")
-      .reduce((sum, e) => sum + (e.taxed ? e.value / 0.95 : e.value), 0);
+        let tax = entry.taxed ? raw * 0.05 : 0;
+        let payout = raw - tax - entry.expenseTotal;
 
-    const percentDeductions = entries
-      .filter(e => e.type === "percent")
-      .reduce((sum, e) => {
-        const amount = (e.value / 100) * postExpensesProfit;
-        return sum + (e.taxed ? amount / 0.95 : amount);
-      }, 0);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${entry.name}</td>
+          <td>${entry.type}</td>
+          <td>${entry.value}</td>
+          <td>
+            ${entry.expenses.map(e => `${e.label}: ${e.value}`).join('<br>') || '—'}
+          </td>
+          <td>${tax.toFixed(2)}</td>
+          <td>${payout.toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
 
-    const afterFlatPercent = postExpensesProfit - flatDeductions - percentDeductions;
-    const valuePerShare = sharesTotal > 0 ? afterFlatPercent / sharesTotal : 0;
+    function exportTable() {
+      const rows = document.querySelectorAll('table tr');
+      let csv = [];
+      rows.forEach(row => {
+        const cols = row.querySelectorAll('th, td');
+        const rowData = Array.from(cols).map(col => `"${col.innerText.replace(/\n/g, ' ')}"`).join(',');
+        csv.push(rowData);
+      });
+      const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      const title = document.getElementById('splitTitle').value || 'ProfitSplit';
+      const timestamp = new Date().toISOString().slice(0,16).replace('T','_').replace(':','-');
+      link.download = `${title}_${timestamp}.csv`;
+      link.click();
+    }
 
-    let totalUsed = totalExpenses + flatDeductions + percentDeductions;
+    function copyTable() {
+      const rows = document.querySelectorAll('table tr');
+      let text = '';
+      rows.forEach(row => {
+        const cols = row.querySelectorAll('th, td');
+        const rowText = Array.from(cols).map(col => col.innerText).join('\t');
+        text += rowText + '\n';
+      });
+      navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+    }
 
-    entries.forEach(e => {
-      let raw = 0;
-      if (e.type === "flat") raw = e.value;
-      if (e.type === "percent") raw = (e.value / 100) * postExpensesProfit;
-      if (e.type === "share") raw = e.value * valuePerShare;
-
-      let taxedTotal = e.taxed ? raw / 0.95 : raw;
-      let taxAmount = e.taxed ? taxedTotal - raw : 0;
-      let payout = taxedTotal - e.expenseTotal;
-
-      totalUsed += e.type === "share" ? taxedTotal : 0;
-
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${e.name}</td>
-        <td>${e.type}</td>
-        <td>${e.value}</td>
-        <td><pre style="margin:0">${e.expensesText || "—"}</pre></td>
-        <td>${taxAmount > 0 ? taxAmount.toFixed(2) : "—"}</td>
-        <td>${payout.toFixed(2)}</td>
-      `;
-      tbody.appendChild(row);
-    });
-
-    const remaining = profit - totalUsed;
-    document.getElementById('remainingPool').textContent = `Remaining Pool: ${remaining.toFixed(2)} aUEC`;
-  }
-
-  function exportData(type) {
-    const now = new Date();
-    const title = document.getElementById('splitTitle').value || 'ProfitSplit';
-    const timestamp = now.toISOString().slice(0, 16).replace('T', '_').replace(':', '-');
-    const filename = `${title}_${timestamp}.${type}`;
-    let content = '';
-
-    const rows = document.querySelectorAll("#breakdownTable tbody tr");
-    rows.forEach(row => {
-      const cells = row.querySelectorAll("td");
-      const values = Array.from(cells).map(cell => cell.innerText.trim());
-      content += type === "csv" ? values.join(",") + "\n" : values.join(" | ") + "\n";
-    });
-
-    const blob = new Blob([content], { type: 'text/plain' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-  }
-
-  function copyToClipboard() {
-    const rows = document.querySelectorAll("#breakdownTable tbody tr");
-    let text = '';
-    rows.forEach(row => {
-      const cells = row.querySelectorAll("td");
-      text += Array.from(cells).map(cell => cell.innerText.trim()).join(" | ") + "\n";
-    });
-    navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
-  }
-
-  addPlayer();
-</script>
-
+    addPlayer(); // Initialize with one player
+  </script>
 </body>
 </html>
