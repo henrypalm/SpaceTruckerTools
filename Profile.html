@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile Manager</title>
+  <link rel="icon" href="profile-icon.png" type="image/png">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #121212;
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .nav-tabs {
+      width: 100%;
+      background-color: #1f1f1f;
+      padding: 1rem;
+      text-align: center;
+      border-bottom: 1px solid #444;
+    }
+
+    .nav-tabs a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #ccc;
+    }
+
+    .nav-tabs a:hover {
+      color: #fff;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background-color: #1a1a1a;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    form input, form textarea {
+      width: 100%;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      background: #222;
+      color: #eee;
+      border: 1px solid #333;
+      border-radius: 5px;
+    }
+
+    .webhook-table {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .webhook-table td {
+      padding: 0.25rem;
+    }
+
+    .webhook-table input {
+      width: 90%;
+    }
+
+    .webhook-table button {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .profile-view {
+      margin-top: 2rem;
+      padding: 1rem;
+      background-color: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 8px;
+    }
+
+    .profile-view img {
+      max-height: 100px;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .button-group button {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    .button-group button:hover {
+      background-color: #555;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="nav-tabs">
+    <a href="#">Home</a>
+    <a href="#">Cargo</a>
+    <a href="#">Yield2Sell</a>
+    <a href="#">Profile</a>
+  </div>
+
+  <div class="container">
+    <h1>Profile Setup</h1>
+    <form id="profile-form">
+      <label>Org Name:</label>
+      <input type="text" id="orgName" />
+
+      <label>Org URL:</label>
+      <input type="text" id="orgUrl" />
+
+      <label>In-Game Username:</label>
+      <input type="text" id="userName" />
+
+      <label>User Description:</label>
+      <textarea id="description" rows="3"></textarea>
+
+      <label>Org Image URL:</label>
+      <input type="text" id="orgImage" />
+
+      <label>User Image URL:</label>
+      <input type="text" id="userImage" />
+
+      <label>Discord Webhooks:</label>
+      <table class="webhook-table" id="webhookTable">
+        <tbody></tbody>
+      </table>
+      <div>
+        <input type="text" id="webhookName" placeholder="Webhook Name" />
+        <input type="text" id="webhookUrl" placeholder="Webhook URL" />
+        <button type="button" onclick="addWebhook()">Add Webhook</button>
+      </div>
+
+      <div class="button-group">
+        <button type="button" onclick="saveProfile()">Save Profile</button>
+        <button type="button" onclick="loadProfile()">Load Profile</button>
+        <button type="button" onclick="exportProfile()">Export Profile</button>
+      </div>
+    </form>
+
+    <div class="profile-view" id="profile-view" style="display:none;"></div>
+  </div>
+
+  <script>
+    function addWebhook() {
+      const name = document.getElementById('webhookName').value;
+      const url = document.getElementById('webhookUrl').value;
+      if (!name || !url) return;
+
+      const table = document.getElementById('webhookTable').querySelector('tbody');
+      const row = document.createElement('tr');
+
+      row.innerHTML = `
+        <td><input type="text" value="${name}" data-type="name" /></td>
+        <td><input type="text" value="${url}" data-type="url" /></td>
+        <td><button onclick="this.closest('tr').remove()">X</button></td>
+      `;
+
+      table.appendChild(row);
+      document.getElementById('webhookName').value = '';
+      document.getElementById('webhookUrl').value = '';
+    }
+
+    function saveProfile() {
+      const profile = {
+        orgName: document.getElementById('orgName').value,
+        orgUrl: document.getElementById('orgUrl').value,
+        userName: document.getElementById('userName').value,
+        description: document.getElementById('description').value,
+        orgImage: document.getElementById('orgImage').value,
+        userImage: document.getElementById('userImage').value,
+        webhooks: Array.from(document.querySelectorAll('#webhookTable tbody tr')).map(row => {
+          const name = row.querySelector('input[data-type="name"]').value;
+          const url = row.querySelector('input[data-type="url"]').value;
+          return { name, url };
+        })
+      };
+      document.cookie = "profile=" + encodeURIComponent(JSON.stringify(profile)) + "; path=/";
+      alert("Profile saved!");
+    }
+
+    function loadProfile() {
+      const match = document.cookie.match(/(?:^|; )profile=([^;]*)/);
+      if (!match) return alert("No profile saved!");
+      const profile = JSON.parse(decodeURIComponent(match[1]));
+
+      document.getElementById('orgName').value = profile.orgName || '';
+      document.getElementById('orgUrl').value = profile.orgUrl || '';
+      document.getElementById('userName').value = profile.userName || '';
+      document.getElementById('description').value = profile.description || '';
+      document.getElementById('orgImage').value = profile.orgImage || '';
+      document.getElementById('userImage').value = profile.userImage || '';
+
+      const table = document.getElementById('webhookTable').querySelector('tbody');
+      table.innerHTML = '';
+      (profile.webhooks || []).forEach(({ name, url }) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><input type="text" value="${name}" data-type="name" /></td>
+          <td><input type="text" value="${url}" data-type="url" /></td>
+          <td><button onclick="this.closest('tr').remove()">X</button></td>
+        `;
+        table.appendChild(row);
+      });
+
+      const view = document.getElementById('profile-view');
+      view.innerHTML = `
+        <h3>${profile.orgName}</h3>
+        <p><a href="${profile.orgUrl}" target="_blank">${profile.orgUrl}</a></p>
+        <img src="${profile.orgImage}" alt="Org Image" />
+        <h4>${profile.userName}</h4>
+        <p>${profile.description}</p>
+        <img src="${profile.userImage}" alt="User Image" />
+        <h5>Webhooks:</h5>
+        <ul>
+          ${(profile.webhooks || []).map(h => `<li>${h.name}: ${h.url}</li>`).join('')}
+        </ul>
+      `;
+      view.style.display = 'block';
+    }
+
+    function exportProfile() {
+      const match = document.cookie.match(/(?:^|; )profile=([^;]*)/);
+      if (!match) return alert("No profile saved!");
+      const dataStr = decodeURIComponent(match[1]);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "profile.json";
+      a.click();
+    }
+  </script>
+</body>
+</html>
