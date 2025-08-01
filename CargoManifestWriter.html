@@ -6,6 +6,16 @@
   <title>Cargo Manifest Writer</title>
   <link rel="icon" href="cargoManifest.ico" type="image/x-icon" />
   <style>
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.75); /* semi-transparent dark background */
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 700px;
+      width: 90%;
+      margin: 2rem auto;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
     
     .nav-tabs {
       display: flex;
@@ -154,62 +164,65 @@
     <a href="ProfitSplitter.html">Profit Splitter</a>
     <a href="Profile.html">Profile</a>
   </div>
-  <input type="text" id="manifestTitle" placeholder="Enter manifest title..." />
-  <h1 id="manifestTitleDisplay">Cargo Manifest Writer</h1>
 
-  <details open>
-    <summary>Ship Mining</summary>
-    <table>
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Quantity</th>
-          <th>Location</th>
-          <th>Unit Price<br>(choose size)</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody id="shipMiningBody"></tbody>
-    </table>
-  </details>
-
-  <details open>
-    <summary>Hand Mining</summary>
-    <table>
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Quantity</th>
-          <th>Location</th>
-          <th>Unit Price<br>(choose size)</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody id="handMiningBody"></tbody>
-    </table>
-  </details>
-
-  <details open>
-    <summary>Salvage</summary>
-    <table>
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Quantity</th>
-          <th>Location</th>
-          <th>Unit Price<br>(choose size)</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody id="salvageBody"></tbody>
-    </table>
-  </details>
-
-  <div id="exportBox">
-    <button onclick="exportCSV()">Export CSV</button>
-    <button onclick="exportTXT()">Export TXT</button>
-    <button onclick="copyToClipboard()">Copy to Clipboard</button>
-    <div id="grandTotalDisplay">Total: 0 aUEC</div>
+  <div class="container">
+    <h1 id="manifestTitleDisplay">Cargo Manifest Writer</h1>
+    <input type="text" id="manifestTitle" placeholder="Enter manifest title..." />
+  
+    <details open>
+      <summary>Ship Mining</summary>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Location</th>
+            <th>Unit Price<br>(choose size)</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="shipMiningBody"></tbody>
+      </table>
+    </details>
+  
+    <details open>
+      <summary>Hand Mining</summary>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Location</th>
+            <th>Unit Price<br>(choose size)</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="handMiningBody"></tbody>
+      </table>
+    </details>
+  
+    <details open>
+      <summary>Salvage</summary>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Location</th>
+            <th>Unit Price<br>(choose size)</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="salvageBody"></tbody>
+      </table>
+    </details>
+  
+    <div id="exportBox">
+      <button onclick="exportCSV()">Export CSV</button>
+      <button onclick="exportTXT()">Export TXT</button>
+      <button onclick="copyToClipboard()">Copy to Clipboard</button>
+      <div id="grandTotalDisplay">Total: 0 aUEC</div>
+    </div>
   </div>
 
   <script src="CargoManifestWriterItemPrices.js"></script>
