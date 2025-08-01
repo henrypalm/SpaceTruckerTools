@@ -36,9 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const nav = document.createElement('div');
   nav.className = 'nav-tabs';
   nav.innerHTML = `
+    <a href="index.html">Space Trucker Tools</a>
     <a href="Yield2Sell.html">Yield 2 Sell</a>
     <a href="CargoManifestWriter.html">Cargo Manifest</a>
     <a href="ProfitSpliter.html">Profit Splitter</a>
+    <a href="Profile.html">Profile</a>
   `;
   document.body.insertBefore(nav, document.body.firstChild);
 
