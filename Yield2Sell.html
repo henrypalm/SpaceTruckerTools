@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Yield 2 Sell</title>
-  <link rel="icon" href="logo.ico" type="image/x-icon" />
+  <link rel="icon" href="Yield2SellIcon.ico" type="image/x-icon" />
 
   <!-- Load item data and color mappings -->
   <script src="Yield2SellItemPrices.js"></script>
@@ -252,31 +252,24 @@
         function updateRow() {
           const selectedLocation = select.value;
           const price = destinations[selectedLocation] || 0;
-          row.children[2].textContent = price;
-  
+          row.children[2].textContent = price.toLocaleString();
+        
           const yieldValue = Math.floor(parseFloat(yieldInput.value) || 0);
           const scu = Math.floor(yieldValue / 100);
           const total = scu * price;
-          row.querySelector('.rowTotal').textContent = total.toFixed(2);
+          row.querySelector('.rowTotal').textContent = total.toLocaleString();  // commas, no decimals
+        
           calculateTotal();
         }
-  
-        // Add event listeners for changes
-        select.addEventListener('change', updateRow);
-        yieldInput.addEventListener('input', updateRow);
-  
-        tbody.appendChild(row);
-      });
-    }
-  
-    function calculateTotal() {
-      const totalCells = document.querySelectorAll('.rowTotal');
-      let total = 0;
-      totalCells.forEach(cell => {
-        total += parseFloat(cell.textContent) || 0;
-      });
-      document.getElementById('grandTotal').textContent = `Total: ${total.toFixed(2)} aUEC`;
-    }
+        
+        function calculateTotal() {
+          const totalCells = document.querySelectorAll('.rowTotal');
+          let total = 0;
+          totalCells.forEach(cell => {
+            total += parseFloat(cell.textContent.replace(/,/g, '')) || 0;
+          });
+          document.getElementById('grandTotal').textContent = `Total: ${total.toLocaleString()} aUEC`;
+        }
   
     // Initial population
     populateTable();
