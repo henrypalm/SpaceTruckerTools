@@ -6,6 +6,17 @@
   <link rel="icon" href="ProfileIcon.ico" type="image/x-icon" />
   <title>Profile Setup</title>
   <style>
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.75); /* semi-transparent dark background */
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 700px;
+      width: 90%;
+      margin: 2rem auto;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    
     .nav-tabs {
       display: flex;
       gap: 10px;
@@ -141,86 +152,90 @@
     <a href="Profile.html">Profile</a>
   </div>
 
-  <h1>Profile Setup</h1>
+  <div class="container">
 
-  <form id="profile-form" onsubmit="return false;">
-    <label>Organization Name:
-      <input type="text" id="orgname" />
-    </label>
-
-    <label>Organization URL:
-      <input type="url" id="orgurl" />
-    </label>
-
-    <label>Organization Image URL:
-      <input type="url" id="orgimage" />
-    </label>
-
-    <label>In-Game User Name:
-      <input type="text" id="username" />
-    </label>
-
-    <label>User Image URL:
-      <input type="url" id="userimage" />
-    </label>
-
-    <label>User Description:
-      <textarea id="userdesc" rows="4"></textarea>
-    </label>
-
-    <label>Regolith Secret Key:
-      <input type="password" id="regolithKey" />
-    </label>
-    
-    <label>UEX API Key:
-      <input type="password" id="uexKey" />
-    </label>
-
-    <label>Discord Webhooks:</label>
-    <div class="flex-row">
-      <input type="text" id="webhook-name" placeholder="Webhook Name" />
-      <input type="url" id="webhook-url" placeholder="Webhook URL" />
-      <button type="button" onclick="addWebhook()">+</button>
+    <h1>Profile Setup</h1>
+  
+    <form id="profile-form" onsubmit="return false;">
+      <label>Organization Name:
+        <input type="text" id="orgname" />
+      </label>
+  
+      <label>Organization URL:
+        <input type="url" id="orgurl" />
+      </label>
+  
+      <label>Organization Image URL:
+        <input type="url" id="orgimage" />
+      </label>
+  
+      <label>In-Game User Name:
+        <input type="text" id="username" />
+      </label>
+  
+      <label>User Image URL:
+        <input type="url" id="userimage" />
+      </label>
+  
+      <label>User Description:
+        <textarea id="userdesc" rows="4"></textarea>
+      </label>
+  
+      <label>Regolith Secret Key:
+        <input type="password" id="regolithKey" />
+      </label>
+      
+      <label>UEX API Key:
+        <input type="password" id="uexKey" />
+      </label>
+  
+      <label>Discord Webhooks:</label>
+      <div class="flex-row">
+        <input type="text" id="webhook-name" placeholder="Webhook Name" />
+        <input type="url" id="webhook-url" placeholder="Webhook URL" />
+        <button type="button" onclick="addWebhook()">+</button>
+      </div>
+      <table id="webhook-table" style="display:none;">
+        <thead>
+          <tr><th>Name</th><th>URL</th><th>Remove</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+  
+      <label>Additional Data (JSON format):
+        <textarea id="otherdata" rows="4" placeholder='{"role":"Leader","level":10}'></textarea>
+      </label>
+  
+      <div id="buttons-row">
+        <button type="button" id="save-btn">Save Profile</button>
+        <button type="button" id="load-btn">Load Profile</button>
+        <button type="button" id="clear-btn">Clear Profile</button>
+        <button type="button" id="export-btn">Export Profile</button>
+      </div>
+  
+      <label for="import-json" style="margin-top:1rem; display:block;">
+        Import Profile JSON:
+      </label>
+      <textarea id="import-json" rows="6" placeholder="Paste profile JSON here to import"></textarea>
+      <button type="button" id="import-btn">Import JSON</button>
+    </form>
+  
+    <div class="profile-view" id="profile-view" style="display:none;">
+      <h2>Current Profile</h2>
+      <p><strong>Organization Name:</strong> <span id="view-orgname"></span></p>
+      <p><strong>Organization URL:</strong> <a href="#" id="view-orgurl" target="_blank" rel="noopener"></a></p>
+      <p><strong>Organization Image:</strong><br/><img id="view-orgimage" alt="Organization Image" /></p>
+      <p><strong>In-Game Username:</strong> <span id="view-username"></span></p>
+      <p><strong>User Image:</strong><br/><img id="view-userimage" alt="User Image" /></p>
+      <p><strong>Description:</strong> <span id="view-userdesc"></span></p>
+      <p><strong>Regolith Key:</strong> <span id="view-regolithKey"></span></p>
+      <p><strong>UEX Key:</strong> <span id="view-uexKey"></span></p>
+      <p><strong>Webhooks:</strong></p>
+      <ul id="view-webhooks"></ul>
+      <p><strong>Additional Data:</strong></p>
+      <pre id="view-otherdata"></pre>
     </div>
-    <table id="webhook-table" style="display:none;">
-      <thead>
-        <tr><th>Name</th><th>URL</th><th>Remove</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
 
-    <label>Additional Data (JSON format):
-      <textarea id="otherdata" rows="4" placeholder='{"role":"Leader","level":10}'></textarea>
-    </label>
-
-    <div id="buttons-row">
-      <button type="button" id="save-btn">Save Profile</button>
-      <button type="button" id="load-btn">Load Profile</button>
-      <button type="button" id="clear-btn">Clear Profile</button>
-      <button type="button" id="export-btn">Export Profile</button>
-    </div>
-
-    <label for="import-json" style="margin-top:1rem; display:block;">
-      Import Profile JSON:
-    </label>
-    <textarea id="import-json" rows="6" placeholder="Paste profile JSON here to import"></textarea>
-    <button type="button" id="import-btn">Import JSON</button>
-  </form>
-
-  <div class="profile-view" id="profile-view" style="display:none;">
-    <h2>Current Profile</h2>
-    <p><strong>Organization Name:</strong> <span id="view-orgname"></span></p>
-    <p><strong>Organization URL:</strong> <a href="#" id="view-orgurl" target="_blank" rel="noopener"></a></p>
-    <p><strong>Organization Image:</strong><br/><img id="view-orgimage" alt="Organization Image" /></p>
-    <p><strong>In-Game Username:</strong> <span id="view-username"></span></p>
-    <p><strong>User Image:</strong><br/><img id="view-userimage" alt="User Image" /></p>
-    <p><strong>Description:</strong> <span id="view-userdesc"></span></p>
-    <p><strong>Regolith Key:</strong> <span id="view-regolithKey"></span></p>
-    <p><strong>UEX Key:</strong> <span id="view-uexKey"></span></p>
-    <p><strong>Webhooks:</strong></p>
-    <ul id="view-webhooks"></ul>
-    <p><strong>Additional Data:</strong></p>
-    <pre id="view-otherdata"></pre>
   </div>
 
   <script>
