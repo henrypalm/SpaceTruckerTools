@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>UEX & Regolith Market Scraper</title>
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: monospace;
+      padding: 2rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 6px 10px;
+      border-bottom: 1px solid #444;
+    }
+  </style>
+</head>
+<body>
+  <h1>Market Scraper</h1>
+  <button onclick="fetchMarket()">Fetch UEX Market</button>
+  <button onclick="fetchProfile()">Fetch Regolith Profile</button>
+  <pre id="output">Waiting...</pre>
+
+  <script>
+    function getCookie(name) {
+      const value = document.cookie.split('; ').find(row => row.startsWith(name + '='));
+      return value ? decodeURIComponent(value.split('=')[1]) : null;
+    }
+
+    async function fetchMarket() {
+      const uexKey = getCookie('uexKey');
+      if (!uexKey) {
+        document.getElementById('output').textContent = 'UEX API key not found in cookies.';
+        return;
+      }
+
+      try {
+        const res = await fetch('https://api.uex.io/v1/items', {
+          headers: {
+            'Authorization': 'Bearer ' + uexKey,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!res.ok) throw new Error(`UEX Error ${res.status}`);
+        const data = await res.json();
+        document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById('output').textContent = 'Error: ' + err.message;
+      }
+    }
+
+    async function fetchProfile() {
+      const regKey = getCookie('regolithKey');
+      if (!regKey) {
+        document.getElementById('output').textContent = 'Regolith API key not found in cookies.';
+        return;
+      }
+
+      try {
+        const query = {
+          query: `
+            query {
+              profile {
+                userId
+                scName
+                avatarUrl
+                createdAt
+                updatedAt
+              }
+            }
+          `
+        };
+
+        const res = await fetch('https://api.regolith.rocks', {
+          method: 'POST',
+          headers: {
+            'x-api-key': regKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(query)
+        });
+
+        if (!res.ok) throw new Error(`Regolith Error ${res.status}`);
+        const data = await res.json();
+        document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById('output').textContent = 'Error: ' + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
