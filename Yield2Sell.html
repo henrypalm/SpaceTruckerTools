@@ -6,471 +6,242 @@
   <title>Yield 2 Sell</title>
   <link rel="icon" href="Yield2SellIogo.ico" type="image/x-icon" />
   <style>
-    .nav-tabs {
-      display: flex;
-      gap: 10px;
-      background-color: #222;
-      padding: 10px;
-      border-bottom: 2px solid #444;
-      margin-bottom: 20px;
-      justify-content: center;
-    }
-    
-    .nav-tabs a {
-      color: #ccc;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      background-color: #333;
-      transition: background-color 0.3s;
-    }
-    
-    .nav-tabs a:hover {
-      background-color: #555;
-      color: white;
-    }
-    
-    .nav-tabs a.active {
-      background-color: #2d89ff;
-      color: white;
-      font-weight: bold;
-    }
-
     body {
-      background-color: #000;
-      color: #00FF00;
-      font-family: Helvetica, sans-serif;
-      padding: 10px 15px;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: white;
       margin: 0;
-      font-size: 12px;
+      padding-bottom: 120px;
     }
 
-    .title {
-      color: #FFD700;
-      font-size: 18px;
-      margin-bottom: 10px;
+    h1 {
       text-align: center;
+      color: gold;
+      padding-top: 1rem;
     }
 
-    .total-top {
-      font-size: 16px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      text-align: center;
-      color: #FFD700;
-    }
-
-    label, select, input, button {
-      font-size: 12px;
-    }
-
-    .refinery {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 15px;
-    }
-
-    .refinery input {
-      background: #111;
-      color: #00FF00;
-      border: none;
-      padding: 5px;
-      margin-top: 2px;
-      font-size: 12px;
-    }
-
-    .item-container {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .container {
+      max-width: 1000px;
+      margin: 1rem auto;
+      padding: 0 1rem;
     }
 
     .item {
-      background: #111;
-      padding: 6px 8px;
-      border-radius: 6px;
-    }
-
-    .item-label {
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .row input, .row select {
-      flex: 1 1 100px;
-      padding: 4px 6px;
       background: #1a1a1a;
-      color: #00FF00;
-      border: none;
-      font-size: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #444;
+      margin-bottom: 0.8rem;
     }
 
-    .row button {
-      background: red;
-      color: white;
-      border: none;
-      padding: 4px 6px;
+    .item label {
+      display: block;
       font-weight: bold;
-      font-size: 12px;
-      cursor: pointer;
+      margin-bottom: 0.3rem;
     }
 
-    .result {
-      margin-top: 4px;
-      background: #000;
-      padding: 4px;
-      font-family: monospace;
-      font-size: 11px;
-      min-height: 18px;
+    input, select {
+      background-color: #222;
+      color: white;
+      border: 1px solid #444;
+      padding: 0.3rem;
+      border-radius: 4px;
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 0.6rem;
+    }
+
+    button {
+      background-color: #333;
+      border: 1px solid #555;
+      color: white;
+      padding: 0.6em 1.2em;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
+
+    .value {
+      text-align: right;
+      color: gold;
+      font-weight: bold;
+      margin-top: 0.5rem;
+    }
+
+    #exportBox {
+      position: sticky;
+      bottom: 0;
+      background: #222;
+      padding: 1em;
+      border-top: 2px solid #555;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1em;
+      z-index: 999;
     }
 
     .total {
-      font-size: 16px;
-      margin-top: 20px;
-      text-align: center;
+      font-size: 1.2rem;
       font-weight: bold;
-    }
-
-    .actions {
-      margin-top: 15px;
+      color: gold;
       text-align: center;
     }
 
-    .actions button {
-      background: #FFD700;
-      color: black;
-      padding: 6px 10px;
-      margin: 3px;
-      border: none;
-      font-weight: bold;
-      font-size: 12px;
-      cursor: pointer;
-    }
-
-    .actions .clear {
-      background: lime;
-    }
-
-    .ready-container {
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #111;
-      border-radius: 6px;
-    }
-
-    .ready-container label {
-      display: block;
-      margin-bottom: 4px;
-      color: #FFD700;
-    }
-
-    .ready-container input {
-      width: 60px;
-      margin-right: 10px;
-    }
-
-    .ready-time {
-      margin-top: 6px;
-      font-family: monospace;
-      font-size: 13px;
-      color: #00FF00;
-    }
-
-    @media (max-width: 600px) {
-      .row {
-        flex-direction: column;
-        align-items: stretch;
-      }
+    .clear {
+      background-color: darkred;
     }
   </style>
 </head>
 <body>
-  <div class="nav-tabs">
-    <a href="index.html">Space Trucker Tools</a>
-    <a href="Yield2Sell.html">Yield 2 Sell</a>
-    <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
-    <a href="ProfitSpliter.html">Profit Splitter</a>
+  <h1>Yield 2 Sell</h1>
+  <div class="container" id="itemContainer">
+    <!-- Items will be added here dynamically -->
   </div>
 
-  <div class="title">Yield 2 Sell</div>
-
-  <div class="total-top" id="totalDisplayTop">Total: 0.00 aUEC</div>
-
-  <div class="refinery">
-    <label>Refinery Location:
-      <input id="refineryTitle" placeholder="Enter refinery name..." />
-    </label>
-  </div>
-
-  <div id="itemsContainer" class="item-container"></div>
-
-  <div class="total" id="totalDisplay">Total: 0.00 aUEC</div>
-
-  <!-- NEW: Order Ready Time Inputs -->
-  <div class="ready-container">
-    <label>Order estimated ready at:</label>
-    <div class="row">
-      <input type="number" id="hoursInput" placeholder="Hours" min="0" />
-      <input type="number" id="minutesInput" placeholder="Minutes" min="0" />
-    </div>
-    <div class="ready-time" id="readyTimeOutput">Ready at: —</div>
-  </div>
-
-  <div class="actions">
+  <div id="exportBox">
     <button onclick="exportToFile('txt')">Export to TXT</button>
     <button onclick="exportToFile('csv')">Export to CSV</button>
     <button onclick="copyToClipboard()">Copy to Clipboard</button>
     <button class="clear" onclick="clearAll()">Clear All</button>
+    <div class="total" id="totalDisplayBottom">Total: 0.00 aUEC</div>
   </div>
 
-  <script src="Yield2SellItemItemPrices.js"></script>
-  <script src="itemColors.js"></script>
   <script>
-    // Highlight active tab based on current filename
-    const path = window.location.pathname;
-    const page = path.substring(path.lastIndexOf('/') + 1);
-    const tabs = document.querySelectorAll('.nav-tabs a');
-    tabs.forEach(tab => {
-      if (tab.getAttribute('href') === page) {
-        tab.classList.add('active');
-      }
-    });
-    
-    const itemsContainer = document.getElementById('itemsContainer');
-    const totalDisplay = document.getElementById('totalDisplay');
-    const totalDisplayTop = document.getElementById('totalDisplayTop');
-    const entries = {};
+    const itemData = [
+      { name: "Bexalite", price: 37000 },
+      { name: "Taranite", price: 31250 },
+      { name: "Borase", price: 24750 },
+      { name: "Agricium", price: 22000 },
+      { name: "Hephaestanite", price: 8800 },
+      { name: "Titanium", price: 7700 },
+      { name: "Diamond", price: 7000 },
+      { name: "Gold", price: 6600 },
+      { name: "Copper", price: 4950 },
+      { name: "Aluminum", price: 4400 },
+      { name: "Inert Material", price: 0 }
+    ];
 
-    // READY TIME references
-    const hoursInput = document.getElementById("hoursInput");
-    const minutesInput = document.getElementById("minutesInput");
-    const readyTimeOutput = document.getElementById("readyTimeOutput");
-
-    // Estimate Ready Time logic
-    function updateReadyTime() {
-      const hours = parseInt(hoursInput.value) || 0;
-      const minutes = parseInt(minutesInput.value) || 0;
-
-      const now = new Date();
-      now.setHours(now.getHours() + hours);
-      now.setMinutes(now.getMinutes() + minutes);
-
-      const readyTimeStr = now.toLocaleString();
-      readyTimeOutput.textContent = `Ready at: ${readyTimeStr}`;
-      return readyTimeStr;
+    function formatCurrency(value) {
+      return value.toLocaleString('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2
+      }).replace('$', '').trim();
     }
 
-    hoursInput.addEventListener("input", updateReadyTime);
-    minutesInput.addEventListener("input", updateReadyTime);
+    function createItemRow(item) {
+      const container = document.createElement("div");
+      container.className = "item";
 
-    // BUILD ITEMS
-    for (const [item, locations] of Object.entries(itemPrices)) {
-      const container = document.createElement('div');
-      container.className = 'item';
-
-      const label = document.createElement('div');
-      label.className = 'item-label';
-      label.textContent = item;
-      label.style.color = itemColors[item] || '#00FF00';
+      const label = document.createElement("label");
+      label.textContent = item.name;
       container.appendChild(label);
 
-      const row = document.createElement('div');
-      row.className = 'row';
+      const input = document.createElement("input");
+      input.type = "number";
+      input.min = "0";
+      input.placeholder = "Enter amount in SCU";
+      input.addEventListener("input", calculateTotal);
+      container.appendChild(input);
 
-      const input = document.createElement('input');
-      input.type = 'number';
-      input.placeholder = 'Yield amount...';
+      const value = document.createElement("div");
+      value.className = "value";
+      value.textContent = "0.00 aUEC";
+      container.appendChild(value);
 
-      const select = document.createElement('select');
-      for (const loc of Object.keys(locations)) {
-        const opt = document.createElement('option');
-        opt.value = loc;
-        opt.textContent = loc;
-        select.appendChild(opt);
-      }
+      container.dataset.price = item.price;
+      container.dataset.valueDisplay = value;
 
-      const clear = document.createElement('button');
-      clear.textContent = "❌";
-      clear.onclick = () => {
-        input.value = '';
-        result.textContent = '';
-        calculateTotal();
-      };
-
-      row.appendChild(input);
-      row.appendChild(select);
-      row.appendChild(clear);
-      container.appendChild(row);
-
-      const result = document.createElement('div');
-      result.className = 'result';
-      container.appendChild(result);
-
-      itemsContainer.appendChild(container);
-
-      entries[item] = { input, select, result, locations };
-
-      input.addEventListener('input', calculateTotal);
-      select.addEventListener('change', calculateTotal);
+      document.getElementById("itemContainer").appendChild(container);
     }
 
     function calculateTotal() {
+      const items = document.querySelectorAll(".item");
       let total = 0;
-      for (const item in entries) {
-        const { input, select, result, locations } = entries[item];
-        const raw = input.value;
-        if (!raw) {
-          result.textContent = '';
-          continue;
-        }
-        const value = parseFloat(raw);
-        if (isNaN(value)) {
-          result.textContent = 'Invalid input';
-          continue;
-        }
-        const units = Math.floor(value / 100);
-        const location = select.value;
-        const price = locations[location] || 0;
-        const itemTotal = units * price;
-        result.textContent = `${units} × ${price} = ${itemTotal.toLocaleString()} aUEC (${location})`;
-        total += itemTotal;
-      }
-      const formattedTotal = total.toLocaleString();
-      totalDisplay.textContent = `Total: ${formattedTotal} aUEC`;
-      totalDisplayTop.textContent = `Total: ${formattedTotal} aUEC`;
-    }
 
-    function clearAll() {
-      document.getElementById('refineryTitle').value = '';
-      hoursInput.value = '';
-      minutesInput.value = '';
-      readyTimeOutput.textContent = 'Ready at: —';
-      for (const item in entries) {
-        const { input, result } = entries[item];
-        input.value = '';
-        result.textContent = '';
-      }
-      totalDisplay.textContent = "Total: 0.00 aUEC";
-      totalDisplayTop.textContent = "Total: 0.00 aUEC";
+      items.forEach(item => {
+        const price = parseFloat(item.dataset.price);
+        const input = item.querySelector("input");
+        const valueDisplay = item.querySelector(".value");
+
+        const quantity = parseFloat(input.value) || 0;
+        const itemTotal = quantity * price;
+
+        valueDisplay.textContent = `${formatCurrency(itemTotal)} aUEC`;
+        total += itemTotal;
+      });
+
+      const formattedTotal = formatCurrency(total);
+      document.getElementById("totalDisplayBottom").textContent = `Total: ${formattedTotal} aUEC`;
     }
 
     function exportToFile(type) {
-      const title = document.getElementById('refineryTitle').value || "Untitled";
-      const now = new Date();
-      const timestamp = now.toISOString().replace(/[:.]/g, '-');
-      const fileName = `${title.replace(/\s+/g, '_')}_${timestamp}.${type}`;
-      let content = '';
-      let csv = [["Item", "Units", "Price", "Location", "Total Value"]];
+      const lines = [];
       let total = 0;
 
-      const readyTime = updateReadyTime(); // Make sure it's current
+      document.querySelectorAll(".item").forEach(item => {
+        const name = item.querySelector("label").textContent;
+        const quantity = parseFloat(item.querySelector("input").value) || 0;
+        const price = parseFloat(item.dataset.price);
+        const lineTotal = quantity * price;
 
-      content += `Title: ${title}\nDate: ${now.toLocaleString()}\nEstimated Ready Time: ${readyTime}\n\n`;
+        if (quantity > 0) {
+          lines.push(`${name}, ${quantity}, ${formatCurrency(price)}, ${formatCurrency(lineTotal)}`);
+          total += lineTotal;
+        }
+      });
 
-      for (const item in entries) {
-        const { input, select, locations } = entries[item];
-        const raw = input.value;
-        if (!raw) continue;
-        const value = parseFloat(raw);
-        const units = Math.floor(value / 100);
-        const loc = select.value;
-        const price = locations[loc];
-        const itemTotal = units * price;
-        total += itemTotal;
+      lines.push(`Total,, ,${formatCurrency(total)} aUEC`);
+      const content = lines.join(type === 'csv' ? "\n" : "\n");
 
-        content += `${item}: ${units} × ${price} = ${itemTotal} aUEC (${loc})\n`;
-        csv.push([item, units, price, loc, itemTotal]);
-      }
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
 
-      content += `\nTotal: ${total.toLocaleString()} aUEC`;
-      csv.push([]);
-      csv.push(["Total", "", "", "", total]);
-      csv.push(["Estimated Ready Time", "", "", "", readyTime]);
-
-      const blob = new Blob([
-        type === "csv"
-          ? csv.map(r => r.join(",")).join("\n")
-          : content
-      ], { type: type === "csv" ? "text/csv" : "text/plain" });
-
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const a = document.createElement("a");
+      a.href = url;
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      a.download = `Yield2Sell_${timestamp}.${type}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
 
     function copyToClipboard() {
-      // Gather the text you want to copy; for example, let's copy the export TXT content
-      const title = document.getElementById('refineryTitle').value || "Untitled";
-      const now = new Date();
-      const readyTime = updateReadyTime();
-    
-      let content = `Title: ${title}\nDate: ${now.toLocaleString()}\nEstimated Ready Time: ${readyTime}\n\n`;
-    
-      for (const item in entries) {
-        const { input, select, locations } = entries[item];
-        const raw = input.value;
-        if (!raw) continue;
-        const value = parseFloat(raw);
-        const units = Math.floor(value / 100);
-        const loc = select.value;
-        const price = locations[loc];
-        const itemTotal = units * price;
-    
-        content += `${item}: ${units} × ${price} = ${itemTotal} aUEC (${loc})\n`;
-      }
-    
-      // Add total at the end
+      let text = "";
       let total = 0;
-      for (const item in entries) {
-        const { input, select, locations } = entries[item];
-        const raw = input.value;
-        if (!raw) continue;
-        const value = parseFloat(raw);
-        const units = Math.floor(value / 100);
-        const loc = select.value;
-        const price = locations[loc];
-        total += units * price;
-      }
-      content += `\nTotal: ${total.toLocaleString()} aUEC`;
-    
-      // Use the Clipboard API if available
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(content).then(() => {
-          alert("Copied to clipboard!");
-        }, () => {
-          alert("Failed to copy.");
-        });
-      } else {
-        // fallback for older browsers
-        const textArea = document.createElement("textarea");
-        textArea.value = content;
-        // Avoid scrolling to bottom
-        textArea.style.position = "fixed";
-        textArea.style.top = "-9999px";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-    
-        try {
-          const successful = document.execCommand('copy');
-          alert(successful ? "Copied to clipboard!" : "Failed to copy.");
-        } catch (err) {
-          alert("Failed to copy.");
+
+      document.querySelectorAll(".item").forEach(item => {
+        const name = item.querySelector("label").textContent;
+        const quantity = parseFloat(item.querySelector("input").value) || 0;
+        const price = parseFloat(item.dataset.price);
+        const lineTotal = quantity * price;
+
+        if (quantity > 0) {
+          text += `${name}: ${quantity} x ${formatCurrency(price)} = ${formatCurrency(lineTotal)} aUEC\n`;
+          total += lineTotal;
         }
-    
-        document.body.removeChild(textArea);
-      }
+      });
+
+      text += `\nTotal: ${formatCurrency(total)} aUEC`;
+
+      navigator.clipboard.writeText(text)
+        .then(() => alert("Copied to clipboard!"))
+        .catch(err => alert("Failed to copy: " + err));
     }
+
+    function clearAll() {
+      document.querySelectorAll(".item input").forEach(input => input.value = "");
+      calculateTotal();
+    }
+
+    window.onload = () => {
+      itemData.forEach(createItemRow);
+    };
   </script>
 </body>
 </html>
