@@ -135,6 +135,25 @@ button:hover {
     </label>
     <input type="text" id="refineryTitle" placeholder="Enter refinery name" style="display:block; margin: 0 auto 1rem auto; width: 300px; padding: 0.3rem; font-size: 1rem; border-radius: 4px; border: 1px solid #555; background-color: #111; color: white;" />
 
+    <div style="text-align:center; margin-bottom:1rem; color: gold;">
+      <label for="refiningType">Refining Type: </label>
+      <select id="refiningType" style="background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px; width:150px;">
+        <option value="Ferron">Ferron</option>
+        <option value="Dynix">Dynix</option>
+      </select>
+    
+      <label for="refiningCost" style="margin-left:1rem;">Refining Cost: </label>
+      <input type="number" id="refiningCost" placeholder="aUEC" min="0" style="width:100px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
+    
+      <label for="refiningHours" style="margin-left:1rem;">Duration: </label>
+      <input type="number" id="refiningHours" placeholder="Hours" min="0" max="23" style="width:60px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
+      <input type="number" id="refiningMinutes" placeholder="Minutes" min="0" max="59" style="width:60px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
+    
+      <div style="margin-top:0.5rem; font-weight:bold;">
+        Order Ready At: <span id="orderReadyAt" style="color: lightgreen;">--:--</span>
+      </div>
+    </div>
+
     <table id="priceTable">
       <thead>
         <tr>
@@ -266,8 +285,16 @@ button:hover {
       const refineryNameInput = document.getElementById("refineryTitle");
       const titleRaw = refineryNameInput ? refineryNameInput.value.trim() : "";
       const title = titleRaw.length > 0 ? titleRaw : "Yield 2 Sell Export";
-      let txt = `Title: ${title}\n\nItem | Yield | Location | Price Per SCU | Item Total\n`;
+      const refiningType = document.getElementById("refiningType").value;
+      const refiningCost = document.getElementById("refiningCost").value || "0";
+      const refiningHours = document.getElementById("refiningHours").value || "0";
+      const refiningMinutes = document.getElementById("refiningMinutes").value || "0";
+      const orderReady = document.getElementById("orderReadyAt").textContent;
     
+      // Initialize the TXT content with the header info and table header
+      let txt = `Title: ${title}\nRefining Type: ${refiningType}\nRefining Cost: ${refiningCost} aUEC\nDuration: ${refiningHours}h ${refiningMinutes}m\nOrder Ready At: ${orderReady}\n\nItem | Yield | Location | Price Per SCU | Item Total\n`;
+    
+      // Append each row with yield > 0
       const rows = document.querySelectorAll("#priceTable tbody tr");
       rows.forEach(row => {
         const item = row.children[0].textContent.trim();
@@ -281,7 +308,10 @@ button:hover {
         }
       });
     
+      // Format filename with refinery title and datetime
       const filename = `${title.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0,16).replace(/[:T]/g, "-")}.txt`;
+    
+      // Trigger file download
       downloadFile(txt, filename);
     }
     
@@ -289,8 +319,13 @@ button:hover {
       const refineryNameInput = document.getElementById("refineryTitle");
       const titleRaw = refineryNameInput ? refineryNameInput.value.trim() : "";
       const title = titleRaw.length > 0 ? titleRaw : "Yield 2 Sell Export";
-
-      let csv = `Title:,${title}\n\nItem,Yield,Location,Price Per SCU,Item Total\n`;
+      const refiningType = document.getElementById("refiningType").value;
+      const refiningCost = document.getElementById("refiningCost").value || "0";
+      const refiningHours = document.getElementById("refiningHours").value || "0";
+      const refiningMinutes = document.getElementById("refiningMinutes").value || "0";
+      const orderReady = document.getElementById("orderReadyAt").textContent;
+    
+      let csv = `Title:,${title}\nRefining Type:,${refiningType}\nRefining Cost:,${refiningCost} aUEC\nDuration:,${refiningHours}h ${refiningMinutes}m\nOrder Ready At:,${orderReady}\n\nItem,Yield,Location,Price Per SCU,Item Total\n`;
     
       const rows = document.querySelectorAll("#priceTable tbody tr");
       rows.forEach(row => {
@@ -301,6 +336,7 @@ button:hover {
         const itemTotal = row.children[4].textContent.trim();
     
         if (parseInt(yieldVal) > 0) {
+          // Quote values to handle commas in text
           csv += `"${item}","${yieldVal}","${location}","${price}","${itemTotal}"\n`;
         }
       });
@@ -315,7 +351,13 @@ button:hover {
       const refineryNameInput = document.getElementById("refineryTitle");
       const titleRaw = refineryNameInput ? refineryNameInput.value.trim() : "";
       const title = titleRaw.length > 0 ? titleRaw : "Yield 2 Sell Export";
-      let textToCopy = `Title: ${title}\n\nItem | Yield | Location | Price Per SCU | Item Total\n`;
+      const refiningType = document.getElementById("refiningType").value;
+      const refiningCost = document.getElementById("refiningCost").value || "0";
+      const refiningHours = document.getElementById("refiningHours").value || "0";
+      const refiningMinutes = document.getElementById("refiningMinutes").value || "0";
+      const orderReady = document.getElementById("orderReadyAt").textContent;
+    
+      let textToCopy = `Title: ${title}\nRefining Type: ${refiningType}\nRefining Cost: ${refiningCost} aUEC\nDuration: ${refiningHours}h ${refiningMinutes}m\nOrder Ready At: ${orderReady}\n\nItem | Yield | Location | Price Per SCU | Item Total\n`;
     
       const rows = document.querySelectorAll("#priceTable tbody tr");
       rows.forEach(row => {
