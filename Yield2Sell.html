@@ -379,11 +379,31 @@ button:hover {
       });
     }
     
-    // Hook buttons to functions after DOM loaded
+    function updateOrderReadyAt() {
+      const refiningHours = parseInt(document.getElementById('refiningHours').value) || 0;
+      const refiningMinutes = parseInt(document.getElementById('refiningMinutes').value) || 0;
+    
+      const now = new Date();
+      now.setHours(now.getHours() + refiningHours);
+      now.setMinutes(now.getMinutes() + refiningMinutes);
+    
+      const hh = now.getHours().toString().padStart(2, '0');
+      const mm = now.getMinutes().toString().padStart(2, '0');
+    
+      document.getElementById('orderReadyAt').textContent = `${hh}:${mm}`;
+    }
+    
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("exportTxtBtn").addEventListener("click", exportTXT);
       document.getElementById("exportCsvBtn").addEventListener("click", exportCSV);
       document.getElementById("copyClipboardBtn").addEventListener("click", copyToClipboard);
+    
+      // Hook refining hours and minutes inputs
+      document.getElementById('refiningHours').addEventListener('input', updateOrderReadyAt);
+      document.getElementById('refiningMinutes').addEventListener('input', updateOrderReadyAt);
+    
+      // Initial update of order ready time on page load
+      updateOrderReadyAt();
     });
 
   </script>
