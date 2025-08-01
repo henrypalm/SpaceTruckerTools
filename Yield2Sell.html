@@ -11,6 +11,17 @@
   <script src="itemColors.js"></script>
 
   <style>
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.75); /* semi-transparent dark background */
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 700px;
+      width: 90%;
+      margin: 2rem auto;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    
     body {
       background-color: #111;         
       background-image: url('RefineryBackground.png'); 
@@ -136,57 +147,59 @@ button:hover {
     <a href="Profile.html">Profile</a>
   </nav>
 
-  <main>
-    <h1>Yield 2 Sell</h1>
-
-    <label for="refineryTitle" style="display:block; text-align:center; color: gold; margin-bottom: 0.5rem;">
-      Refinery Name:
-    </label>
-    <input type="text" id="refineryTitle" placeholder="Enter refinery name" style="display:block; margin: 0 auto 1rem auto; width: 300px; padding: 0.3rem; font-size: 1rem; border-radius: 4px; border: 1px solid #555; background-color: #111; color: white;" />
-
-    <div style="text-align:center; margin-bottom:1rem; color: gold;">
-      <label for="refiningType">Refining Type: </label>
-      <select id="refiningType" style="background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px; width:150px;">
-        <option value="Ferron">Ferron</option>
-        <option value="Dynix">Dynix</option>
-      </select>
-    
-      <label for="refiningCost" style="margin-left:1rem;">Refining Cost: </label>
-      <input type="number" id="refiningCost" placeholder="aUEC" min="0" style="width:100px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
-    
-      <label for="refiningHours" style="margin-left:1rem;">Duration: </label>
-      <input type="number" id="refiningHours" placeholder="Hours" min="0" max="23" style="width:60px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
-      <input type="number" id="refiningMinutes" placeholder="Minutes" min="0" max="59" style="width:60px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
-    
-      <div style="margin-top:0.5rem; font-weight:bold;">
-        Order Ready At: <span id="orderReadyAt" style="color: lightgreen;">--:--</span>
+  <div class="container">
+    <main>
+      <h1>Yield 2 Sell</h1>
+  
+      <label for="refineryTitle" style="display:block; text-align:center; color: gold; margin-bottom: 0.5rem;">
+        Refinery Name:
+      </label>
+      <input type="text" id="refineryTitle" placeholder="Enter refinery name" style="display:block; margin: 0 auto 1rem auto; width: 300px; padding: 0.3rem; font-size: 1rem; border-radius: 4px; border: 1px solid #555; background-color: #111; color: white;" />
+  
+      <div style="text-align:center; margin-bottom:1rem; color: gold;">
+        <label for="refiningType">Refining Type: </label>
+        <select id="refiningType" style="background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px; width:150px;">
+          <option value="Ferron">Ferron</option>
+          <option value="Dynix">Dynix</option>
+        </select>
+      
+        <label for="refiningCost" style="margin-left:1rem;">Refining Cost: </label>
+        <input type="number" id="refiningCost" placeholder="aUEC" min="0" style="width:100px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
+      
+        <label for="refiningHours" style="margin-left:1rem;">Duration: </label>
+        <input type="number" id="refiningHours" placeholder="Hours" min="0" max="23" style="width:60px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
+        <input type="number" id="refiningMinutes" placeholder="Minutes" min="0" max="59" style="width:60px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
+      
+        <div style="margin-top:0.5rem; font-weight:bold;">
+          Order Ready At: <span id="orderReadyAt" style="color: lightgreen;">--:--</span>
+        </div>
       </div>
-    </div>
-
-    <table id="priceTable">
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Yield</th>
-          <th>Location</th>
-          <th>Price Per SCU (aUEC)</th>
-          <th>Item Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Dynamically populated -->
-      </tbody>
-    </table>
-
-    <div class="total-display" id="grandTotal">Total: 0 aUEC</div>
-
-    <div style="margin-top:1rem; text-align: center; gap: 1rem; display: flex; justify-content: center;">
-      <button id="exportTxtBtn">Export TXT</button>
-      <button id="exportCsvBtn">Export CSV</button>
-      <button id="copyClipboardBtn">Copy to Clipboard</button>
-    </div>
-
-  </main>
+  
+      <table id="priceTable">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Yield</th>
+            <th>Location</th>
+            <th>Price Per SCU (aUEC)</th>
+            <th>Item Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Dynamically populated -->
+        </tbody>
+      </table>
+  
+      <div class="total-display" id="grandTotal">Total: 0 aUEC</div>
+  
+      <div style="margin-top:1rem; text-align: center; gap: 1rem; display: flex; justify-content: center;">
+        <button id="exportTxtBtn">Export TXT</button>
+        <button id="exportCsvBtn">Export CSV</button>
+        <button id="copyClipboardBtn">Copy to Clipboard</button>
+      </div>
+  
+    </main>
+  </div>
 
   <script>
     function populateTable() {
