@@ -123,6 +123,14 @@
       flex-wrap: wrap;
       max-width: 600px;
     }
+
+    body { background:#111; color:white; font-family:sans-serif; padding:20px; }
+    .entry { display:flex; gap:10px; margin:5px 0; }
+    input, select { padding:5px; font-size:1rem; }
+    button { padding:6px 10px; margin-top:10px; cursor:pointer; }
+    table { width:100%; border-collapse:collapse; margin-top:20px; }
+    td, th { border:1px solid #444; padding:8px; text-align:center; }
+    #results { display:none; }
   </style>
 </head>
 <body>
@@ -132,6 +140,17 @@
   <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
   <a href="ProfitSpliter.html">Profit Splitter</a>
   <a href="Profile.html">Profile</a>
+
+  <script>
+  // Highlight active tab based on current filename
+  const path = window.location.pathname;
+  const page = path.substring(path.lastIndexOf('/') + 1);
+  const tabs = document.querySelectorAll('.nav-tabs a');
+  tabs.forEach(tab => {
+    if (tab.getAttribute('href') === page) {
+      tab.classList.add('active');
+    }
+  });
   
   <h1>Profile Setup</h1>
 
