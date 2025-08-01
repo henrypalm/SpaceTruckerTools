@@ -6,6 +6,17 @@
   <title>Space Trucker Tools</title>
   <link rel="icon" href="SpaceTruckerToolsIcon.ico" type="image/x-icon" />
   <style>
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.75); /* semi-transparent dark background */
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 700px;
+      width: 90%;
+      margin: 2rem auto;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    
     body {
       font-family: Arial, sans-serif;
       background-color: #111;
@@ -260,45 +271,46 @@
     window.onload = updateAnnouncement;
   </script>
 
+  <div class="container">
+    <div class="button-row">
   
-  <div class="button-row">
-
-    <div class="app-button" onclick="location.href='Yield2Sell.html'">
-      <img src="Yield2SellIogo.ico" alt="Yield 2 Sell Icon" />
-      <div class="title">Yield 2 Sell</div>
-      <div class="description">Calculate and track your refinery's work order cost, duration, and yields while planning routes to sell the refined cargo and a profit estimation.</div>
+      <div class="app-button" onclick="location.href='Yield2Sell.html'">
+        <img src="Yield2SellIogo.ico" alt="Yield 2 Sell Icon" />
+        <div class="title">Yield 2 Sell</div>
+        <div class="description">Calculate and track your refinery's work order cost, duration, and yields while planning routes to sell the refined cargo and a profit estimation.</div>
+      </div>
+      
+      <div class="app-button" onclick="location.href='CargoManifestWriter.html'">
+        <img src="cargoManifest.ico" alt="Cargo Manifest Icon" />
+        <div class="title">Cargo Manifest Writer</div>
+        <div class="description">Manage and export your cargo manifests easily while planning your cargo drop off routes and profit estimations.</div>
+      </div>
+      
+      <div class="app-button" onclick="location.href='ProfitSplitter.html'">
+        <img src="ProfitSplitterIcon.ico" alt="Profit Splitter Icon" />
+        <div class="title">Profit Splitter</div>
+        <div class="description">Split mission profits among crew members based on grand total, party size, party's mission expenses, flate rates, percentages and/or shares.</div>
+      </div>
     </div>
-    
-    <div class="app-button" onclick="location.href='CargoManifestWriter.html'">
-      <img src="cargoManifest.ico" alt="Cargo Manifest Icon" />
-      <div class="title">Cargo Manifest Writer</div>
-      <div class="description">Manage and export your cargo manifests easily while planning your cargo drop off routes and profit estimations.</div>
+  
+    <div class="app-button" onclick="location.href='Profile.html'">
+        <img src="ProfileIcon.ico" alt="Profile Icon" />
+        <div class="title">Profile</div>
+        <div class="description">Import, export, save and view your profile.</div>
+      </div>
     </div>
-    
-    <div class="app-button" onclick="location.href='ProfitSplitter.html'">
-      <img src="ProfitSplitterIcon.ico" alt="Profit Splitter Icon" />
-      <div class="title">Profit Splitter</div>
-      <div class="description">Split mission profits among crew members based on grand total, party size, party's mission expenses, flate rates, percentages and/or shares.</div>
-    </div>
-  </div>
-
-  <div class="app-button" onclick="location.href='Profile.html'">
-      <img src="ProfileIcon.ico" alt="Profile Icon" />
-      <div class="title">Profile</div>
-      <div class="description">Import, export, save and view your profile.</div>
-    </div>
-  </div>
-
-  <div class="info-box">
-    <img src="SpaceTruckerToolsIcon.ico" alt="Info Box Image" />
-    <div class="text-content">
-      <h2>Welcome to the Space Trucker Tools App Suite</h2>
-      <p>
-        Use the buttons above to navigate between different tools. Each tool is designed to help
-        you effectively track your refinery work orders, mining and salvage related cargo hauls, estimate 
-        your profits, and split earnings with your team. 
-        This dashboard provides a quick overview to track operations, simply.
-      </p>
+  
+    <div class="info-box">
+      <img src="SpaceTruckerToolsIcon.ico" alt="Info Box Image" />
+      <div class="text-content">
+        <h2>Welcome to the Space Trucker Tools App Suite</h2>
+        <p>
+          Use the buttons above to navigate between different tools. Each tool is designed to help
+          you effectively track your refinery work orders, mining and salvage related cargo hauls, estimate 
+          your profits, and split earnings with your team. 
+          This dashboard provides a quick overview to track operations, simply.
+        </p>
+      </div>
     </div>
   </div>
 
