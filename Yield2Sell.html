@@ -85,6 +85,14 @@
       padding: 0.3rem;
     }
 
+    select {
+      background-color: #111;
+      border: 1px solid #555;
+      color: white;
+      padding: 0.3rem;
+      width: 100%;
+    }
+
     .total-display {
       text-align: right;
       font-size: 1.2rem;
@@ -111,7 +119,7 @@
       <thead>
         <tr>
           <th>Item</th>
-          <th>Best Location</th>
+          <th>Location</th>
           <th>Price (aUEC)</th>
           <th>Yield</th>
           <th>Total</th>
@@ -133,7 +141,6 @@
       Object.entries(itemPrices).forEach(([item, destinations]) => {
         const row = document.createElement('tr');
 
-        // Create cells
         row.innerHTML = `
           <td>${item}</td>
           <td></td>
@@ -142,37 +149,56 @@
           <td class="rowTotal">0</td>
         `;
 
-        // Apply item color
         row.children[0].style.color = itemColors[item] || 'white';
 
-        // Best location logic
-        const bestLocation = Object.entries(destinations).reduce((a, b) => (b[1] > a[1] ? b : a));
+        const entries = Object.entries(destinations);
+        const bestLocation = entries.reduce((a, b) => (b[1] > a[1] ? b : a));
         const [bestDest, bestPrice] = bestLocation;
 
-        // Location and price
-        const locationSpan = document.createElement('span');
-        locationSpan.textContent = bestDest;
-        row.children[1].appendChild(locationSpan);
+        const select = document.createElement('select');
 
-        const priceSpan = document.createElement('span');
-        priceSpan.textContent = bestPrice;
-        row.children[2].appendChild(priceSpan);
+        // Add best location first and select it
+        const bestOption = document.createElement('option');
+        bestOption.value = bestDest;
+        bestOption.textContent = bestDest;
+        select.appendChild(bestOption);
 
-        // Yield input
+        // Add other locations except the best to avoid duplicates
+        entries.forEach(([loc]) => {
+          if (loc !== bestDest) {
+            const option = document.createElement('option');
+            option.value = loc;
+            option.textContent = loc;
+            select.appendChild(option);
+          }
+        });
+
+        row.children[1].appendChild(select);
+
+        // Set initial price with commas, no decimals
+        row.children[2].textContent = bestPrice.toLocaleString();
+
         const yieldInput = document.createElement('input');
         yieldInput.type = 'number';
         yieldInput.min = 0;
         yieldInput.placeholder = 'Yield';
         row.children[3].appendChild(yieldInput);
 
-        // Calculation on input
-        yieldInput.addEventListener('input', () => {
-          const yieldValue = Math.floor(parseFloat(yieldInput.value) || 0);
-          const scu = Math.floor(yieldValue / 100);
-          const total = scu * bestPrice;
-          row.querySelector('.rowTotal').textContent = total.toFixed(2);
+        function updateRow() {
+          const selectedLoc = select.value;
+          const price = destinations[selectedLoc] || 0;
+          row.children[2].textContent = price.toLocaleString();
+
+          const yieldVal = Math.floor(parseFloat(yieldInput.value) || 0);
+          const scu = Math.floor(yieldVal / 100);
+          const total = scu * price;
+          row.querySelector('.rowTotal').textContent = total.toLocaleString();
+
           calculateTotal();
-        });
+        }
+
+        select.addEventListener('change', updateRow);
+        yieldInput.addEventListener('input', updateRow);
 
         tbody.appendChild(row);
       });
@@ -182,96 +208,11 @@
       const totalCells = document.querySelectorAll('.rowTotal');
       let total = 0;
       totalCells.forEach(cell => {
-        total += parseFloat(cell.textContent) || 0;
+        total += parseFloat(cell.textContent.replace(/,/g, '')) || 0;
       });
-      document.getElementById('grandTotal').textContent = `Total: ${total.toFixed(2)} aUEC`;
+      document.getElementById('grandTotal').textContent = `Total: ${total.toLocaleString()} aUEC`;
     }
 
-    // Initial population
-    populateTable();
-  </script>
-
-  <script>
-    function populateTable() {
-      const tbody = document.querySelector('#priceTable tbody');
-      tbody.innerHTML = '';
-  
-      Object.entries(itemPrices).forEach(([item, destinations]) => {
-        const row = document.createElement('tr');
-  
-        // Create cells
-        row.innerHTML = `
-          <td>${item}</td>
-          <td></td>
-          <td class="priceCell"></td>
-          <td></td>
-          <td class="rowTotal">0</td>
-        `;
-  
-        // Apply item color
-        row.children[0].style.color = itemColors[item] || 'white';
-  
-        // Find best location (highest price)
-        const entries = Object.entries(destinations);
-        const bestLocation = entries.reduce((a, b) => (b[1] > a[1] ? b : a));
-        const [bestDest, bestPrice] = bestLocation;
-  
-        // Create a dropdown for locations, with best location first and selected
-        const select = document.createElement('select');
-  
-        // Put best location as first option
-        const bestOption = document.createElement('option');
-        bestOption.value = bestDest;
-        bestOption.textContent = bestDest;
-        select.appendChild(bestOption);
-  
-        // Add other locations (except the best, to avoid duplicates)
-        entries.forEach(([loc, price]) => {
-          if (loc !== bestDest) {
-            const opt = document.createElement('option');
-            opt.value = loc;
-            opt.textContent = loc;
-            select.appendChild(opt);
-          }
-        });
-  
-        // Append dropdown to the Location cell
-        row.children[1].appendChild(select);
-  
-        // Set initial price cell
-        row.children[2].textContent = bestPrice;
-  
-        // Yield input
-        const yieldInput = document.createElement('input');
-        yieldInput.type = 'number';
-        yieldInput.min = 0;
-        yieldInput.placeholder = 'Yield';
-        row.children[3].appendChild(yieldInput);
-  
-        // Function to update price and total when location or yield changes
-        function updateRow() {
-          const selectedLocation = select.value;
-          const price = destinations[selectedLocation] || 0;
-          row.children[2].textContent = price.toLocaleString();
-        
-          const yieldValue = Math.floor(parseFloat(yieldInput.value) || 0);
-          const scu = Math.floor(yieldValue / 100);
-          const total = scu * price;
-          row.querySelector('.rowTotal').textContent = total.toLocaleString();  // commas, no decimals
-        
-          calculateTotal();
-        }
-        
-        function calculateTotal() {
-          const totalCells = document.querySelectorAll('.rowTotal');
-          let total = 0;
-          totalCells.forEach(cell => {
-            total += parseFloat(cell.textContent.replace(/,/g, '')) || 0;
-          });
-          document.getElementById('grandTotal').textContent = `Total: ${total.toLocaleString()} aUEC`;
-        }
-  
-    // Initial population
     populateTable();
   </script>
 
