@@ -1,4 +1,5 @@
 const itemColors = {
+  // coolers
   "IcePlunge": "skyblue",
   "Quikcool": "#ccc",
   "Polar": "lightgreen",
@@ -13,6 +14,7 @@ const itemColors = {
   "Blizzard": "gold",
   "Mercury": "steelblue",
 
+  // sheilds
   "Targa": "skyblue",
   "Falco": "#ccc",
   "ForceWall": "lightgreen",
@@ -28,6 +30,7 @@ const itemColors = {
   "Sheut": "deepskyblue",
   "FullBlcock": "steelblue",
 
+  // quantum drives
   "FoxFire": "skyblue",
   "LightFire": "#ccc",
   "Beacon": "orange",
@@ -36,5 +39,28 @@ const itemColors = {
   "Yeager": "lightgreen",
   "CrossField": "steelblue",
   "Nova": "purple",
-  "Pontes": "gold"
+  "Pontes": "gold",
+
+  // power plants
+  "LumaCore": "skyblue",
+  "StarHeat": "orange",
+  "JS-3000": "lightgreen",
+  "DynaFlux": "khaki",
+  "Firell Cascade": "lightcoral",
+  "Overdrive": "gold",
+  "Regulus": "deepskyblue",
+  "Charger": "coral",
+  "Slipstream": "teal",
+  "DeltaMax": "gray",
+  "SonicLite": "#ccc",
+  "LuxCore": "steelblue",
+  "UltraFlux": "purple",
+  "Maelstorm": "red",
+  "Sukoran": "lightgreen", 
+  "TurboDrive": "gold",
+  "Exogen": "lightblue",
+  "Eclipse": "lightgray",
+  "GammaMax": "green",
+  "Centurion": "green",
+  "SuperDrive": "green"
 };
