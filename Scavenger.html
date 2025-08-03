@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Scavenging Tool</title>
+  <link rel="icon" href="ScavengingIcon.ico" type="image/x-icon" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    details {
+      margin-bottom: 20px;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    summary {
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #555;
+      padding: 6px;
+      text-align: center;
+    }
+    th {
+      background-color: #222;
+    }
+    .export-buttons {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .export-buttons button {
+      margin: 5px;
+      padding: 8px 12px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .export-buttons button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>Scavenging Tool</h1>
+  <div id="componentContainer"></div>
+
+  <div class="export-buttons">
+    <button onclick="exportCSV()">Export CSV</button>
+    <button onclick="exportTXT()">Export TXT</button>
+    <button onclick="copyToClipboard()">Copy to Clipboard</button>
+  </div>
+
+  <script src="scavengingPrices.js"></script>
+  <script src="scavengingColors.js"></script>
+  <script>
+    const container = document.getElementById("componentContainer");
+
+    let grandTotal = 0;
+
+    function buildCategoryTable(category, items) {
+      const details = document.createElement("details");
+      details.open = true;
+      const summary = document.createElement("summary");
+      summary.textContent = category;
+      details.appendChild(summary);
+
+      const table = document.createElement("table");
+      const header = `
+        <tr>
+          <th>Name</th>
+          <th>Size</th>
+          <th>Class</th>
+          <th>Grade</th>
+          <th>Ship(s)</th>
+          <th>Value</th>
+          <th>Qty</th>
+          <th>Total</th>
+        </tr>`;
+      table.innerHTML = header;
+
+      items.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td style="color:${itemColors[item.name] || 'white'}">${item.name}</td>
+          <td>${item.size}</td>
+          <td>${item.class}</td>
+          <td>${item.grade}</td>
+          <td>${item.ship}</td>
+          <td>${item.price} aUEC</td>
+          <td><input type="number" min="0" value="0" onchange="calculateTotals()" data-name="${item.name}" data-price="${item.price}" /></td>
+          <td id="total-${item.name}">0</td>
+        `;
+        table.appendChild(row);
+      });
+
+      details.appendChild(table);
+      container.appendChild(details);
+    }
+
+    function calculateTotals() {
+      const inputs = document.querySelectorAll('input[type="number"]');
+      grandTotal = 0;
+      inputs.forEach(input => {
+        const qty = parseInt(input.value) || 0;
+        const price = parseInt(input.dataset.price);
+        const total = qty * price;
+        grandTotal += total;
+        document.getElementById(`total-${input.dataset.name}`).textContent = total;
+      });
+      document.getElementById("grandTotal")?.remove();
+
+      const grandRow = document.createElement("h2");
+      grandRow.id = "grandTotal";
+      grandRow.textContent = `Grand Total: ${grandTotal} aUEC`;
+      container.appendChild(grandRow);
+    }
+
+    function exportCSV() {
+      let csv = "Category,Name,Size,Class,Grade,Value,Qty,Total\n";
+      for (const category in scavengingPrices) {
+        scavengingPrices[category].forEach(item => {
+          const qty = document.querySelector(`input[data-name="${item.name}"]`).value || 0;
+          const total = qty * item.price;
+          csv += `${category},${item.name},${item.size},${item.class},${item.grade},${item.price},${qty},${total}\n`;
+        });
+      }
+      downloadFile(csv, "scavenging_report.csv");
+    }
+
+    function exportTXT() {
+      let txt = "Scavenging Report\n\n";
+      for (const category in scavengingPrices) {
+        txt += `== ${category} ==\n`;
+        scavengingPrices[category].forEach(item => {
+          const qty = document.querySelector(`input[data-name="${item.name}"]`).value || 0;
+          const total = qty * item.price;
+          if (qty > 0) {
+            txt += `${item.name} x${qty} - ${total} aUEC\n`;
+          }
+        });
+        txt += "\n";
+      }
+      txt += `Total: ${grandTotal} aUEC\n`;
+      downloadFile(txt, "scavenging_report.txt");
+    }
+
+    function copyToClipboard() {
+      let txt = "Scavenging Report\n\n";
+      for (const category in scavengingPrices) {
+        txt += `== ${category} ==\n`;
+        scavengingPrices[category].forEach(item => {
+          const qty = document.querySelector(`input[data-name="${item.name}"]`).value || 0;
+          const total = qty * item.price;
+          if (qty > 0) {
+            txt += `${item.name} x${qty} - ${total} aUEC\n`;
+          }
+        });
+        txt += "\n";
+      }
+      txt += `Total: ${grandTotal} aUEC\n`;
+      navigator.clipboard.writeText(txt);
+      alert("Copied to clipboard!");
+    }
+
+    function downloadFile(data, filename) {
+      const blob = new Blob([data], { type: "text/plain" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+    }
+
+    for (const category in scavengingPrices) {
+      buildCategoryTable(category, scavengingPrices[category]);
+    }
+  </script>
+</body>
+</html>
