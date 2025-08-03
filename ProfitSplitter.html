@@ -1,127 +1,273 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profit Splitter with PDF Export</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <meta charset="UTF-8" />
+  <title>Profit Splitter</title>
   <style>
-    body { background: #111; color: white; font-family: Arial, sans-serif; padding: 20px; }
-    .button { padding: 10px 20px; background: #444; color: white; border: none; cursor: pointer; margin-top: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #555; padding: 8px; text-align: center; }
-    #pdfContent { background: white; color: black; padding: 30px; width: 800px; margin: auto; display: none; }
-    #pdfContent img { max-height: 80px; }
-    #reportHeader { display: flex; justify-content: space-between; align-items: center; }
-    #reportTableContainer table { border: 1px solid #000; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .input-section, .player, .export-buttons, .summary {
+      background-color: #222;
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .player {
+      margin-top: 10px;
+    }
+    input, select, button {
+      padding: 5px;
+      margin: 5px;
+    }
+    .expenses {
+      margin-left: 20px;
+    }
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn {
+      background-color: #444;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #666;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #000;
+      color: #0f0;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #222;
+    }
+    .small {
+      font-size: 0.9em;
+      color: #aaa;
+    }
   </style>
 </head>
-<body>  <h1>Profit Splitter</h1>
-  <label>Title: <input type="text" id="title" value="Operation Silverhaul"></label><br><br>
-  <label>Total Profit: <input type="number" id="totalProfit" value="100000"></label><br><br>  <table id="outputTable">
+<body>
+
+  <h1>Profit Splitter</h1>
+
+  <div class="input-section">
+    <label>Title: <input type="text" id="splitTitle" placeholder="Mission Name" /></label>
+    <label>Total Profit: <input type="number" id="totalProfit" oninput="updateCalculations()" /></label>
+  </div>
+
+  <div id="players"></div>
+  <button class="btn" onclick="addPlayer()">+ Add Player</button>
+
+  <h2>Summary</h2>
+  <div class="summary">
+    <p><strong>Post-Expense Profit:</strong> <span id="postExpensesProfit">0</span></p>
+    <p><strong>Accounting Buffer (Auto):</strong> <span id="accountingBuffer">0</span></p>
+    <p><strong>Remaining Pool After All Deductions:</strong> <span id="remainingPool">0</span></p>
+  </div>
+
+  <h2>Itemized Breakdown</h2>
+  <table id="outputTable">
     <thead>
       <tr>
         <th>Player</th>
-        <th>Split Type</th>
-        <th>Share</th>
-        <th>Payout</th>
+        <th>Type</th>
+        <th>Value</th>
+        <th>Expenses</th>
+        <th>Tax (5%)</th>
+        <th>Final Payout</th>
       </tr>
     </thead>
-    <tbody>
-      <tr>
-        <td>AcePilot</td>
-        <td>Flat</td>
-        <td>20000</td>
-        <td>20000</td>
-      </tr>
-      <tr>
-        <td>MinerJoe</td>
-        <td>Percent</td>
-        <td>20%</td>
-        <td>16000</td>
-      </tr>
-    </tbody>
-  </table><button class="button" onclick="exportToPDF()">Export as PDF</button>
+    <tbody></tbody>
+  </table>
 
-  <div id="pdfContent">
-    <div id="reportHeader">
-      <div>
-        <img id="orgImage" src="org_logo.png" alt="Org Logo">
-        <h2 id="orgName">Org Name</h2>
-      </div>
-      <div style="text-align: right;">
-        <img id="userImage" src="user_avatar.png" alt="User Image" style="border-radius: 50%;">
-        <h3 id="userName">User Name</h3>
-      </div>
-    </div>
-    <hr />
-    <h1 id="reportTitle"></h1>
-    <p id="reportDate"></p>
-    <p id="totalProfitSummary"></p>
-    <div id="reportTableContainer"></div>
-  </div>  <script>
-    function generatePDFContent() {
-      const title = document.getElementById("title").value || "Untitled Mission";
-      const date = new Date().toLocaleString();
-      const totalProfit = document.getElementById("totalProfit").value;
+  <div class="export-buttons">
+    <button class="btn" onclick="exportTable('csv')">Export as CSV</button>
+    <button class="btn" onclick="exportTable('txt')">Export as TXT</button>
+    <button class="btn" onclick="copyTable()">Copy to Clipboard</button>
+  </div>
 
-      document.getElementById("userName").innerText = localStorage.getItem("userName") || "Commander";
-      document.getElementById("orgName").innerText = localStorage.getItem("orgName") || "Freelancer Co.";
-      document.getElementById("userImage").src = localStorage.getItem("userImage") || "defaultUser.png";
-      document.getElementById("orgImage").src = localStorage.getItem("orgImage") || "defaultOrg.png";
+  <script>
+    let playerCount = 0;
 
-      document.getElementById("reportTitle").innerText = `Profit Split: ${title}`;
-      document.getElementById("reportDate").innerText = `Date: ${date}`;
-      document.getElementById("totalProfitSummary").innerText = `Total Profit: ${totalProfit}`;
+    function addPlayer() {
+      const container = document.createElement('div');
+      container.className = 'player';
+      container.dataset.playerIndex = playerCount;
 
-      const tableClone = document.getElementById("outputTable").cloneNode(true);
-      document.getElementById("reportTableContainer").innerHTML = "";
-      document.getElementById("reportTableContainer").appendChild(tableClone);
+      container.innerHTML = `
+        <div class="flex-row">
+          <label>Player Name: <input type="text" class="playerName" oninput="updateCalculations()" /></label>
+          <label>Split Type:
+            <select class="splitType" onchange="updateCalculations()">
+              <option value="flat">Flat</option>
+              <option value="percent">Percent</option>
+              <option value="share">Share</option>
+            </select>
+          </label>
+          <label>Value: <input type="number" class="splitValue" oninput="updateCalculations()" /></label>
+          <label><input type="checkbox" class="taxed" onchange="updateCalculations()" /> Receives Money (5% Tax)</label>
+          <button class="btn" onclick="addExpense(this)">+ Add Expense</button>
+        </div>
+        <div class="expenses"></div>
+      `;
+
+      document.getElementById('players').appendChild(container);
+      playerCount++;
+      updateCalculations();
     }
 
-    async function exportToPDF() {
-      generatePDFContent();
-      const pdfElement = document.getElementById("pdfContent");
-      pdfElement.style.display = "block";
+    function addExpense(button) {
+      const expenseDiv = document.createElement('div');
+      expenseDiv.className = 'expenseRow';
+      expenseDiv.innerHTML = `
+        <label>Label: <input type="text" class="expenseLabel" value="New Expense" oninput="updateCalculations()" /></label>
+        <label>Amount: <input type="number" class="expenseValue" value="0" oninput="updateCalculations()" /></label>
+        <button class="btn" onclick="this.parentElement.remove(); updateCalculations()">✖</button>
+      `;
+      button.parentElement.nextElementSibling.appendChild(expenseDiv);
+    }
 
-      await html2canvas(pdfElement, { scale: 2 }).then(canvas => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jspdf.jsPDF("p", "pt", "a4");
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
+    function updateCalculations() {
+      const profit = parseFloat(document.getElementById('totalProfit').value) || 0;
+      const players = Array.from(document.getElementsByClassName('player'));
 
-        const imgProps = pdf.getImageProperties(imgData);
-        const imgHeight = imgProps.height * (pageWidth / imgProps.width);
+      let entries = [];
+      let totalExpenses = 0;
+      let flatTotal = 0;
+      let percentTotal = 0;
+      let sharesTotal = 0;
+      let requiredTaxBuffer = 0;
 
-        let position = 0;
-        if (imgHeight < pageHeight) {
-          pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgHeight);
-        } else {
-          let remainingHeight = imgHeight;
-          let pageOffset = 0;
-          while (remainingHeight > 0) {
-            pdf.addImage(imgData, 'PNG', 0, pageOffset, pageWidth, imgHeight);
-            remainingHeight -= pageHeight;
-            if (remainingHeight > 0) pdf.addPage();
-            pageOffset -= pageHeight;
-          }
-        }
+      players.forEach((playerDiv, index) => {
+        const name = playerDiv.querySelector('.playerName').value || `Player ${index + 1}`;
+        const type = playerDiv.querySelector('.splitType').value;
+        const value = parseFloat(playerDiv.querySelector('.splitValue').value) || 0;
+        const taxed = playerDiv.querySelector('.taxed').checked;
+        const expenseRows = playerDiv.querySelectorAll('.expenseRow');
 
-        const filename = `ProfitSplit_${Date.now()}.pdf`;
-        pdf.save(filename);
+        let expenses = [];
+        let expenseTotal = 0;
+        expenseRows.forEach(row => {
+          const label = row.querySelector('.expenseLabel').value;
+          const val = parseFloat(row.querySelector('.expenseValue').value) || 0;
+          expenses.push({ label, value: val });
+          expenseTotal += val;
+        });
 
-        storeReport(filename);
+        if (type === "flat") flatTotal += value;
+        else if (type === "percent") percentTotal += value;
+        else if (type === "share") sharesTotal += value;
+
+        totalExpenses += expenseTotal;
+
+        entries.push({ name, type, value, taxed, expenses, expenseTotal });
       });
 
-      pdfElement.style.display = "none";
+      const postExpensesProfit = profit - totalExpenses;
+      let taxedEntries = [];
+
+      // Calculate deductions
+      const flatDeductions = entries.filter(e => e.type === "flat").reduce((sum, e) => {
+        const taxedPortion = e.taxed ? e.value / 0.95 : e.value;
+        if (e.taxed) taxedEntries.push(taxedPortion - e.value);
+        return sum + taxedPortion;
+      }, 0);
+
+      const percentDeductions = entries.filter(e => e.type === "percent").reduce((sum, e) => {
+        const amount = (e.value / 100) * postExpensesProfit;
+        const taxedPortion = e.taxed ? amount / 0.95 : amount;
+        if (e.taxed) taxedEntries.push(taxedPortion - amount);
+        return sum + taxedPortion;
+      }, 0);
+
+      const remainder = postExpensesProfit - flatDeductions - percentDeductions;
+      const valuePerShare = sharesTotal > 0 ? remainder / sharesTotal : 0;
+
+      entries.forEach(e => {
+        if (e.type === "share") {
+          const raw = e.value * valuePerShare;
+          if (e.taxed) {
+            const taxedPortion = raw / 0.95;
+            taxedEntries.push(taxedPortion - raw);
+          }
+        }
+      });
+
+      requiredTaxBuffer = taxedEntries.reduce((sum, t) => sum + t, 0);
+      const accountingBuffer = requiredTaxBuffer;
+
+      const finalPool = profit - totalExpenses - flatDeductions - percentDeductions - accountingBuffer;
+
+      // Display breakdown
+      const tbody = document.querySelector("#outputTable tbody");
+      tbody.innerHTML = "";
+      entries.forEach(entry => {
+        let raw = 0;
+        if (entry.type === "flat") raw = entry.value;
+        else if (entry.type === "percent") raw = (entry.value / 100) * postExpensesProfit;
+        else if (entry.type === "share") raw = entry.value * valuePerShare;
+
+        let taxedAmount = entry.taxed ? raw * 0.05 : 0;
+        let payout = raw - entry.expenseTotal;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${entry.name}</td>
+          <td>${entry.type}</td>
+          <td>${entry.value}</td>
+          <td>${entry.expenseTotal.toFixed(2)}</td>
+          <td>${taxedAmount.toFixed(2)}</td>
+          <td>${payout.toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      document.getElementById("postExpensesProfit").textContent = postExpensesProfit.toFixed(2);
+      document.getElementById("accountingBuffer").textContent = accountingBuffer.toFixed(2);
+      document.getElementById("remainingPool").textContent = finalPool.toFixed(2);
     }
 
-    function storeReport(filename) {
-      const title = document.getElementById("title").value || "Untitled";
-      const date = new Date().toLocaleString();
-      const previous = JSON.parse(localStorage.getItem("previousReports") || "[]");
-      previous.push({ title, filename, date });
-      localStorage.setItem("previousReports", JSON.stringify(previous));
+    function exportTable(type) {
+      const rows = Array.from(document.querySelectorAll("table tr"));
+      const lines = rows.map(row => Array.from(row.cells).map(cell => cell.textContent).join(","));
+      const content = lines.join("\n");
+      const title = document.getElementById('splitTitle').value || 'ProfitSplit';
+      const now = new Date().toISOString().slice(0,16).replace("T","_").replace(":","-");
+      const blob = new Blob([content], { type: "text/plain" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${title}_${now}.${type}`;
+      a.click();
     }
-  </script></body>
+
+    function copyTable() {
+      const rows = Array.from(document.querySelectorAll("table tr"));
+      const lines = rows.map(row => Array.from(row.cells).map(cell => cell.textContent).join("\t"));
+      navigator.clipboard.writeText(lines.join("\n")).then(() => alert("Copied to clipboard!"));
+    }
+
+    addPlayer();
+  </script>
+
+</body>
 </html>
