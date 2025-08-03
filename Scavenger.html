@@ -6,6 +6,39 @@
   <title>Scavenging Tool</title>
   <link rel="icon" href="ScavengingIcon.ico" type="image/x-icon" />
   <style>
+
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      background-color: #222;
+      padding: 10px 20px;
+      border-bottom: 2px solid #444;
+      margin-bottom: 20px;
+      justify-content: center;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .nav-tabs a {
+      color: #ccc;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      background-color: #333;
+      transition: background-color 0.3s;
+    }
+
+    .nav-tabs a:hover {
+      background-color: #555;
+      color: white;
+    }
+
+    .nav-tabs a.active {
+      background-color: #2d89ff;
+      color: white;
+      font-weight: bold;
+    }
+    
     body {
       font-family: Arial, sans-serif;
       background-color: #111;
@@ -58,6 +91,16 @@
   </style>
 </head>
 <body>
+
+  <nav>
+    <a href="index.html">Space Trucker Tools</a>
+    <a href="Yield2Sell.html" class="active">Yield 2 Sell</a>
+    <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
+    <a href="Scavenger.html">Scavenger</a>
+    <a href="ProfitSplitter.html">Profit Splitter</a>
+    <a href="Profile.html">Profile</a>
+  </nav>
+  
   <h1>Scavenging Tool</h1>
   <div id="componentContainer"></div>
 
@@ -70,6 +113,17 @@
   <script src="scavengingPrices.js"></script>
   <script src="scavengingColors.js"></script>
   <script>
+
+    // Highlight active tab based on current filename
+    const path = window.location.pathname;
+    const page = path.substring(path.lastIndexOf('/') + 1);
+    const tabs = document.querySelectorAll('.nav-tabs a');
+    tabs.forEach(tab => {
+      if (tab.getAttribute('href') === page) {
+        tab.classList.add('active');
+      }
+    });
+    
     const container = document.getElementById("componentContainer");
 
     let grandTotal = 0;
