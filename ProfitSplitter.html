@@ -5,6 +5,16 @@
   <title>Profit Splitter</title>
   <style>
 
+    .container {
+      background-color: rgba(0, 0, 0, 0.75); /* semi-transparent dark background */
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 700px;
+      width: 90%;
+      margin: 2rem auto;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
     .nav-tabs {
       display: flex;
       gap: 10px;
@@ -114,42 +124,44 @@
     <a href="Profile.html">Profile</a>
   </nav>
 
-  <h1>Profit Splitter</h1>
-
-  <div class="input-section">
-    <label>Title: <input type="text" id="splitTitle" placeholder="Mission Name" /></label>
-    <label>Total Profit: <input type="number" id="totalProfit" oninput="updateCalculations()" /></label>
-  </div>
-
-  <div id="players"></div>
-  <button class="btn" onclick="addPlayer()">+ Add Player</button>
-
-  <h2>Summary</h2>
-  <div class="summary">
-    <p><strong>Post-Expense Profit:</strong> <span id="postExpensesProfit">0</span></p>
-    <p><strong>Accounting Buffer (Auto):</strong> <span id="accountingBuffer">0</span></p>
-    <p><strong>Remaining Pool After All Deductions:</strong> <span id="remainingPool">0</span></p>
-  </div>
-
-  <h2>Itemized Breakdown</h2>
-  <table id="outputTable">
-    <thead>
-      <tr>
-        <th>Player</th>
-        <th>Type</th>
-        <th>Value</th>
-        <th>Expenses</th>
-        <th>Tax (5%)</th>
-        <th>Final Payout</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <div class="export-buttons">
-    <button class="btn" onclick="exportTable('csv')">Export as CSV</button>
-    <button class="btn" onclick="exportTable('txt')">Export as TXT</button>
-    <button class="btn" onclick="copyTable()">Copy to Clipboard</button>
+  <div class="container">
+    <h1>Profit Splitter</h1>
+  
+    <div class="input-section">
+      <label>Title: <input type="text" id="splitTitle" placeholder="Mission Name" /></label>
+      <label>Total Profit: <input type="number" id="totalProfit" oninput="updateCalculations()" /></label>
+    </div>
+  
+    <div id="players"></div>
+    <button class="btn" onclick="addPlayer()">+ Add Player</button>
+  
+    <h2>Summary</h2>
+    <div class="summary">
+      <p><strong>Post-Expense Profit:</strong> <span id="postExpensesProfit">0</span></p>
+      <p><strong>Accounting Buffer (Auto):</strong> <span id="accountingBuffer">0</span></p>
+      <p><strong>Remaining Pool After All Deductions:</strong> <span id="remainingPool">0</span></p>
+    </div>
+  
+    <h2>Itemized Breakdown</h2>
+    <table id="outputTable">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Type</th>
+          <th>Value</th>
+          <th>Expenses</th>
+          <th>Tax (5%)</th>
+          <th>Final Payout</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  
+    <div class="export-buttons">
+      <button class="btn" onclick="exportTable('csv')">Export as CSV</button>
+      <button class="btn" onclick="exportTable('txt')">Export as TXT</button>
+      <button class="btn" onclick="copyTable()">Copy to Clipboard</button>
+    </div>
   </div>
 
   <script>
