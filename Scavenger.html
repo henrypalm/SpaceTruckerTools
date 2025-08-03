@@ -7,6 +7,16 @@
   <link rel="icon" href="ScavengingIcon.ico" type="image/x-icon" />
   <style>
 
+    .container {
+      background-color: rgba(0, 0, 0, 0.75); /* semi-transparent dark background */
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 700px;
+      width: 90%;
+      margin: 2rem auto;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
     .nav-tabs {
       display: flex;
       gap: 10px;
@@ -104,14 +114,16 @@
     <a href="ProfitSplitter.html">Profit Splitter</a>
     <a href="Profile.html">Profile</a>
   </nav>
-  
-  <h1>Scavenging Tool</h1>
-  <div id="componentContainer"></div>
 
-  <div class="export-buttons">
-    <button onclick="exportCSV()">Export CSV</button>
-    <button onclick="exportTXT()">Export TXT</button>
-    <button onclick="copyToClipboard()">Copy to Clipboard</button>
+  <div class="container">
+    <h1>Scavenging Tool</h1>
+    <div id="componentContainer"></div>
+  
+    <div class="export-buttons">
+      <button onclick="exportCSV()">Export CSV</button>
+      <button onclick="exportTXT()">Export TXT</button>
+      <button onclick="copyToClipboard()">Copy to Clipboard</button>
+    </div>
   </div>
 
   <script src="scavengingPrices.js"></script>
