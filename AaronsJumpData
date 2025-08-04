@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aaron's Jump Data</title>
+  <link rel="icon" href="quantumIcon.ico" type="image/x-icon" />
+  <style>
+    body {
+      padding-bottom: 120px;
+      background-color: #111;
+      background-image: url('QuantumBackground.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      gap: 30px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      background-color: #222;
+      padding: 10px;
+      border-bottom: 2px solid #444;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+
+    .nav-tabs a {
+      color: #ccc;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      background-color: #333;
+      transition: background-color 0.3s;
+    }
+
+    .nav-tabs a:hover {
+      background-color: #555;
+      color: white;
+    }
+
+    .nav-tabs a.active {
+      background-color: #2d89ff;
+      color: white;
+      font-weight: bold;
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.75);
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 800px;
+      width: 90%;
+      margin: 2rem auto;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      text-align: center;
+      color: gold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th, td {
+      padding: 0.6rem;
+      border-bottom: 1px solid #444;
+      text-align: left;
+    }
+
+    th {
+      background-color: #222;
+    }
+
+    .highlight {
+      color: cyan;
+    }
+
+    #exportBox {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    button {
+      background-color: #333;
+      border: 1px solid #555;
+      color: white;
+      padding: 0.6em 1.2em;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-tabs">
+    <a href="index.html">Space Trucker Tools</a>
+    <a href="Yield2Sell.html">Yield 2 Sell</a>
+    <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
+    <a href="Scavenger.html">Scavenger</a>
+    <a href="ProfitSplitter.html">Profit Splitter</a>
+    <a href="AaronsJumpData.html" class="active">Aaron's Jump Data</a>
+    <a href="Profile.html">Profile</a>
+  </div>
+
+  <div class="container">
+    <h1>Quantum Jump Data for Aaron's Halo</h1>
+    <table id="jumpTable">
+      <thead>
+        <tr>
+          <th>From</th>
+          <th>To</th>
+          <th>Drop-Out Range (millions of km)</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="exportBox">
+      <button onclick="exportToTXT()">Export TXT</button>
+      <button onclick="exportToCSV()">Export CSV</button>
+      <button onclick="copyToClipboard()">Copy to Clipboard</button>
+    </div>
+  </div>
+
+  <script src="JumpData.js"></script>
+  <script>
+    const tbody = document.querySelector("#jumpTable tbody");
+
+    function populateTable() {
+      tbody.innerHTML = "";
+      JumpData.forEach(entry => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${entry.from}</td>
+          <td>${entry.to}</td>
+          <td class="highlight">${entry.range}</td>
+          <td>${entry.notes || ""}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function exportToTXT() {
+      let txt = "Quantum Jump Reference to Aaron's Halo\n\nFrom | To | Range (mil km) | Notes\n";
+      JumpData.forEach(entry => {
+        txt += `${entry.from} | ${entry.to} | ${entry.range} | ${entry.notes || ""}\n`;
+      });
+      downloadFile(txt, `QuantumJumps_${timestamp()}.txt`);
+    }
+
+    function exportToCSV() {
+      let csv = "From,To,Range (mil km),Notes\n";
+      JumpData.forEach(entry => {
+        csv += `"${entry.from}","${entry.to}","${entry.range}","${entry.notes || ""}"\n`;
+      });
+      downloadFile(csv, `QuantumJumps_${timestamp()}.csv`);
+    }
+
+    function copyToClipboard() {
+      let text = "Quantum Jump Reference to Aaron's Halo\n\nFrom | To | Range (mil km) | Notes\n";
+      JumpData.forEach(entry => {
+        text += `${entry.from} | ${entry.to} | ${entry.range} | ${entry.notes || ""}\n`;
+      });
+
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => alert("Copied to clipboard!"));
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        alert("Copied to clipboard!");
+      }
+    }
+
+    function downloadFile(content, filename) {
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
+
+    function timestamp() {
+      return new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
+    }
+
+    populateTable();
+
+    // Highlight current tab
+    const currentPage = location.pathname.split("/").pop();
+    document.querySelectorAll(".nav-tabs a").forEach(link => {
+      if (link.getAttribute("href") === currentPage) {
+        link.classList.add("active");
+      }
+    });
+  </script>
+</body>
+</html>
