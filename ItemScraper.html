@@ -10,23 +10,66 @@
       font-family: monospace;
       padding: 2rem;
     }
+    input {
+      padding: 6px;
+      margin-right: 10px;
+      background: #222;
+      color: #0f0;
+      border: 1px solid #444;
+    }
+    button {
+      padding: 6px 12px;
+      background: #333;
+      color: #0f0;
+      border: 1px solid #555;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #444;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 1rem;
     }
     th, td {
       padding: 6px 10px;
       border-bottom: 1px solid #444;
     }
+    .section {
+      margin-bottom: 1.5rem;
+    }
   </style>
 </head>
 <body>
   <h1>Market Scraper</h1>
-  <button onclick="fetchMarket()">Fetch UEX Market</button>
-  <button onclick="fetchProfile()">Fetch Regolith Profile</button>
+
+  <div class="section">
+    <input type="text" id="uexInput" placeholder="Enter UEX API Key" />
+    <button onclick="setCookie('uexKey', document.getElementById('uexInput').value)">Set UEX Key</button>
+  </div>
+
+  <div class="section">
+    <input type="text" id="regInput" placeholder="Enter Regolith API Key" />
+    <button onclick="setCookie('regolithKey', document.getElementById('regInput').value)">Set Regolith Key</button>
+  </div>
+
+  <div class="section">
+    <button onclick="fetchMarket()">Fetch UEX Market</button>
+    <button onclick="fetchProfile()">Fetch Regolith Profile</button>
+  </div>
+
   <pre id="output">Waiting...</pre>
+  <div id="table-container"></div>
 
   <script>
+    function setCookie(name, value, days = 365) {
+      const expires = new Date(Date.now() + days * 864e5).toUTCString();
+      document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+      alert(name + ' saved.');
+    }
+
     function getCookie(name) {
       const value = document.cookie.split('; ').find(row => row.startsWith(name + '='));
       return value ? decodeURIComponent(value.split('=')[1]) : null;
@@ -34,10 +77,13 @@
 
     async function fetchMarket() {
       const uexKey = getCookie('uexKey');
+      document.getElementById('table-container').innerHTML = '';
       if (!uexKey) {
         document.getElementById('output').textContent = 'UEX API key not found in cookies.';
         return;
       }
+
+      document.getElementById('output').textContent = 'Loading UEX market data...';
 
       try {
         const res = await fetch('https://api.uex.io/v1/items', {
@@ -49,18 +95,40 @@
 
         if (!res.ok) throw new Error(`UEX Error ${res.status}`);
         const data = await res.json();
-        document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+
+        document.getElementById('output').textContent = 'UEX Market Data Fetched';
+
+        // Basic table rendering
+        const table = document.createElement('table');
+        const headerRow = table.insertRow();
+        headerRow.innerHTML = `<th>Name</th><th>Buy Price</th><th>Sell Price</th>`;
+
+        data.forEach(item => {
+          const row = table.insertRow();
+          row.innerHTML = `
+            <td>${item.name || 'N/A'}</td>
+            <td>${item.prices?.buy || '—'}</td>
+            <td>${item.prices?.sell || '—'}</td>
+          `;
+        });
+
+        document.getElementById('table-container').appendChild(table);
+
       } catch (err) {
-        document.getElementById('output').textContent = 'Error: ' + err.message;
+        const cleanMsg = err.message.replace(/Bearer\s+\w+/i, 'Bearer [HIDDEN]');
+        document.getElementById('output').textContent = 'Error: ' + cleanMsg;
       }
     }
 
     async function fetchProfile() {
       const regKey = getCookie('regolithKey');
+      document.getElementById('table-container').innerHTML = '';
       if (!regKey) {
         document.getElementById('output').textContent = 'Regolith API key not found in cookies.';
         return;
       }
+
+      document.getElementById('output').textContent = 'Loading Regolith profile...';
 
       try {
         const query = {
@@ -87,10 +155,15 @@
         });
 
         if (!res.ok) throw new Error(`Regolith Error ${res.status}`);
-        const data = await res.json();
-        document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+        const { data } = await res.json();
+        const p = data.profile;
+
+        document.getElementById('output').textContent =
+          `SC Name: ${p.scName}\nUser ID: ${p.userId}\nCreated: ${p.createdAt}\nUpdated: ${p.updatedAt}`;
+
       } catch (err) {
-        document.getElementById('output').textContent = 'Error: ' + err.message;
+        const cleanMsg = err.message.replace(/Bearer\s+\w+/i, 'Bearer [HIDDEN]');
+        document.getElementById('output').textContent = 'Error: ' + cleanMsg;
       }
     }
   </script>
