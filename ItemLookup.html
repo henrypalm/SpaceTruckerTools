@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Item Lookup</title>
+  <link rel="icon" href="itemLookupIcon.ico" type="image/x-icon" />
+  <style>
+    /* COPY STYLES from CargoManifestWriter.html (unchanged for brevity) */
+    /* ... INSERT ALL STYLES FROM YOUR EXAMPLE PAGE HERE ... */
+
+    .result-block {
+      background-color: #1a1a1a;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .result-block h2 {
+      color: gold;
+      margin-bottom: 0.5rem;
+    }
+
+    pre {
+      background-color: #111;
+      padding: 1rem;
+      overflow-x: auto;
+      border: 1px solid #333;
+    }
+
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-tabs">
+    <a href="index.html">Space Trucker Tools</a>
+    <a href="Yield2Sell.html">Yield 2 Sell</a>
+    <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
+    <a href="Scavenger.html">Scavenger</a>
+    <a href="ProfitSplitter.html">Profit Splitter</a>
+    <a href="AaronsJumpData.html">Aaron's Jump Data</a>
+    <a href="ItemLookup.html" class="active">Item Lookup</a>
+    <a href="Profile.html">Profile</a>
+  </div>
+
+  <div class="container">
+    <h1>Star Citizen Item Lookup</h1>
+
+    <button onclick="fetchRegolithProfile()">🔍 Fetch Regolith Profile</button>
+    <div class="result-block" id="regolithProfileBlock">
+      <h2>Regolith Profile</h2>
+      <div id="regolithResult">No data yet.</div>
+    </div>
+
+    <button onclick="fetchUEXItemPrices()">💰 Fetch UEX Prices</button>
+    <div class="result-block" id="uexPriceBlock">
+      <h2>UEX Price Lookup</h2>
+      <div id="uexResult">No data yet.</div>
+    </div>
+  </div>
+
+  <script>
+    async function fetchRegolithProfile() {
+      const regolithKey = localStorage.getItem("regolithKey");
+      if (!regolithKey) {
+        document.getElementById("regolithResult").innerHTML = `<span class="error">No Regolith API key found in localStorage</span>`;
+        return;
+      }
+
+      try {
+        const response = await fetch("https://api.regolith.rocks", {
+          method: "POST",
+          headers: {
+            "x-api-key": regolithKey,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            query: `
+              query {
+                profile {
+                  userId
+                  scName
+                  avatarUrl
+                  createdAt
+                  updatedAt
+                }
+              }
+            `
+          })
+        });
+
+        const data = await response.json();
+        const profile = data?.data?.profile;
+        if (!profile) {
+          throw new Error("No profile found");
+        }
+
+        document.getElementById("regolithResult").innerHTML = `
+          <p><strong>SC Name:</strong> ${profile.scName}</p>
+          <p><strong>User ID:</strong> ${profile.userId}</p>
+          <p><strong>Created:</strong> ${new Date(profile.createdAt).toLocaleString()}</p>
+          <p><strong>Updated:</strong> ${new Date(profile.updatedAt).toLocaleString()}</p>
+          ${profile.avatarUrl ? `<img src="${profile.avatarUrl}" alt="Avatar" style="max-width: 150px;">` : ""}
+        `;
+      } catch (error) {
+        console.error(error);
+        document.getElementById("regolithResult").innerHTML = `<span class="error">Failed to fetch profile: ${error.message}</span>`;
+      }
+    }
+
+    async function fetchUEXItemPrices() {
+      const uexKey = localStorage.getItem("uexKey");
+      if (!uexKey) {
+        document.getElementById("uexResult").innerHTML = `<span class="error">No UEX secret key found in localStorage</span>`;
+        return;
+      }
+
+      try {
+        // Example: Replace this with the real UEX fetch structure
+        const response = await fetch("https://uexcorp.space/api/item-prices", {
+          headers: { "Authorization": `Bearer ${uexKey}` }
+        });
+        const data = await response.json();
+
+        document.getElementById("uexResult").innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } catch (error) {
+        console.error(error);
+        document.getElementById("uexResult").innerHTML = `<span class="error">Failed to fetch UEX data: ${error.message}</span>`;
+      }
+    }
+
+    // Highlight active nav tab
+    const currentPage = location.pathname.split("/").pop();
+    document.querySelectorAll(".nav-tabs a").forEach(tab => {
+      if (tab.getAttribute("href") === currentPage) {
+        tab.classList.add("active");
+      }
+    });
+  </script>
+</body>
+</html>
