@@ -2,170 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>UEX & Regolith Market Scraper</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UEX Commodities Lookup</title>
   <style>
-    body {
-      background: #111;
-      color: #eee;
-      font-family: monospace;
-      padding: 2rem;
-    }
-    input {
-      padding: 6px;
-      margin-right: 10px;
-      background: #222;
-      color: #0f0;
-      border: 1px solid #444;
-    }
-    button {
-      padding: 6px 12px;
-      background: #333;
-      color: #0f0;
-      border: 1px solid #555;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-    button:hover {
-      background: #444;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    th, td {
-      padding: 6px 10px;
-      border-bottom: 1px solid #444;
-    }
-    .section {
-      margin-bottom: 1.5rem;
-    }
+    body { font-family: Arial, sans-serif; background: #121212; color: #eee; padding: 20px; }
+    h1 { color: #4FC3F7; }
+    input, button { padding: 8px; font-size: 1rem; margin: 5px 0; border-radius: 5px; border: none; }
+    input { width: 250px; }
+    button { background-color: #4FC3F7; color: #111; cursor: pointer; }
+    button:hover { background-color: #29B6F6; }
+    table { width: 100%; margin-top: 20px; border-collapse: collapse; background-color: #1a1a1a; }
+    th, td { padding: 8px; border: 1px solid #333; text-align: left; }
+    th { background-color: #333; }
+    tr:nth-child(even) { background-color: #222; }
+    .not-found { margin-top: 20px; color: #f55; }
   </style>
 </head>
 <body>
-  <h1>Market Scraper</h1>
+  <h1>UEX Commodities Lookup</h1>
 
-  <div class="section">
-    <input type="text" id="uexInput" placeholder="Enter UEX API Key" />
-    <button onclick="setCookie('uexKey', document.getElementById('uexInput').value)">Set UEX Key</button>
-  </div>
+  <label>Commodity Name or Code:</label><br />
+  <input type="text" id="commodityInput" placeholder="e.g. Aluminum or ALUMINUM_CODE" />
+  <button id="lookupBtn">Lookup</button>
 
-  <div class="section">
-    <input type="text" id="regInput" placeholder="Enter Regolith API Key" />
-    <button onclick="setCookie('regolithKey', document.getElementById('regInput').value)">Set Regolith Key</button>
-  </div>
+  <div id="notFound" class="not-found" style="display:none;">Commodity not found.</div>
 
-  <div class="section">
-    <button onclick="fetchMarket()">Fetch UEX Market</button>
-    <button onclick="fetchProfile()">Fetch Regolith Profile</button>
-  </div>
+  <table id="resultsTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Buy Price (SCU)</th>
+        <th>Sell Price (SCU)</th>
+      </tr>
+    </thead>
+    <tbody id="resultsBody"></tbody>
+  </table>
 
-  <pre id="output">Waiting...</pre>
-  <div id="table-container"></div>
+<script>
+  function getCookie(name) {
+    const v = document.cookie.split('; ').find(row => row.startsWith(name + '='));
+    return v ? decodeURIComponent(v.split('=')[1]) : null;
+  }
 
-  <script>
-    function setCookie(name, value, days = 365) {
-      const expires = new Date(Date.now() + days * 864e5).toUTCString();
-      document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
-      alert(name + ' saved.');
+  function getUEXKey() {
+    const cookie = getCookie("profileData");
+    if (!cookie) return null;
+    try {
+      return JSON.parse(cookie).uexKey || null;
+    } catch {
+      return null;
+    }
+  }
+
+  async function lookupCommodity(query) {
+    const apiKey = getUEXKey();
+    if (!apiKey) return alert("UEX API key missing—please set it in Profile.html first.");
+
+    const url = 'https://api.uexcorp.space/2.0/commodities';
+    try {
+      const res = await fetch(url, {
+        headers: { "Authorization": `Bearer ${apiKey}`, "Accept": "application/json" }
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const body = await res.json();
+      if (body.status !== 'ok' || !Array.isArray(body.data)) throw new Error("Unexpected API response.");
+      
+      return body.data.find(item =>
+        item.name.toLowerCase() === query ||
+        item.code.toLowerCase() === query ||
+        item.slug?.toLowerCase() === query
+      );
+    } catch (err) {
+      console.error(err);
+      alert("Failed to fetch commodities. Check console for details.");
+    }
+  }
+
+  async function onLookup() {
+    const raw = document.getElementById("commodityInput").value.trim().toLowerCase();
+    if (!raw) return alert("Please enter a commodity name or code.");
+    document.getElementById("notFound").style.display = 'none';
+    document.getElementById("resultsTable").style.display = 'none';
+
+    const item = await lookupCommodity(raw);
+    if (!item) {
+      document.getElementById("notFound").style.display = 'block';
+      return;
     }
 
-    function getCookie(name) {
-      const value = document.cookie.split('; ').find(row => row.startsWith(name + '='));
-      return value ? decodeURIComponent(value.split('=')[1]) : null;
-    }
+    const tbody = document.getElementById("resultsBody");
+    tbody.innerHTML = `
+      <tr>
+        <td>${item.name}</td>
+        <td>${item.code}</td>
+        <td>${item.price_buy != null ? item.price_buy : '—'}</td>
+        <td>${item.price_sell != null ? item.price_sell : '—'}</td>
+      </tr>`;
+    document.getElementById("resultsTable").style.display = 'table';
+  }
 
-    async function fetchMarket() {
-      const uexKey = getCookie('uexKey');
-      document.getElementById('table-container').innerHTML = '';
-      if (!uexKey) {
-        document.getElementById('output').textContent = 'UEX API key not found in cookies.';
-        return;
-      }
-
-      document.getElementById('output').textContent = 'Loading UEX market data...';
-
-      try {
-        const res = await fetch('https://api.uex.io/v1/items', {
-          headers: {
-            'Authorization': 'Bearer ' + uexKey,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!res.ok) throw new Error(`UEX Error ${res.status}`);
-        const data = await res.json();
-
-        document.getElementById('output').textContent = 'UEX Market Data Fetched';
-
-        // Basic table rendering
-        const table = document.createElement('table');
-        const headerRow = table.insertRow();
-        headerRow.innerHTML = `<th>Name</th><th>Buy Price</th><th>Sell Price</th>`;
-
-        data.forEach(item => {
-          const row = table.insertRow();
-          row.innerHTML = `
-            <td>${item.name || 'N/A'}</td>
-            <td>${item.prices?.buy || '—'}</td>
-            <td>${item.prices?.sell || '—'}</td>
-          `;
-        });
-
-        document.getElementById('table-container').appendChild(table);
-
-      } catch (err) {
-        const cleanMsg = err.message.replace(/Bearer\s+\w+/i, 'Bearer [HIDDEN]');
-        document.getElementById('output').textContent = 'Error: ' + cleanMsg;
-      }
-    }
-
-    async function fetchProfile() {
-      const regKey = getCookie('regolithKey');
-      document.getElementById('table-container').innerHTML = '';
-      if (!regKey) {
-        document.getElementById('output').textContent = 'Regolith API key not found in cookies.';
-        return;
-      }
-
-      document.getElementById('output').textContent = 'Loading Regolith profile...';
-
-      try {
-        const query = {
-          query: `
-            query {
-              profile {
-                userId
-                scName
-                avatarUrl
-                createdAt
-                updatedAt
-              }
-            }
-          `
-        };
-
-        const res = await fetch('https://api.regolith.rocks', {
-          method: 'POST',
-          headers: {
-            'x-api-key': regKey,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(query)
-        });
-
-        if (!res.ok) throw new Error(`Regolith Error ${res.status}`);
-        const { data } = await res.json();
-        const p = data.profile;
-
-        document.getElementById('output').textContent =
-          `SC Name: ${p.scName}\nUser ID: ${p.userId}\nCreated: ${p.createdAt}\nUpdated: ${p.updatedAt}`;
-
-      } catch (err) {
-        const cleanMsg = err.message.replace(/Bearer\s+\w+/i, 'Bearer [HIDDEN]');
-        document.getElementById('output').textContent = 'Error: ' + cleanMsg;
-      }
-    }
-  </script>
+  document.getElementById("lookupBtn").onclick = onLookup;
+</script>
 </body>
 </html>
