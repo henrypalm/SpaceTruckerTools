@@ -1,101 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>UEX Commodity Lookup</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #111; color: #eee; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 8px; border-bottom: 1px solid #444; }
-        th { background: #222; }
-        input { padding: 5px; }
-    </style>
+  <meta charset="UTF-8" />
+  <title>UEX Commodity Lookup</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111; color: #eee; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 8px; border-bottom: 1px solid #444; }
+    th { background: #222; }
+    input { padding: 5px; }
+  </style>
 </head>
 <body>
-    <h1>UEX Commodity Lookup</h1>
-    <input type="text" id="search" placeholder="Search commodity...">
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Buy Price</th>
-                <th>Sell Price</th>
-                <th>Location</th>
-            </tr>
-        </thead>
-        <tbody id="commodity-table"></tbody>
-    </table>
+  <h1>UEX Commodity Lookup</h1>
+  <input type="text" id="search" placeholder="Search commodity..." />
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Buy Price</th>
+        <th>Sell Price</th>
+        <th>Location</th>
+      </tr>
+    </thead>
+    <tbody id="commodity-table"></tbody>
+  </table>
 
-    <script>
-        let commoditiesData = [];
+  <script>
+    let commoditiesData = [];
 
-        // Read the UEX API key from localStorage profileData
-        function getUEXKey() {
-            const profileStr = localStorage.getItem('profileData');
-            if (!profileStr) return null;
-            try {
-                const profile = JSON.parse(profileStr);
-                return profile.uexKey || null;
-            } catch {
-                return null;
-            }
-        }
+    // Get UEX key from localStorage (profileData JSON)
+    function getUEXKey() {
+      const profileStr = localStorage.getItem('profileData');
+      if (!profileStr) return null;
+      try {
+        const profile = JSON.parse(profileStr);
+        return profile.uexKey || null;
+      } catch {
+        return null;
+      }
+    }
 
-        // Fetch commodities with Authorization header
-        async function fetchCommodities() {
-            const uexKey = getUEXKey();
-            if (!uexKey) {
-                alert("Please enter your UEX API key in the Profile tab.");
-                return;
-            }
-            try {
-                const response = await fetch("https://uexcorp.space/api/commodities", {
-                    headers: {
-                        "Authorization": `Bearer ${uexKey}`,
-                        "Content-Type": "application/json"
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status} - ${response.statusText}`);
-                }
-                commoditiesData = await response.json();
-                renderTable();
-            } catch (err) {
-                console.error("Error fetching commodities:", err);
-                alert("Failed to fetch commodities: " + err.message);
-            }
-        }
+    // Fetch commodities from backend, sending the user key in header
+    async function fetchCommodities() {
+      const uexKey = getUEXKey();
+      if (!uexKey) {
+        alert("Please enter your UEX API key in the Profile tab.");
+        return;
+      }
 
-        // Render table filtered by search input
-        function renderTable() {
-            const search = document.getElementById("search").value.toLowerCase();
-            const tableBody = document.getElementById("commodity-table");
-            tableBody.innerHTML = "";
-
-            commoditiesData.forEach(item => {
-                if (item.name.toLowerCase().includes(search)) {
-                    const row = `
-                        <tr>
-                            <td>${item.name}</td>
-                            <td>${item.buyPrice ?? '-'}</td>
-                            <td>${item.sellPrice ?? '-'}</td>
-                            <td>${item.location ?? '-'}</td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
-                }
-            });
-        }
-
-        // Debounce helper so typing search isn't too aggressive
-        let debounceTimeout;
-        document.getElementById("search").addEventListener("input", () => {
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(renderTable, 300);
+      try {
+        // Replace with your backend URL deployed on Render.com or elsewhere
+        const response = await fetch("https://your-backend.onrender.com/commodities", {
+          headers: {
+            "x-api-key": uexKey
+          }
         });
 
-        // Initial fetch on page load
-        fetchCommodities();
-    </script>
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+        }
+
+        commoditiesData = await response.json();
+        renderTable();
+      } catch (err) {
+        console.error("Error fetching commodities:", err);
+        alert("Failed to fetch commodities: " + err.message);
+      }
+    }
+
+    // Render filtered commodities table
+    function renderTable() {
+      const search = document.getElementById("search").value.toLowerCase();
+      const tableBody = document.getElementById("commodity-table");
+      tableBody.innerHTML = "";
+
+      commoditiesData.forEach(item => {
+        if (item.name.toLowerCase().includes(search)) {
+          const row = `
+            <tr>
+              <td>${item.name}</td>
+              <td>${item.buyPrice ?? '-'}</td>
+              <td>${item.sellPrice ?? '-'}</td>
+              <td>${item.location ?? '-'}</td>
+            </tr>
+          `;
+          tableBody.innerHTML += row;
+        }
+      });
+    }
+
+    // Debounce search input to avoid excessive renders
+    let debounceTimeout;
+    document.getElementById("search").addEventListener("input", () => {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(renderTable, 300);
+    });
+
+    // Initial load
+    fetchCommodities();
+  </script>
 </body>
 </html>
