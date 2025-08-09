@@ -14,10 +14,9 @@ app.get("/commodities", async (req, res) => {
   }
 
   try {
-    const response = await fetch("https://uexcorp.space/api/commodities", {
+    const response = await fetch("https://spacetruckertools.onrender.com/api/commodities", {
       headers: {
-        "Authorization": `Bearer ${uexKey}`,
-        "Content-Type": "application/json"
+        "x-api-key": uexKey
       }
     });
 
