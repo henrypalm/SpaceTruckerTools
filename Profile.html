@@ -364,6 +364,7 @@
         }
       }
       setCookie('profileData', JSON.stringify(profile), 365);
+      localStorage.setItem('profileData', JSON.stringify(profile));
       alert("Profile saved.");
       showProfile(profile);
     }
@@ -485,6 +486,7 @@
         localStorage.setItem("webhooks", JSON.stringify(data.discordwebhooks || []));
         updateWebhookTable();
         showProfile(data);
+        localStorage.setItem('profileData', JSON.stringify(data));
         alert("Profile imported successfully!");
       } catch(e) {
         alert("Invalid JSON: " + e.message);
