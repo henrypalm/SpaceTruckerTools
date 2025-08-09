@@ -1,17 +1,22 @@
-// server.js
 const express = require("express");
 const fetch = require("node-fetch");
 const cors = require("cors");
 
 const app = express();
-app.use(cors()); // Allow requests from your frontend (GitHub Pages)
+app.use(cors()); // Allow your frontend to access
 
-// Endpoint to fetch commodities from UEX API
+// Proxy endpoint to fetch commodities from UEX API using user’s key
 app.get("/commodities", async (req, res) => {
+  // Get user key from custom header "x-api-key"
+  const uexKey = req.headers["x-api-key"];
+  if (!uexKey) {
+    return res.status(400).json({ error: "Missing UEX API key" });
+  }
+
   try {
     const response = await fetch("https://uexcorp.space/api/commodities", {
       headers: {
-        "Authorization": `Bearer ${process.env.UEX_API_KEY}`, // UEX key from env var
+        "Authorization": `Bearer ${uexKey}`,
         "Content-Type": "application/json"
       }
     });
@@ -24,7 +29,6 @@ app.get("/commodities", async (req, res) => {
     res.json(data);
 
   } catch (error) {
-    console.error("Error fetching UEX commodities:", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -32,5 +36,5 @@ app.get("/commodities", async (req, res) => {
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`UEX backend running on port ${PORT}`);
+  console.log(`Backend server running on port ${PORT}`);
 });
