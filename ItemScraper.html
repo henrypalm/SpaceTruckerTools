@@ -1,108 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>UEX Commodities Lookup</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #121212; color: #eee; padding: 20px; }
-    h1 { color: #4FC3F7; }
-    input, button { padding: 8px; font-size: 1rem; margin: 5px 0; border-radius: 5px; border: none; }
-    input { width: 250px; }
-    button { background-color: #4FC3F7; color: #111; cursor: pointer; }
-    button:hover { background-color: #29B6F6; }
-    table { width: 100%; margin-top: 20px; border-collapse: collapse; background-color: #1a1a1a; }
-    th, td { padding: 8px; border: 1px solid #333; text-align: left; }
-    th { background-color: #333; }
-    tr:nth-child(even) { background-color: #222; }
-    .not-found { margin-top: 20px; color: #f55; }
-  </style>
+    <meta charset="UTF-8" />
+    <title>UEX Commodity Lookup</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #111; color: #eee; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 8px; border-bottom: 1px solid #444; }
+        th { background: #222; }
+        input { padding: 5px; }
+    </style>
 </head>
 <body>
-  <h1>UEX Commodities Lookup</h1>
+    <h1>UEX Commodity Lookup</h1>
+    <input type="text" id="search" placeholder="Search commodity...">
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Buy Price</th>
+                <th>Sell Price</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody id="commodity-table"></tbody>
+    </table>
 
-  <label>Commodity Name or Code:</label><br />
-  <input type="text" id="commodityInput" placeholder="e.g. Aluminum or ALUMINUM_CODE" />
-  <button id="lookupBtn">Lookup</button>
+    <script>
+        let commoditiesData = [];
 
-  <div id="notFound" class="not-found" style="display:none;">Commodity not found.</div>
+        // Read the UEX API key from localStorage profileData
+        function getUEXKey() {
+            const profileStr = localStorage.getItem('profileData');
+            if (!profileStr) return null;
+            try {
+                const profile = JSON.parse(profileStr);
+                return profile.uexKey || null;
+            } catch {
+                return null;
+            }
+        }
 
-  <table id="resultsTable" style="display:none;">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Code</th>
-        <th>Buy Price (SCU)</th>
-        <th>Sell Price (SCU)</th>
-      </tr>
-    </thead>
-    <tbody id="resultsBody"></tbody>
-  </table>
+        // Fetch commodities with Authorization header
+        async function fetchCommodities() {
+            const uexKey = getUEXKey();
+            if (!uexKey) {
+                alert("Please enter your UEX API key in the Profile tab.");
+                return;
+            }
+            try {
+                const response = await fetch("https://uexcorp.space/api/commodities", {
+                    headers: {
+                        "Authorization": `Bearer ${uexKey}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+                }
+                commoditiesData = await response.json();
+                renderTable();
+            } catch (err) {
+                console.error("Error fetching commodities:", err);
+                alert("Failed to fetch commodities: " + err.message);
+            }
+        }
 
-<script>
-  function getCookie(name) {
-    const v = document.cookie.split('; ').find(row => row.startsWith(name + '='));
-    return v ? decodeURIComponent(v.split('=')[1]) : null;
-  }
+        // Render table filtered by search input
+        function renderTable() {
+            const search = document.getElementById("search").value.toLowerCase();
+            const tableBody = document.getElementById("commodity-table");
+            tableBody.innerHTML = "";
 
-  function getUEXKey() {
-    const cookie = getCookie("profileData");
-    if (!cookie) return null;
-    try {
-      return JSON.parse(cookie).uexKey || null;
-    } catch {
-      return null;
-    }
-  }
+            commoditiesData.forEach(item => {
+                if (item.name.toLowerCase().includes(search)) {
+                    const row = `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td>${item.buyPrice ?? '-'}</td>
+                            <td>${item.sellPrice ?? '-'}</td>
+                            <td>${item.location ?? '-'}</td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                }
+            });
+        }
 
-  async function lookupCommodity(query) {
-    const apiKey = getUEXKey();
-    if (!apiKey) return alert("UEX API key missing—please set it in Profile.html first.");
+        // Debounce helper so typing search isn't too aggressive
+        let debounceTimeout;
+        document.getElementById("search").addEventListener("input", () => {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(renderTable, 300);
+        });
 
-    const url = 'https://api.uexcorp.space/2.0/commodities';
-    try {
-      const res = await fetch(url, {
-        headers: { "Authorization": `Bearer ${apiKey}`, "Accept": "application/json" }
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const body = await res.json();
-      if (body.status !== 'ok' || !Array.isArray(body.data)) throw new Error("Unexpected API response.");
-      
-      return body.data.find(item =>
-        item.name.toLowerCase() === query ||
-        item.code.toLowerCase() === query ||
-        item.slug?.toLowerCase() === query
-      );
-    } catch (err) {
-      console.error(err);
-      alert("Failed to fetch commodities. Check console for details.");
-    }
-  }
-
-  async function onLookup() {
-    const raw = document.getElementById("commodityInput").value.trim().toLowerCase();
-    if (!raw) return alert("Please enter a commodity name or code.");
-    document.getElementById("notFound").style.display = 'none';
-    document.getElementById("resultsTable").style.display = 'none';
-
-    const item = await lookupCommodity(raw);
-    if (!item) {
-      document.getElementById("notFound").style.display = 'block';
-      return;
-    }
-
-    const tbody = document.getElementById("resultsBody");
-    tbody.innerHTML = `
-      <tr>
-        <td>${item.name}</td>
-        <td>${item.code}</td>
-        <td>${item.price_buy != null ? item.price_buy : '—'}</td>
-        <td>${item.price_sell != null ? item.price_sell : '—'}</td>
-      </tr>`;
-    document.getElementById("resultsTable").style.display = 'table';
-  }
-
-  document.getElementById("lookupBtn").onclick = onLookup;
-</script>
+        // Initial fetch on page load
+        fetchCommodities();
+    </script>
 </body>
 </html>
