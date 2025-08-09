@@ -14,14 +14,14 @@ app.get("/commodities", async (req, res) => {
   }
 
   try {
-    const response = await fetch("https://spacetruckertools.onrender.com/api/commodities", {
+    const response = await fetch("https://uexcorp.space/api/commodities", {
       headers: {
         "x-api-key": uexKey
       }
     });
 
     if (!response.ok) {
-      return res.status(response.status).json({ error: "Failed to fetch commodities from UEX" });
+      return res.status(response.status).json({ error: `UEX API error: ${response.statusText}` });
     }
 
     const data = await response.json();
