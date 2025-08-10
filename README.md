@@ -1,7 +1,3 @@
-
-
-readme_content = """# Space Trucker Tools
-
 **A versatile web toolkit to streamline your salvaging, mining, hauling, and mission profit-tracking adventures in Star Citizen.**
 
 ---
