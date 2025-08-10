@@ -73,7 +73,7 @@ Create, view, import, and export your user profile—centralize your preferences
 
 ## Getting Started
 
-*Content coming soon...*
+Space Trucker Tools runs entirely in your browser—no installation required. Simply visit the [Space Trucker Tools homepage](https://spacetruckertools.servebeer.com/index.html) and select the tool you want from the dashboard. Each tool opens in its own page, with inputs, dropdowns, and buttons clearly labeled for quick use. Your data is stored locally in your browser, so you can close the page and return later without losing progress. For longer-term storage or sharing, most tools include options to export results to text, CSV, or directly to your clipboard.
 
 ---
 
