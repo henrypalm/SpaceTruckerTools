@@ -1,0 +1,475 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Workorders</title>
+  <style>
+    :root{--bg:#0b0f14;--card:#0f1720;--muted:#9aa7b3;--accent:#b08a00;--accent-2:#2aa198;--danger:#c04;}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,arial; margin:0; background:linear-gradient(180deg,#061118 0%, #08121a 100%); color:#e6eef6;}
+    .wrap{max-width:1100px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    header h1{font-size:20px;margin:0}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); padding:14px;border-radius:10px;}
+    form .row{display:flex;gap:8px;margin-bottom:8px}
+    label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+    input[type=text], select, input[type=number]{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    button{background:var(--accent);color:#071014;border:0;padding:8px 10px;border-radius:8px;cursor:pointer}
+    button.secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
+    .small{font-size:13px}
+    .section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .runs-list{display:flex;flex-direction:column;gap:8px;max-height:440px;overflow:auto;padding-right:6px}
+    .run-item{padding:10px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between;align-items:flex-start}
+    .run-meta{font-size:13px;color:var(--muted)}
+    .run-actions{display:flex;gap:6px}
+    .tag{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,0.02);font-size:12px}
+    .flex{display:flex;gap:8px}
+    textarea{width:100%;min-height:80px;background:transparent;color:inherit;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:6px}
+    .muted{color:var(--muted)}
+    .footer-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+    .pill{padding:6px 10px;border-radius:6px;background:rgba(255,255,255,0.02);font-size:13px}
+    .spacer{height:10px}
+    .grid-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .commodity-row{display:flex;gap:6px;align-items:center}
+    .commodity-row input{padding:6px}
+    .controls{display:flex;gap:6px;align-items:center}
+    .search{margin-bottom:8px}
+    .empty{padding:14px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01),transparent);border:1px dashed rgba(255,255,255,0.03);color:var(--muted)}
+    /* Modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.6));z-index:40}
+    .modal.open{display:flex}
+    .modal .panel{width:820px;max-width:95%;background:var(--card);padding:16px;border-radius:10px}
+    .table{width:100%;border-collapse:collapse}
+    .table td,.table th{padding:8px;border-bottom:1px solid rgba(255,255,255,0.03);text-align:left}
+    .muted-small{color:var(--muted);font-size:12px}
+    .danger{background:linear-gradient(180deg,#6b0000,#4a0000);color:#fff}
+    @media(max-width:980px){.grid{grid-template-columns:1fr;}.card{padding:12px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img src="" alt="logo" style="width:44px;height:44px;border-radius:6px;background:linear-gradient(180deg,#0f1720,#061220);display:inline-block">
+      <div>
+        <h1>Space Trucker Tools — Run Tracking Overview</h1>
+        <div class="muted">Create, activate, and manage runs. Active runs can be sent to Profit Splitter automatically.</div>
+      </div>
+    </header><div class="grid">
+  <main class="card">
+    <div class="section-title">
+      <strong>Create / Edit Run</strong>
+      <div class="controls">
+        <button class="secondary" id="importBtn">Import JSON</button>
+        <button class="secondary" id="exportBtn">Export JSON</button>
+      </div>
+    </div>
+
+    <form id="runForm">
+      <div class="row">
+        <div style="flex:1">
+          <label>Job Type</label>
+          <select id="jobType">
+            <option>Hauling</option>
+            <option>Salvage</option>
+            <option>Refining</option>
+            <option>Delivery</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div style="width:150px">
+          <label>Date</label>
+          <input type="text" id="runDate" placeholder="YYYY-MM-DD" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div style="flex:1">
+          <label>From</label>
+          <input type="text" id="fromLoc" placeholder="Start location" />
+        </div>
+        <div style="flex:1">
+          <label>To</label>
+          <input type="text" id="toLoc" placeholder="Destination" />
+        </div>
+      </div>
+
+      <div style="margin-top:8px">
+        <label>Commodities</label>
+        <div id="commodities"></div>
+        <div style="margin-top:6px;display:flex;gap:8px">
+          <button id="addCommodityBtn" type="button">Add Commodity</button>
+          <button id="clearCommodities" type="button" class="secondary">Clear</button>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="grid-two">
+        <div>
+          <label>Notes (optional)</label>
+          <textarea id="notes" placeholder="Any extra info..."></textarea>
+        </div>
+        <div>
+          <label>Status</label>
+          <select id="statusSelect">
+            <option value="Setup">Setup</option>
+            <option value="Active">Active</option>
+            <option value="Completed">Completed</option>
+          </select>
+          <div style="height:12px"></div>
+          <label>Grand Total</label>
+          <input type="number" id="grandTotal" placeholder="auto-calculated or manual" />
+        </div>
+      </div>
+
+      <div class="footer-actions">
+        <div class="pill muted-small">Tip: Add commodities then click Save Run</div>
+        <div style="flex:1"></div>
+        <button type="submit" id="saveRunBtn">Save Run</button>
+        <button type="button" id="resetForm" class="secondary">Reset</button>
+      </div>
+    </form>
+
+    <div style="height:14px"></div>
+
+    <div class="section-title"><strong>Active Runs</strong>
+      <div class="muted-small">These are automatically available to Profit Splitter</div>
+    </div>
+    <div id="activeRuns" class="runs-list"></div>
+
+  </main>
+
+  <aside class="card">
+    <div class="section-title"><strong>Tracking Overview</strong>
+      <div class="controls">
+        <button id="clearCompleted" class="secondary">Clear Completed</button>
+        <button id="clearAll" class="secondary danger">Clear Everything</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:8px"><label>Search / Filter</label>
+      <input type="text" class="search" id="searchInput" placeholder="search by location, commodity, job type...">
+    </div>
+
+    <div style="margin-bottom:8px" class="section-title"><strong>Setup</strong><span class="muted-small">Runs ready for activation</span></div>
+    <div id="setupRuns" class="runs-list"></div>
+
+    <div style="height:10px"></div>
+    <div class="section-title"><strong>Completed</strong><span class="muted-small">Historical runs</span></div>
+    <div id="completedRuns" class="runs-list"></div>
+
+    <div style="height:12px"></div>
+    <div class="section-title"><strong>Quick Actions</strong></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button id="openProfitSplitter" class="secondary">Open Profit Splitter (Active Runs)</button>
+      <button id="exportCSV" class="secondary">Export Completed CSV</button>
+    </div>
+  </aside>
+</div>
+
+  </div>  <!-- Profit Splitter Modal -->  <div id="profitModal" class="modal" role="dialog" aria-hidden="true">
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong>Profit Splitter — Active Runs</strong>
+        <div>
+          <button id="closeProfit" class="secondary">Close</button>
+        </div>
+      </div><div id="profitContent"></div>
+
+  <div style="height:8px"></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end;align-items:center">
+    <label class="muted-small">Crew size</label>
+    <input type="number" id="crewSize" value="1" min="1" style="width:80px;padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit">
+    <label class="muted-small">Expenses</label>
+    <input type="number" id="expenses" value="0" min="0" style="width:120px;padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit">
+    <button id="calcSplit">Calculate Split</button>
+  </div>
+
+  <div id="splitResult" style="margin-top:12px"></div>
+</div>
+
+  </div>  <script>
+    // Simple Run Tracker using localStorage
+    const LS_KEY = 'str_runs_v1';
+
+    // UI refs
+    const runForm = document.getElementById('runForm');
+    const commoditiesDiv = document.getElementById('commodities');
+    const addCommodityBtn = document.getElementById('addCommodityBtn');
+    const clearCommodities = document.getElementById('clearCommodities');
+    const setupRunsDiv = document.getElementById('setupRuns');
+    const activeRunsDiv = document.getElementById('activeRuns');
+    const completedRunsDiv = document.getElementById('completedRuns');
+    const exportBtn = document.getElementById('exportBtn');
+    const importBtn = document.getElementById('importBtn');
+    const resetForm = document.getElementById('resetForm');
+    const saveRunBtn = document.getElementById('saveRunBtn');
+    const searchInput = document.getElementById('searchInput');
+    const openProfitSplitter = document.getElementById('openProfitSplitter');
+    const profitModal = document.getElementById('profitModal');
+    const profitContent = document.getElementById('profitContent');
+    const closeProfit = document.getElementById('closeProfit');
+    const calcSplit = document.getElementById('calcSplit');
+    const crewSizeInput = document.getElementById('crewSize');
+    const expensesInput = document.getElementById('expenses');
+    const splitResult = document.getElementById('splitResult');
+    const exportCSV = document.getElementById('exportCSV');
+    const clearCompleted = document.getElementById('clearCompleted');
+    const clearAll = document.getElementById('clearAll');
+
+    let runs = loadRuns();
+    let editId = null;
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      if(!document.getElementById('runDate').value) document.getElementById('runDate').value = (new Date()).toISOString().slice(0,10);
+      renderAll();
+    });
+
+    addCommodityBtn.addEventListener('click', addCommodityRow);
+    clearCommodities.addEventListener('click', ()=>{commoditiesDiv.innerHTML=''; calcGrandTotal();});
+    runForm.addEventListener('submit', onSaveRun);
+    resetForm.addEventListener('click', resetFormFields);
+    exportBtn.addEventListener('click', exportJSON);
+    importBtn.addEventListener('click', ()=>{promptImport()});
+    searchInput.addEventListener('input', renderAll);
+    openProfitSplitter.addEventListener('click', openProfitModal);
+    closeProfit.addEventListener('click', ()=>profitModal.classList.remove('open'));
+    calcSplit.addEventListener('click', calculateSplit);
+    exportCSV.addEventListener('click', exportCompletedCSV);
+    clearCompleted.addEventListener('click', clearCompletedRuns);
+    clearAll.addEventListener('click', clearEverything);
+
+    function uid(){return 'r_'+Math.random().toString(36).slice(2,9)}
+
+    function loadRuns(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        return raw? JSON.parse(raw) : [];
+      }catch(e){console.error(e);return []}
+    }
+    function saveRuns(){localStorage.setItem(LS_KEY, JSON.stringify(runs));}
+
+    function addCommodityRow(data={name:'',qty:0,unit:0}){
+      const idx = Date.now()+Math.random();
+      const row = document.createElement('div');
+      row.className='commodity-row';
+      row.dataset.idx = idx;
+      row.innerHTML = `
+        <input placeholder="Commodity name" class="c-name" value="${escapeHtml(data.name)}" />
+        <input type="number" min="0" step="1" class="c-qty" value="${data.qty}" style="width:90px" />
+        <input type="number" min="0" step="0.01" class="c-unit" value="${data.unit}" style="width:120px" />
+        <div style="flex:1" class="c-total muted-small">0</div>
+        <button type="button" class="secondary c-remove">✕</button>
+      `;
+      commoditiesDiv.appendChild(row);
+      const name = row.querySelector('.c-name');
+      const qty = row.querySelector('.c-qty');
+      const unit = row.querySelector('.c-unit');
+      const total = row.querySelector('.c-total');
+      const remove = row.querySelector('.c-remove');
+      function update(){
+        const q = parseFloat(qty.value||0); const u = parseFloat(unit.value||0);
+        total.textContent = (q*u).toFixed(2);
+        calcGrandTotal();
+      }
+      name.addEventListener('input', ()=>{});
+      qty.addEventListener('input', update);
+      unit.addEventListener('input', update);
+      remove.addEventListener('click', ()=>{row.remove(); calcGrandTotal();});
+      update();
+    }
+
+    function escapeHtml(s){ if(!s) return ''; return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
+
+    function getFormData(){
+      const jobType = document.getElementById('jobType').value;
+      const date = document.getElementById('runDate').value;
+      const from = document.getElementById('fromLoc').value;
+      const to = document.getElementById('toLoc').value;
+      const notes = document.getElementById('notes').value;
+      const status = document.getElementById('statusSelect').value;
+      const grand = parseFloat(document.getElementById('grandTotal').value || 0);
+      const commodityEls = [...commoditiesDiv.querySelectorAll('.commodity-row')];
+      const commodities = commodityEls.map(el=>({name:el.querySelector('.c-name').value, qty:parseFloat(el.querySelector('.c-qty').value||0), unit:parseFloat(el.querySelector('.c-unit').value||0)})).filter(c=>c.name||c.qty>0||c.unit>0);
+      const total = commodities.reduce((s,c)=>s + ( (c.qty||0)*(c.unit||0) ), 0);
+      return {jobType,date,from,to,notes,status,grandTotal: grand || total, commodities, total};
+    }
+
+    function onSaveRun(e){
+      e.preventDefault();
+      const data = getFormData();
+      if(!data.jobType){alert('job type required');return}
+      if(editId){
+        const idx = runs.findIndex(r=>r.id===editId);
+        if(idx>-1){runs[idx] = {...runs[idx], ...data, lastUpdated:new Date().toISOString()};}
+        editId = null;
+      }else{
+        const newRun = {id:uid(), ...data, created:new Date().toISOString(), lastUpdated:new Date().toISOString()};
+        runs.push(newRun);
+      }
+      saveRuns(); resetFormFields(); renderAll();
+    }
+
+    function resetFormFields(){
+      editId = null; runForm.reset(); document.getElementById('runDate').value = (new Date()).toISOString().slice(0,10); commoditiesDiv.innerHTML=''; document.getElementById('grandTotal').value='';
+    }
+
+    function renderAll(){
+      const q = (searchInput.value||'').toLowerCase();
+      setupRunsDiv.innerHTML=''; activeRunsDiv.innerHTML=''; completedRunsDiv.innerHTML='';
+      const setup = runs.filter(r=> r.status==='Setup');
+      const active = runs.filter(r=> r.status==='Active');
+      const completed = runs.filter(r=> r.status==='Completed');
+      function renderList(arr, container, type){
+        if(arr.length===0){container.innerHTML = `<div class="empty">No ${type} runs</div>`; return}
+        arr.filter(r=> filterRun(r,q)).forEach(r=>{
+          const el = document.createElement('div'); el.className='run-item';
+          el.innerHTML = `
+            <div style="flex:1">
+              <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+                <strong>${escapeHtml(r.jobType)}</strong>
+                <div class="tag">${escapeHtml(r.from)} → ${escapeHtml(r.to)}</div>
+                <div class="muted-small">${(new Date(r.created)).toISOString().slice(0,10)}</div>
+              </div>
+              <div class="run-meta">${r.commodities.length} commodity(s) • Total: <strong>${Number(r.grandTotal||r.total||0).toFixed(2)} aUEC</strong></div>
+            </div>
+            <div class="run-actions">
+              ${type!=='Completed' ? `<button class="secondary" data-action="edit" data-id="${r.id}">Edit</button>` : `<button class="secondary" data-action="view" data-id="${r.id}">View</button>`}
+              ${type==='Setup' ? `<button data-action="activate" data-id="${r.id}">Activate</button>` : ''}
+              ${type!=='Completed' ? `<button class="secondary" data-action="del" data-id="${r.id}">Delete</button>`: `<button class="secondary" data-action="del" data-id="${r.id}">Delete</button>`}
+              ${type==='Active' ? `<button class="secondary" data-action="complete" data-id="${r.id}">Complete</button>`:''}
+            </div>
+          `;
+          container.appendChild(el);
+        });
+      }
+      renderList(setup, setupRunsDiv, 'Setup');
+      renderList(active, activeRunsDiv, 'Active');
+      renderList(completed, completedRunsDiv, 'Completed');
+
+      // Attach event listeners (delegation)
+      [setupRunsDiv,activeRunsDiv,completedRunsDiv].forEach(container=>{
+        container.querySelectorAll('button').forEach(btn=>{
+          btn.addEventListener('click', runAction);
+        });
+      });
+    }
+
+    function filterRun(run, q){
+      if(!q) return true;
+      const s = `${run.jobType} ${run.from} ${run.to} ${run.notes} ${run.commodities.map(c=>c.name).join(' ')}`.toLowerCase();
+      return s.includes(q);
+    }
+
+    function runAction(e){
+      const id = e.currentTarget.dataset.id;
+      const action = e.currentTarget.dataset.action;
+      if(!id) return;
+      if(action==='edit') loadIntoForm(id);
+      if(action==='del') { if(confirm('Delete this run?')){ runs = runs.filter(r=>r.id!==id); saveRuns(); renderAll(); }}
+      if(action==='activate') { const r = runs.find(x=>x.id===id); if(r){r.status='Active'; r.lastUpdated=new Date().toISOString(); saveRuns(); renderAll();}}
+      if(action==='complete') { const r = runs.find(x=>x.id===id); if(r){r.status='Completed'; r.lastUpdated=new Date().toISOString(); saveRuns(); renderAll();}}
+      if(action==='view') viewDetails(id);
+    }
+
+    function loadIntoForm(id){
+      const r = runs.find(x=>x.id===id); if(!r) return; editId = id;
+      document.getElementById('jobType').value = r.jobType;
+      document.getElementById('runDate').value = r.date;
+      document.getElementById('fromLoc').value = r.from;
+      document.getElementById('toLoc').value = r.to;
+      document.getElementById('notes').value = r.notes;
+      document.getElementById('statusSelect').value = r.status;
+      document.getElementById('grandTotal').value = r.grandTotal || r.total || 0;
+      commoditiesDiv.innerHTML=''; (r.commodities||[]).forEach(c=> addCommodityRow(c));
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function viewDetails(id){
+      const r = runs.find(x=>x.id===id); if(!r) return; alert(JSON.stringify(r, null, 2));
+    }
+
+    function calcGrandTotal(){
+      const commodityEls = [...commoditiesDiv.querySelectorAll('.commodity-row')];
+      const total = commodityEls.reduce((s,el)=> s + ((parseFloat(el.querySelector('.c-qty').value||0) * parseFloat(el.querySelector('.c-unit').value||0)) ), 0);
+      document.getElementById('grandTotal').value = total? total.toFixed(2):'';
+      return total;
+    }
+
+    function exportJSON(){
+      const dataStr = JSON.stringify(runs, null, 2);
+      const blob = new Blob([dataStr], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download='spacetrucker_runs.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+
+    function promptImport(){
+      const input = document.createElement('input'); input.type='file'; input.accept='application/json';
+      input.addEventListener('change', ()=>{
+        const f = input.files[0]; if(!f) return; const reader = new FileReader();
+        reader.onload = e=>{
+          try{ const data = JSON.parse(e.target.result); if(Array.isArray(data)){ runs = data; saveRuns(); renderAll(); alert('Imported runs'); } else alert('Invalid format'); }catch(err){alert('Import failed: '+err.message)}
+        };
+        reader.readAsText(f);
+      });
+      input.click();
+    }
+
+    function openProfitModal(){
+      const active = runs.filter(r=> r.status==='Active');
+      if(active.length===0){ alert('No active runs to send to Profit Splitter.'); return }
+      profitModal.classList.add('open');
+      renderProfitContent(active);
+    }
+
+    function renderProfitContent(active){
+      const total = active.reduce((s,r)=> s + (parseFloat(r.grandTotal||r.total||0)), 0);
+      let html = `<div class="muted-small">Auto-imported runs (${active.length})</div>`;
+      html += `<table class="table"><thead><tr><th>Run</th><th>Route</th><th>Value</th></tr></thead><tbody>`;
+      active.forEach(r=>{ html += `<tr><td>${escapeHtml(r.jobType)}</td><td>${escapeHtml(r.from)} → ${escapeHtml(r.to)}</td><td>${Number(r.grandTotal||r.total||0).toFixed(2)}</td></tr>` });
+      html += `</tbody></table>`;
+      html += `<div style="margin-top:8px" class="section-title"><strong>Combined Total</strong><div class="tag">${total.toFixed(2)} aUEC</div></div>`;
+      profitContent.innerHTML = html;
+      splitResult.innerHTML = '';
+    }
+
+    function calculateSplit(){
+      const crew = Math.max(1, parseInt(crewSizeInput.value||1));
+      const expenses = parseFloat(expensesInput.value||0);
+      const active = runs.filter(r=> r.status==='Active');
+      if(active.length===0){ alert('No active runs'); return }
+      const total = active.reduce((s,r)=> s + (parseFloat(r.grandTotal||r.total||0)), 0);
+      const afterExpenses = Math.max(0, total - expenses);
+      const per = afterExpenses / crew;
+      let html = `<div class="card">`;
+      html += `<div class="muted-small">Total: ${total.toFixed(2)} aUEC</div>`;
+      html += `<div class="muted-small">Expenses: ${expenses.toFixed(2)} aUEC</div>`;
+      html += `<div style="margin-top:8px"><strong>Net per crew member:</strong> ${per.toFixed(2)} aUEC</div>`;
+      html += `</div>`;
+      html += `<div style="margin-top:8px;display:flex;gap:8px;justify-content:flex-end"><button id="applyComplete">Mark Active Runs Complete</button></div>`;
+      splitResult.innerHTML = html;
+      document.getElementById('applyComplete').addEventListener('click', ()=>{
+        if(!confirm('Mark all active runs as completed?')) return;
+        runs.forEach(r=>{ if(r.status==='Active'){ r.status='Completed'; r.lastUpdated = new Date().toISOString(); }});
+        saveRuns(); renderAll(); profitModal.classList.remove('open'); alert('Active runs moved to Completed.');
+      });
+    }
+
+    function exportCompletedCSV(){
+      const completed = runs.filter(r=> r.status==='Completed');
+      if(completed.length===0){ alert('No completed runs to export'); return }
+      const rows = [['ID','JobType','From','To','Date','GrandTotal','Notes']];
+      completed.forEach(r=> rows.push([r.id, r.jobType, r.from, r.to, r.date, Number(r.grandTotal||r.total||0).toFixed(2), (r.notes||'')]));
+      const csv = rows.map(r=> r.map(c=> '"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv'});
+      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='completed_runs.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+
+    function clearCompletedRuns(){ if(!confirm('Clear all completed runs?')) return; runs = runs.filter(r=> r.status!=='Completed'); saveRuns(); renderAll(); }
+    function clearEverything(){ if(!confirm('Clear ALL runs? This cannot be undone.')) return; runs = []; saveRuns(); renderAll(); }
+
+  </script></body>
+</html>
