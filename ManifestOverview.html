@@ -29,7 +29,7 @@
     border-radius: 8px;
     padding: 1rem;
     overflow-y: auto;
-    max-height: 300px;
+    max-height: 400px;
   }
   .work-order {
     border-bottom: 1px solid #444;
@@ -37,6 +37,19 @@
   }
   .work-order:last-child {
     border-bottom: none;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+  }
+  th, td {
+    border: 1px solid #444;
+    padding: 0.3rem;
+    font-size: 0.85rem;
+  }
+  th {
+    background-color: #333;
   }
   button {
     padding: 0.3rem 0.6rem;
@@ -49,6 +62,11 @@
   }
   button:hover {
     background-color: #555;
+  }
+  .grand-total {
+    margin-top: 0.5rem;
+    font-weight: bold;
+    color: gold;
   }
   .bottom-list {
     background-color: #222;
@@ -67,27 +85,18 @@
 <div class="container">
   <div class="list" id="availableList">
     <h2>Available Work Orders</h2>
-    <!-- Work orders populated here -->
   </div>
 
   <div class="list" id="activeList">
     <h2>Active Work Orders</h2>
-    <!-- Active work orders populated here -->
   </div>
 </div>
 
 <div class="bottom-list" id="completedList">
   <h2>Completed Work Orders</h2>
-  <!-- Completed work orders populated here -->
 </div>
 
 <script>
-  // Example stored manifests in localStorage
-  // localStorage.setItem("cargoManifestData", JSON.stringify({
-  //   "2025-08-01_Job1": { title: "Job 1", dateSaved: Date.now(), grandTotal: 10000 },
-  //   "2025-08-02_Job2": { title: "Job 2", dateSaved: Date.now(), grandTotal: 15000 }
-  // }));
-
   const availableList = document.getElementById("availableList");
   const activeList = document.getElementById("activeList");
   const completedList = document.getElementById("completedList");
@@ -96,17 +105,56 @@
   let activeOrders = [];
   let completedOrders = [];
 
-  function loadOrders() {
-    const savedManifests = JSON.parse(localStorage.getItem("cargoManifestData")) || {};
-    availableOrders = Object.keys(savedManifests).map(key => ({
-      key,
-      ...savedManifests[key]
-    }));
-    renderLists();
+  // Format number with commas
+  function formatNumber(num) {
+    return Number(num).toLocaleString();
+  }
+
+  function renderManifestTable(manifest) {
+    const wrapper = document.createElement("div");
+    manifest.categories.forEach(category => {
+      const catTitle = document.createElement("h4");
+      catTitle.textContent = category.category;
+      wrapper.appendChild(catTitle);
+
+      const table = document.createElement("table");
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Location</th>
+            <th>SCU</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${category.items.map(item => `
+            <tr>
+              <td>${item.item}</td>
+              <td>${formatNumber(item.qty)}</td>
+              <td>${item.location}</td>
+              <td>${item.scuType.toUpperCase()}</td>
+              <td>${formatNumber(item.unitPrice)}</td>
+              <td>${formatNumber(item.total)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      `;
+      wrapper.appendChild(table);
+    });
+
+    const totalDiv = document.createElement("div");
+    totalDiv.className = "grand-total";
+    totalDiv.textContent = `Grand Total: ${formatNumber(manifest.grandTotal)} aUEC`;
+    wrapper.appendChild(totalDiv);
+
+    return wrapper;
   }
 
   function renderLists() {
-    // Available Orders
+    // Available
     availableList.innerHTML = "<h2>Available Work Orders</h2>";
     if (availableOrders.length === 0) {
       availableList.innerHTML += "<p>No available work orders</p>";
@@ -114,17 +162,17 @@
       availableOrders.forEach(order => {
         const div = document.createElement("div");
         div.className = "work-order";
-        div.innerHTML = `
-          <strong>${order.title}</strong><br>
-          Saved: ${new Date(order.dateSaved).toLocaleString()}<br>
-          Total: ${order.grandTotal.toLocaleString()} aUEC<br>
-          <button onclick="activateOrder('${order.key}')">Activate</button>
-        `;
+        div.innerHTML = `<strong>${order.title}</strong> — Saved: ${new Date(order.dateSaved).toLocaleString()}<br>`;
+        div.appendChild(renderManifestTable(order));
+        const btn = document.createElement("button");
+        btn.textContent = "Activate";
+        btn.onclick = () => activateOrder(order.key);
+        div.appendChild(btn);
         availableList.appendChild(div);
       });
     }
 
-    // Active Orders
+    // Active
     activeList.innerHTML = "<h2>Active Work Orders</h2>";
     if (activeOrders.length === 0) {
       activeList.innerHTML += "<p>No active work orders</p>";
@@ -132,16 +180,17 @@
       activeOrders.forEach(order => {
         const div = document.createElement("div");
         div.className = "work-order";
-        div.innerHTML = `
-          <strong>${order.title}</strong><br>
-          Total: ${order.grandTotal.toLocaleString()} aUEC<br>
-          <button onclick="completeOrder('${order.key}')">Complete</button>
-        `;
+        div.innerHTML = `<strong>${order.title}</strong><br>`;
+        div.appendChild(renderManifestTable(order));
+        const btn = document.createElement("button");
+        btn.textContent = "Complete";
+        btn.onclick = () => completeOrder(order.key);
+        div.appendChild(btn);
         activeList.appendChild(div);
       });
     }
 
-    // Completed Orders
+    // Completed
     completedList.innerHTML = "<h2>Completed Work Orders</h2>";
     if (completedOrders.length === 0) {
       completedList.innerHTML += "<p>No completed work orders</p>";
@@ -149,28 +198,35 @@
       completedOrders.forEach(order => {
         const div = document.createElement("div");
         div.className = "work-order";
-        div.innerHTML = `
-          <strong>${order.title}</strong> — ${order.grandTotal.toLocaleString()} aUEC
-        `;
+        div.innerHTML = `<strong>${order.title}</strong> — ${formatNumber(order.grandTotal)} aUEC`;
         completedList.appendChild(div);
       });
     }
   }
 
   function activateOrder(key) {
-    const index = availableOrders.findIndex(o => o.key === key);
-    if (index > -1) {
-      activeOrders.push(availableOrders.splice(index, 1)[0]);
+    const idx = availableOrders.findIndex(o => o.key === key);
+    if (idx > -1) {
+      activeOrders.push(availableOrders.splice(idx, 1)[0]);
       renderLists();
     }
   }
 
   function completeOrder(key) {
-    const index = activeOrders.findIndex(o => o.key === key);
-    if (index > -1) {
-      completedOrders.push(activeOrders.splice(index, 1)[0]);
+    const idx = activeOrders.findIndex(o => o.key === key);
+    if (idx > -1) {
+      completedOrders.push(activeOrders.splice(idx, 1)[0]);
       renderLists();
     }
+  }
+
+  function loadOrders() {
+    const savedManifests = JSON.parse(localStorage.getItem("cargoManifestData")) || {};
+    availableOrders = Object.keys(savedManifests).map(key => ({
+      key,
+      ...savedManifests[key]
+    }));
+    renderLists();
   }
 
   loadOrders();
