@@ -1,0 +1,27 @@
+details {
+  margin-bottom: 20px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+summary {
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  border: 1px solid #555;
+  padding: 6px;
+  text-align: center;
+}
+
+th {
+  background-color: #222;
+}
