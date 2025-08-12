@@ -14,3 +14,42 @@ h2 {
   color: lightblue; 
   margin: 0 0 0.5rem 0; 
 }
+
+.container { 
+  display: flex; 
+  gap: 1rem; 
+  margin-bottom: 2rem; 
+}
+
+.list,
+.bottom-list {
+  background-color: #222;
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.list {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.bottom-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.work-order {
+  border-bottom: 1px solid #444;
+  padding: 0.5rem 0;
+}
+
+.work-order:last-child { border-bottom: none; }
+
+.hidden { display: none; }
+
+/* small responsive tweak */
+@media (max-width: 800px) {
+  .container { flex-direction: column; }
+}
