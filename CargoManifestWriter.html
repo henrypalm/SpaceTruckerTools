@@ -442,6 +442,51 @@
       const filename = `${title.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}.txt`;
       downloadFile(txt, filename);
     }
+
+    function saveManifestToLocalStorage() {
+      const title = document.getElementById("manifestTitle").value || "Cargo Manifest";
+    
+      const bodies = [
+        { label: "Ship Mining", body: document.getElementById("shipMiningBody") },
+        { label: "Handheld and Light Ship Mining", body: document.getElementById("handMiningBody") },
+        { label: "Salvage", body: document.getElementById("salvageBody") }
+      ];
+    
+      const manifestData = {
+        title,
+        dateSaved: new Date().toISOString(),
+        categories: [],
+        grandTotal: 0
+      };
+    
+      bodies.forEach(({ label, body }) => {
+        const rows = Array.from(body.children);
+        const categoryData = { category: label, items: [] };
+    
+        rows.forEach(row => {
+          const qty = parseFloat(row.children[1].querySelector("input").value) || 0;
+          if (!qty) return; // skip empty rows
+    
+          const item = row.children[0].innerText.trim();
+          const location = row.children[2].querySelector("select").value;
+          const scuType = row.children[3].querySelector("select").value; // SCU type
+          const unitPrice = parseFloat(row.children[3].querySelector("span").textContent.replace(/,/g, "")) || 0;
+          const total = parseFloat(row.children[4].querySelector("span").textContent.replace(/,/g, "")) || 0;
+    
+          categoryData.items.push({ item, qty, location, scuType, unitPrice, total });
+          manifestData.grandTotal += total;
+        });
+    
+        if (categoryData.items.length > 0) {
+          manifestData.categories.push(categoryData);
+        }
+      });
+    
+      // Save to localStorage
+      localStorage.setItem("cargoManifestData", JSON.stringify(manifestData));
+    
+      alert("Manifest saved to localStorage!");
+    }
     
     function exportCSV() {
       const title = document.getElementById("manifestTitle").value || "Cargo Manifest";
