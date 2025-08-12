@@ -1,0 +1,27 @@
+button {
+  background-color: #333;
+  border: 1px solid #555;
+  color: white;
+  padding: 0.6em 1.2em;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #555;
+}
+
+.quantity-increment button {
+  background-color: #333;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.quantity-increment button:hover {
+  background-color: #555;
+}
