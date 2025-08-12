@@ -1,0 +1,40 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+th, td {
+  border: 1px solid #444;
+  padding: 0.3rem;
+  font-size: 0.85rem;
+}
+
+th { background-color: #333; }
+
+.order-header {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0.35rem;
+  background-color: #333;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.order-header:hover { background-color: #444; }
+
+.toggle-icon {
+  display:inline-block;
+  width: 20px;
+  text-align: center;
+  font-weight: bold;
+  color: gold;
+}
+
+.grand-total { 
+  margin-top: 0.5rem; 
+  font-weight: bold; 
+  color: gold; 
+}
