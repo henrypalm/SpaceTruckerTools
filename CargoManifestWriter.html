@@ -154,6 +154,19 @@
     button:hover {
       background-color: #555;
     }
+
+    .quantity-increment button {
+      background-color: #333;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .quantity-increment button:hover {
+      background-color: #555;
+    }
   </style>
 </head>
 <body>
@@ -260,17 +273,56 @@
       function createCargoRow(item, targetBody, itemPricesForItem) {
         const row = document.createElement("tr");
         row.style.backgroundColor = itemColors[item] || "#1e1e1e";
-
+      
+        // Item cell
         const itemCell = document.createElement("td");
         itemCell.innerHTML = `<span class="highlighted-text">${item}</span>`;
-
+      
+        // Quantity cell with input and increment buttons
         const quantityCell = document.createElement("td");
         const quantityInput = document.createElement("input");
         quantityInput.type = "number";
         quantityInput.min = 0;
         quantityInput.value = "";
+        quantityInput.style.width = "70px";
+        quantityInput.style.marginBottom = "6px";
         quantityCell.appendChild(quantityInput);
-
+      
+        // Increment buttons container
+        const incrementsDiv = document.createElement("div");
+        incrementsDiv.style.display = "flex";
+        incrementsDiv.style.flexWrap = "wrap";
+        incrementsDiv.style.gap = "4px";
+      
+        [1, 2, 4, 8, 16, 32].forEach(num => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = `+${num}`;
+          btn.style.padding = "2px 6px";
+          btn.style.fontSize = "0.75rem";
+          btn.style.backgroundColor = "#333";
+          btn.style.color = "white";
+          btn.style.border = "1px solid #555";
+          btn.style.borderRadius = "3px";
+          btn.style.cursor = "pointer";
+          btn.style.flex = "1 0 30%"; // Make buttons responsive and wrap nicely
+          btn.addEventListener("mouseenter", () => {
+            btn.style.backgroundColor = "#555";
+          });
+          btn.addEventListener("mouseleave", () => {
+            btn.style.backgroundColor = "#333";
+          });
+          btn.addEventListener("click", () => {
+            const currentVal = parseInt(quantityInput.value) || 0;
+            quantityInput.value = currentVal + num;
+            quantityInput.dispatchEvent(new Event("input")); // trigger update
+          });
+          incrementsDiv.appendChild(btn);
+        });
+      
+        quantityCell.appendChild(incrementsDiv);
+      
+        // Location cell with select
         const locationCell = document.createElement("td");
         const locationSelect = document.createElement("select");
         const locations = Object.keys(itemPricesForItem);
@@ -280,7 +332,9 @@
           option.textContent = location;
           locationSelect.appendChild(option);
         });
-
+        locationCell.appendChild(locationSelect);
+      
+        // Unit price cell with scuType select
         const scuTypeSelect = document.createElement("select");
         ["scu", "cscu", "mscu"].forEach(type => {
           const option = document.createElement("option");
@@ -288,40 +342,41 @@
           option.textContent = `per ${type.toUpperCase()}`;
           scuTypeSelect.appendChild(option);
         });
-
+      
         const unitPriceCell = document.createElement("td");
         unitPriceCell.innerHTML = `<span class="highlighted-text">0</span><br>`;
         unitPriceCell.appendChild(scuTypeSelect);
-
+      
+        // Total cell
         const totalCell = document.createElement("td");
         totalCell.innerHTML = `<span class="highlighted-text">0</span>`;
-
+      
+        // Append all cells to row
         row.appendChild(itemCell);
         row.appendChild(quantityCell);
         row.appendChild(locationCell);
         row.appendChild(unitPriceCell);
         row.appendChild(totalCell);
-
-        locationCell.appendChild(locationSelect);
-
+      
+        // Update totals when inputs change
         function updateRowTotals() {
           const location = locationSelect.value;
           const scuType = scuTypeSelect.value;
           const priceObj = itemPricesForItem[location];
           const unitPrice = priceObj?.[scuType] ?? 0;
-
+      
           unitPriceCell.querySelector("span").textContent = unitPrice.toLocaleString();
           const quantity = parseFloat(quantityInput.value) || 0;
           const total = quantity * unitPrice;
           totalCell.querySelector("span").textContent = total.toLocaleString();
-
+      
           updateGrandTotal();
         }
-
+      
         quantityInput.addEventListener("input", updateRowTotals);
         locationSelect.addEventListener("change", updateRowTotals);
         scuTypeSelect.addEventListener("change", updateRowTotals);
-
+      
         targetBody.appendChild(row);
         updateRowTotals();
       }
@@ -349,53 +404,42 @@
 
     function exportTXT() {
       const title = document.getElementById("manifestTitle").value || "Cargo Manifest";
-      const unitType = document.getElementById("unitSelect")?.value || "SCU";
-      let txt = `Title: ${title}\nUnit Type: ${unitType}\n\n`;
-    
+      let txt = `Title: ${title}\n\n`;
+      
       const bodies = [
         { label: "Ship Mining", body: document.getElementById("shipMiningBody") },
         { label: "Handheld and Light Ship Mining", body: document.getElementById("handMiningBody") },
         { label: "Salvage", body: document.getElementById("salvageBody") }
       ];
-    
+      
       let grandTotal = 0;
-    
+      
       bodies.forEach(({ label, body }) => {
         const rows = Array.from(body.children);
-        const hasRowsWithQuantity = rows.some(row => {
-          const qty = parseFloat(row.children[1].querySelector("input").value) || 0;
-          return qty > 0;
+        if (!rows.some(row => parseFloat(row.children[1].querySelector("input").value) > 0)) return;
+        
+        txt += `== ${label} ==\n`;
+        txt += `Item\tQuantity\tLocation\tUnit Price\tTotal\n`;
+        
+        rows.forEach(row => {
+          const qty = parseFloat(row.children[1].querySelector("input").value);
+          if (!qty) return;
+          
+          const item = row.children[0].innerText.trim();
+          const location = row.children[2].querySelector("select").value;
+          const unitPrice = row.children[3].querySelector("span").textContent;
+          const total = row.children[4].querySelector("span").textContent;
+          
+          txt += `${item}\t${qty}\t${location}\t${unitPrice}\t${total}\n`;
+          grandTotal += parseFloat(total.replace(/,/g, ""));
         });
-    
-        if (hasRowsWithQuantity) {
-          txt += `== ${label} ==\n`;
-          txt += `Item | Quantity | Location | Unit Price | Total\n`;
-    
-          rows.forEach(row => {
-            const item = row.children[0].innerText.trim();
-            const qty = row.children[1].querySelector("input").value;
-            if (!qty || qty === "0") return;
-    
-            const location = row.children[2].querySelector("select").value;
-            const unitPriceRaw = row.children[3].querySelector("span").textContent;
-            const totalRaw = row.children[4].querySelector("span").textContent;
-    
-            const parsedTotal = parseFloat(totalRaw.replace(/,/g, "")) || 0;
-            const formattedUnitPrice = parseFloat(unitPriceRaw.replace(/,/g, "")).toLocaleString();
-            const formattedTotal = parsedTotal.toLocaleString();
-    
-            txt += `${item} | ${qty} | ${location} | ${formattedUnitPrice} | ${formattedTotal}\n`;
-    
-            grandTotal += parsedTotal;
-          });
-    
-          txt += `\n`;
-        }
+        
+        txt += `\n`;
       });
-    
-      txt += `Grand Total: ${grandTotal.toLocaleString()}`;
-    
-      const filename = `${title.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-")}.txt`;
+      
+      txt += `Grand Total: ${grandTotal.toLocaleString()} aUEC\n`;
+      
+      const filename = `${title.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}.txt`;
       downloadFile(txt, filename);
     }
     
@@ -456,49 +500,43 @@
     function copyToClipboard() {
       const title = document.getElementById("manifestTitle").value || "Cargo Manifest";
       let textToCopy = `Title: ${title}\n\n`;
-    
+      
       const bodies = [
         { label: "Ship Mining", body: document.getElementById("shipMiningBody") },
         { label: "Handheld and Light Ship Mining", body: document.getElementById("handMiningBody") },
         { label: "Salvage", body: document.getElementById("salvageBody") }
       ];
-    
+      
       let grandTotal = 0;
-    
+      
       bodies.forEach(({ label, body }) => {
-        let hasRows = Array.from(body.children).some(row => {
-          const qty = parseFloat(row.children[1].querySelector("input").value) || 0;
-          return qty > 0;
+        const rows = Array.from(body.children);
+        if (!rows.some(row => parseFloat(row.children[1].querySelector("input").value) > 0)) return;
+        
+        textToCopy += `${label}:\n`;
+        
+        rows.forEach(row => {
+          const qty = parseFloat(row.children[1].querySelector("input").value);
+          if (!qty) return;
+          
+          const item = row.children[0].innerText.trim();
+          const location = row.children[2].querySelector("select").value;
+          const unitPrice = row.children[3].querySelector("span").textContent;
+          const total = row.children[4].querySelector("span").textContent;
+          
+          textToCopy += `${item}, Qty: ${qty}, Location: ${location}, Unit Price: ${unitPrice}, Total: ${total}\n`;
+          grandTotal += parseFloat(total.replace(/,/g, ""));
         });
-    
-        if (hasRows) {
-          textToCopy += `Category: ${label}\n`;
-    
-          Array.from(body.children).forEach(row => {
-            const item = row.children[0].innerText.trim();
-            const qty = row.children[1].querySelector("input").value;
-            if (!qty || qty === "0") return;
-    
-            const location = row.children[2].querySelector("select").value;
-            const unitPrice = row.children[3].querySelector("span").textContent;
-            const total = row.children[4].querySelector("span").textContent;
-            const parsedTotal = parseFloat(total.replace(/,/g, "")) || 0;
-    
-            textToCopy += `${item} | Qty: ${qty} | Location: ${location} | Unit Price: ${unitPrice} | Total: ${total}\n`;
-            grandTotal += parsedTotal;
-          });
-    
-          textToCopy += "\n";
-        }
+        
+        textToCopy += `\n`;
       });
-    
-      textToCopy += `Grand Total: ${grandTotal.toLocaleString()}`;
-    
-      // Try clipboard API
+      
+      textToCopy += `Grand Total: ${grandTotal.toLocaleString()} aUEC\n`;
+      
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(textToCopy).then(() => {
           alert("Manifest copied to clipboard!");
-        }).catch(err => {
+        }).catch(() => {
           fallbackClipboardCopy(textToCopy);
         });
       } else {
