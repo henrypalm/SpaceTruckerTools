@@ -1,0 +1,27 @@
+.info-box {
+  background-color: #222;
+  border-radius: 12px;
+  max-width: 900px;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.info-box img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  border-radius: 10px;
+  flex-shrink: 0;
+  filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.7));
+}
+
+.info-box .text-content {
+  flex-grow: 1;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: #ddd;
+}
