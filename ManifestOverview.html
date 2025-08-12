@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Manifest Overview</title>
+<style>
+  body {
+    background-color: #111;
+    color: white;
+    font-family: Arial, sans-serif;
+    padding: 2rem;
+  }
+  h1 {
+    color: gold;
+    margin-bottom: 1rem;
+  }
+  select, button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    margin-right: 1rem;
+    border-radius: 5px;
+    border: 1px solid #555;
+    background-color: #222;
+    color: white;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #444;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  th, td {
+    border: 1px solid #444;
+    padding: 0.5rem;
+    text-align: left;
+  }
+  th {
+    background-color: #222;
+  }
+</style>
+</head>
+<body>
+
+<h1>Manifest Overview</h1>
+
+<label for="manifestSelect">Choose a saved manifest:</label>
+<select id="manifestSelect">
+  <option value="">-- No saved manifests found --</option>
+</select>
+<button id="loadBtn" disabled>Load Manifest</button>
+
+<h2 id="loadedTitle"></h2>
+<div id="manifestDetails"></div>
+
+<script>
+  const manifestSelect = document.getElementById("manifestSelect");
+  const loadBtn = document.getElementById("loadBtn");
+  const loadedTitle = document.getElementById("loadedTitle");
+  const manifestDetails = document.getElementById("manifestDetails");
+
+  // Load saved manifests keys from localStorage
+  function populateManifestList() {
+    const savedManifests = JSON.parse(localStorage.getItem("cargoManifestData")) || {};
+
+    const keys = Object.keys(savedManifests).sort().reverse();
+
+    manifestSelect.innerHTML = "";
+
+    if (keys.length === 0) {
+      manifestSelect.innerHTML = `<option value="">-- No saved manifests found --</option>`;
+      loadBtn.disabled = true;
+      return;
+    }
+
+    manifestSelect.innerHTML = `<option value="">-- Select a manifest --</option>`;
+    keys.forEach(key => {
+      const option = document.createElement("option");
+      option.value = key;
+      option.textContent = key;
+      manifestSelect.appendChild(option);
+    });
+
+    loadBtn.disabled = false;
+  }
+
+  function formatNumber(num) {
+    return Number(num).toLocaleString();
+  }
+
+  // Render loaded manifest data into tables
+  function renderManifest(manifest) {
+    loadedTitle.textContent = manifest.title + ` (Saved: ${manifest.dateSaved})`;
+    manifestDetails.innerHTML = "";
+
+    manifest.categories.forEach(category => {
+      const catTitle = document.createElement("h3");
+      catTitle.textContent = category.category;
+      manifestDetails.appendChild(catTitle);
+
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      thead.innerHTML = `
+        <tr>
+          <th>Item</th>
+          <th>Quantity</th>
+          <th>Location</th>
+          <th>SCU Type</th>
+          <th>Unit Price</th>
+          <th>Total</th>
+        </tr>`;
+      table.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+
+      category.items.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.item}</td>
+          <td>${item.qty}</td>
+          <td>${item.location}</td>
+          <td>${item.scuType.toUpperCase()}</td>
+          <td>${formatNumber(item.unitPrice)}</td>
+          <td>${formatNumber(item.total)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      table.appendChild(tbody);
+      manifestDetails.appendChild(table);
+    });
+
+    // Show grand total
+    const grandTotalDiv = document.createElement("div");
+    grandTotalDiv.style.marginTop = "1rem";
+    grandTotalDiv.style.fontWeight = "bold";
+    grandTotalDiv.style.color = "gold";
+    grandTotalDiv.textContent = `Grand Total: ${formatNumber(manifest.grandTotal)} aUEC`;
+    manifestDetails.appendChild(grandTotalDiv);
+  }
+
+  loadBtn.addEventListener("click", () => {
+    const key = manifestSelect.value;
+    if (!key) return;
+
+    const savedManifests = JSON.parse(localStorage.getItem("cargoManifestData")) || {};
+    const manifest = savedManifests[key];
+
+    if (!manifest) {
+      alert("Manifest not found.");
+      return;
+    }
+
+    renderManifest(manifest);
+  });
+
+  // Populate on page load
+  populateManifestList();
+</script>
+
+</body>
+</html>
