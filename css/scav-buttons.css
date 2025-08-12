@@ -1,0 +1,18 @@
+.export-buttons {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.export-buttons button {
+  margin: 5px;
+  padding: 8px 12px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.export-buttons button:hover {
+  background-color: #555;
+}
