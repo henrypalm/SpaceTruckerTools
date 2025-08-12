@@ -1,0 +1,51 @@
+.button-row {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 900px;
+  width: 100%;
+}
+
+.button-row.single {
+  margin-top: 20px;
+}
+
+.app-button {
+  background-color: #007acc;
+  border-radius: 10px;
+  padding: 15px 20px 25px;
+  width: 200px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+}
+
+.app-button:hover {
+  background-color: #005f99;
+}
+
+.app-button img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 12px;
+  filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.7));
+}
+
+.app-button .title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.app-button .description {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
