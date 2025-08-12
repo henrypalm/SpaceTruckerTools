@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Work Order Overview</title>
+<title>Workorder Overview</title>
 <style>
   body {
     background-color: #111;
@@ -86,20 +86,20 @@
 </head>
 <body>
 
-<h1>Work Order Overview</h1>
+<h1>Workorder Overview</h1>
 
 <div class="container">
   <div class="list" id="availableList">
-    <h2>Available Work Orders</h2>
+    <h2>Available Workorders</h2>
   </div>
 
   <div class="list" id="activeList">
-    <h2>Active Work Orders</h2>
+    <h2>Active Workorders</h2>
   </div>
 </div>
 
 <div class="bottom-list" id="completedList">
-  <h2>Completed Work Orders</h2>
+  <h2>Completed Workorders</h2>
 </div>
 
 <script>
@@ -168,9 +168,9 @@
     orderElementMap = {}; // reset map
 
     // AVAILABLE
-    availableList.innerHTML = "<h2>Available Work Orders</h2>";
+    availableList.innerHTML = "<h2>Available Workorders</h2>";
     if (availableOrders.length === 0) {
-      availableList.innerHTML += "<p>No available work orders</p>";
+      availableList.innerHTML += "<p>No available workorders</p>";
     } else {
       availableOrders.forEach(order => {
         const div = document.createElement("div");
@@ -213,9 +213,9 @@
     }
 
     // ACTIVE
-    activeList.innerHTML = "<h2>Active Work Orders</h2>";
+    activeList.innerHTML = "<h2>Active Workorders</h2>";
     if (activeOrders.length === 0) {
-      activeList.innerHTML += "<p>No active work orders</p>";
+      activeList.innerHTML += "<p>No active workorders</p>";
     } else {
       activeOrders.forEach(order => {
         const div = document.createElement("div");
@@ -256,7 +256,7 @@
     }
 
     // COMPLETED (no expand)
-    completedList.innerHTML = "<h2>Completed Work Orders</h2>";
+    completedList.innerHTML = "<h2>Completed Workorders</h2>";
     if (completedOrders.length === 0) {
       completedList.innerHTML += "<p>No completed work orders</p>";
     } else {
