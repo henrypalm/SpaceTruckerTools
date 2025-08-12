@@ -310,11 +310,49 @@
   }
 
   function loadOrders() {
-    const savedManifests = JSON.parse(localStorage.getItem("cargoManifestData")) || {};
+    const raw = localStorage.getItem("cargoManifestData");
+    let savedManifests = {};
+  
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        // Convert array to object keyed by order.key
+        savedManifests = {};
+        parsed.forEach(order => {
+          if (order && order.key) {
+            savedManifests[order.key] = order;
+          }
+        });
+      } else if (typeof parsed === "object" && parsed !== null) {
+        savedManifests = parsed;
+      } else {
+        // unexpected data type
+        savedManifests = {};
+      }
+    } catch (e) {
+      // JSON parsing failed, reset data
+      savedManifests = {};
+    }
+  
     availableOrders = Object.keys(savedManifests).map(k => ({ key: k, ...savedManifests[k] }));
-    activeOrders = JSON.parse(localStorage.getItem("activeOrders")) || [];
-    completedOrders = JSON.parse(localStorage.getItem("completedOrders")) || [];
-    // Load expandedKeys already done above
+  
+    try {
+      activeOrders = JSON.parse(localStorage.getItem("activeOrders")) || [];
+    } catch {
+      activeOrders = [];
+    }
+  
+    try {
+      completedOrders = JSON.parse(localStorage.getItem("completedOrders")) || [];
+    } catch {
+      completedOrders = [];
+    }
+  
+    console.log("Loaded cargoManifestData:", savedManifests);
+    console.log("Available Orders:", availableOrders);
+    console.log("Active Orders:", activeOrders);
+    console.log("Completed Orders:", completedOrders);
+  
     renderLists();
   }
 
