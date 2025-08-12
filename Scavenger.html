@@ -160,6 +160,10 @@
   <div class="container">
     <h1>Scavenger</h1>
     <div id="componentContainer"></div>
+
+    <div id="grandTotalContainer" style="text-align:center; margin-top:10px;">
+      <h2 id="grandTotal">Grand Total: 0 aUEC</h2>
+    </div>
   
     <div class="export-buttons">
       <button onclick="exportCSV()">Export CSV</button>
@@ -249,12 +253,7 @@
         grandTotal += total;
         document.getElementById(`total-${input.dataset.name}`).textContent = total;
       });
-      document.getElementById("grandTotal")?.remove();
-
-      const grandRow = document.createElement("h2");
-      grandRow.id = "grandTotal";
-      grandRow.textContent = `Grand Total: ${grandTotal} aUEC`;
-      container.appendChild(grandRow);
+      document.getElementById("grandTotal").textContent = `Grand Total: ${grandTotal} aUEC`;
     }
 
     function exportCSV() {
