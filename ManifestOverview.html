@@ -38,6 +38,16 @@
   .work-order:last-child {
     border-bottom: none;
   }
+  .order-header {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0.3rem;
+    background-color: #333;
+    border-radius: 4px;
+  }
+  .order-header:hover {
+    background-color: #444;
+  }
   table {
     width: 100%;
     border-collapse: collapse;
@@ -59,6 +69,7 @@
     background-color: #333;
     color: white;
     cursor: pointer;
+    margin-top: 0.5rem;
   }
   button:hover {
     background-color: #555;
@@ -75,6 +86,9 @@
     padding: 1rem;
     max-height: 200px;
     overflow-y: auto;
+  }
+  .hidden {
+    display: none;
   }
 </style>
 </head>
@@ -104,14 +118,15 @@
   let availableOrders = [];
   let activeOrders = [];
   let completedOrders = [];
+  let expandedKey = null; // tracks which manifest is currently open
 
-  // Format number with commas
   function formatNumber(num) {
     return Number(num).toLocaleString();
   }
 
   function renderManifestTable(manifest) {
     const wrapper = document.createElement("div");
+    wrapper.className = "manifest-table hidden"; // hidden until expanded
     manifest.categories.forEach(category => {
       const catTitle = document.createElement("h4");
       catTitle.textContent = category.category;
@@ -162,12 +177,21 @@
       availableOrders.forEach(order => {
         const div = document.createElement("div");
         div.className = "work-order";
-        div.innerHTML = `<strong>${order.title}</strong> — Saved: ${new Date(order.dateSaved).toLocaleString()}<br>`;
-        div.appendChild(renderManifestTable(order));
+
+        const header = document.createElement("div");
+        header.className = "order-header";
+        header.textContent = `${order.title} — Saved: ${new Date(order.dateSaved).toLocaleString()}`;
+        header.onclick = () => toggleManifest(order.key);
+        div.appendChild(header);
+
+        const tableSection = renderManifestTable(order);
+        div.appendChild(tableSection);
+
         const btn = document.createElement("button");
         btn.textContent = "Activate";
         btn.onclick = () => activateOrder(order.key);
-        div.appendChild(btn);
+        tableSection.appendChild(btn);
+
         availableList.appendChild(div);
       });
     }
@@ -180,12 +204,21 @@
       activeOrders.forEach(order => {
         const div = document.createElement("div");
         div.className = "work-order";
-        div.innerHTML = `<strong>${order.title}</strong><br>`;
-        div.appendChild(renderManifestTable(order));
+
+        const header = document.createElement("div");
+        header.className = "order-header";
+        header.textContent = order.title;
+        header.onclick = () => toggleManifest(order.key);
+        div.appendChild(header);
+
+        const tableSection = renderManifestTable(order);
+        div.appendChild(tableSection);
+
         const btn = document.createElement("button");
         btn.textContent = "Complete";
         btn.onclick = () => completeOrder(order.key);
-        div.appendChild(btn);
+        tableSection.appendChild(btn);
+
         activeList.appendChild(div);
       });
     }
@@ -204,10 +237,29 @@
     }
   }
 
+  function toggleManifest(key) {
+    // Close currently open manifest if different
+    if (expandedKey && expandedKey !== key) {
+      document.querySelectorAll(".manifest-table").forEach(el => el.classList.add("hidden"));
+    }
+
+    // Toggle this manifest
+    const container = document.querySelectorAll(".work-order");
+    container.forEach(orderDiv => {
+      const tableSection = orderDiv.querySelector(".manifest-table");
+      if (tableSection && orderDiv.innerHTML.includes(key)) {
+        tableSection.classList.toggle("hidden");
+      }
+    });
+
+    expandedKey = expandedKey === key ? null : key;
+  }
+
   function activateOrder(key) {
     const idx = availableOrders.findIndex(o => o.key === key);
     if (idx > -1) {
       activeOrders.push(availableOrders.splice(idx, 1)[0]);
+      expandedKey = null;
       renderLists();
     }
   }
@@ -216,6 +268,7 @@
     const idx = activeOrders.findIndex(o => o.key === key);
     if (idx > -1) {
       completedOrders.push(activeOrders.splice(idx, 1)[0]);
+      expandedKey = null;
       renderLists();
     }
   }
