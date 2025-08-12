@@ -1,0 +1,15 @@
+input, select, button {
+  padding: 5px;
+  margin: 5px;
+}
+
+.expenses {
+  margin-left: 20px;
+}
+
+.flex-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
