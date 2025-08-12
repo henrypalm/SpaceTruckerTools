@@ -330,8 +330,8 @@
     // turn into array with key preserved (key is used for moving items)
     availableOrders = Object.keys(savedManifests).map(k => ({ key: k, ...savedManifests[k] }));
     // start fresh (you could also persist active/completed lists if you want)
-    activeOrders = [];
-    completedOrders = [];
+    activeOrders = JSON.parse(localStorage.getItem("activeOrders")) || [];
+    completedOrders = JSON.parse(localStorage.getItem("completedOrders")) || [];
     renderLists();
   }
 
