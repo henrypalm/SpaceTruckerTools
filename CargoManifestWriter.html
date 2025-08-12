@@ -466,11 +466,11 @@
     
         rows.forEach(row => {
           const qty = parseFloat(row.children[1].querySelector("input").value) || 0;
-          if (!qty) return; // skip empty rows
+          if (!qty) return;
     
           const item = row.children[0].innerText.trim();
           const location = row.children[2].querySelector("select").value;
-          const scuType = row.children[3].querySelector("select").value; // SCU type
+          const scuType = row.children[3].querySelector("select").value;
           const unitPrice = parseFloat(row.children[3].querySelector("span").textContent.replace(/,/g, "")) || 0;
           const total = parseFloat(row.children[4].querySelector("span").textContent.replace(/,/g, "")) || 0;
     
@@ -483,10 +483,21 @@
         }
       });
     
-      // Save to localStorage
-      localStorage.setItem("cargoManifestData", JSON.stringify(manifestData));
+      // Get existing saved manifests object (or empty object if none)
+      const savedManifests = JSON.parse(localStorage.getItem("cargoManifestData")) || {};
     
-      alert("Manifest saved to localStorage!");
+      // Make unique key using title + timestamp
+      const safeTitle = title.replace(/\s+/g, "_");
+      const timestamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
+      const uniqueKey = `${safeTitle}_${timestamp}`;
+    
+      // Save under that unique key
+      savedManifests[uniqueKey] = manifestData;
+    
+      // Store back to localStorage
+      localStorage.setItem("cargoManifestData", JSON.stringify(savedManifests));
+    
+      alert(`Manifest "${title}" saved as ${uniqueKey} in localStorage!`);
     }
     
     function exportCSV() {
