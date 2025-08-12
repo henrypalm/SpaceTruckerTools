@@ -25,8 +25,12 @@
     color: white;
     cursor: pointer;
   }
-  button:hover {
+  button:hover:not(:disabled) {
     background-color: #444;
+  }
+  button:disabled {
+    opacity: 0.5;
+    cursor: default;
   }
   table {
     width: 100%;
@@ -65,7 +69,6 @@
   // Load saved manifests keys from localStorage
   function populateManifestList() {
     const savedManifests = JSON.parse(localStorage.getItem("cargoManifestData")) || {};
-
     const keys = Object.keys(savedManifests).sort().reverse();
 
     manifestSelect.innerHTML = "";
@@ -73,27 +76,34 @@
     if (keys.length === 0) {
       manifestSelect.innerHTML = `<option value="">-- No saved manifests found --</option>`;
       loadBtn.disabled = true;
+      loadedTitle.textContent = "";
+      manifestDetails.innerHTML = "";
       return;
     }
 
     manifestSelect.innerHTML = `<option value="">-- Select a manifest --</option>`;
     keys.forEach(key => {
+      const manifest = savedManifests[key];
       const option = document.createElement("option");
       option.value = key;
-      option.textContent = key;
+      // Show title + formatted date in option text
+      option.textContent = manifest.title + " (" + new Date(manifest.dateSaved).toLocaleString() + ")";
       manifestSelect.appendChild(option);
     });
 
-    loadBtn.disabled = false;
+    loadBtn.disabled = true; // disable until user selects a manifest
+    loadedTitle.textContent = "";
+    manifestDetails.innerHTML = "";
   }
 
+  // Format numbers with commas
   function formatNumber(num) {
     return Number(num).toLocaleString();
   }
 
   // Render loaded manifest data into tables
   function renderManifest(manifest) {
-    loadedTitle.textContent = manifest.title + ` (Saved: ${manifest.dateSaved})`;
+    loadedTitle.textContent = manifest.title + ` (Saved: ${new Date(manifest.dateSaved).toLocaleString()})`;
     manifestDetails.innerHTML = "";
 
     manifest.categories.forEach(category => {
@@ -142,6 +152,17 @@
     manifestDetails.appendChild(grandTotalDiv);
   }
 
+  // Enable load button only when a valid manifest is selected
+  manifestSelect.addEventListener("change", () => {
+    if (manifestSelect.value) {
+      loadBtn.disabled = false;
+    } else {
+      loadBtn.disabled = true;
+      loadedTitle.textContent = "";
+      manifestDetails.innerHTML = "";
+    }
+  });
+
   loadBtn.addEventListener("click", () => {
     const key = manifestSelect.value;
     if (!key) return;
@@ -151,13 +172,15 @@
 
     if (!manifest) {
       alert("Manifest not found.");
+      loadedTitle.textContent = "";
+      manifestDetails.innerHTML = "";
       return;
     }
 
     renderManifest(manifest);
   });
 
-  // Populate on page load
+  // Populate manifests on page load
   populateManifestList();
 </script>
 
