@@ -1,0 +1,14 @@
+details {
+  margin: 1rem;
+  background: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 0.5rem;
+}
+
+summary {
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #0ff;
+}
