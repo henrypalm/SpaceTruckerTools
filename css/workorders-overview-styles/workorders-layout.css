@@ -1,8 +1,19 @@
 body {
-  background-color: #111;
-  color: white;
   font-family: Arial, sans-serif;
-  padding: 2rem;
+  background-color: #111;
+  background-image: url('/imgs/WorkordersOverviewBackground.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: white;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  gap: 30px;
 }
 
 h1 { 
