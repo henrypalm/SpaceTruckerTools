@@ -9,6 +9,13 @@
   <link rel="stylesheet" href="css/nav-tabs.css" />
 
   <style>
+
+    /* Highlight selected work order */
+    .workorders-section .btn.selected {
+      background-color: #0a8;
+      color: #fff;
+    }
+    
     /* same styles as before */
     .container {
       background-color: rgba(0, 0, 0, 0.75);
@@ -306,7 +313,7 @@
       navigator.clipboard.writeText(lines.join("\n")).then(() => alert("Copied to clipboard!"));
     }
 
-    function loadCompletedWorkOrders() {
+    function loadCompletedOrders() {
       const listDiv = document.getElementById("workordersList");
       listDiv.innerHTML = "";
       let data = JSON.parse(localStorage.getItem("completedOrders") || "[]");
@@ -314,22 +321,41 @@
         listDiv.innerHTML = "<p class='small'>No completed work orders found.</p>";
         return;
       }
+    
+      // Keep track of selected orders by their unique key
+      const selectedOrders = new Set();
+    
       data.forEach(order => {
         const btn = document.createElement("button");
         btn.className = "btn";
         btn.textContent = `${order.title} - ${order.grandTotal} aUEC`;
+        
         btn.onclick = () => {
           let currentProfit = parseFloat(document.getElementById('totalProfit').value) || 0;
-          currentProfit += parseFloat(order.grandTotal) || 0;
+          const orderTotal = parseFloat(order.grandTotal) || 0;
+    
+          if (selectedOrders.has(order.key)) {
+            // Deselect: subtract value and remove highlight
+            currentProfit -= orderTotal;
+            selectedOrders.delete(order.key);
+            btn.classList.remove('selected');
+          } else {
+            // Select: add value and highlight
+            currentProfit += orderTotal;
+            selectedOrders.add(order.key);
+            btn.classList.add('selected');
+          }
+    
           document.getElementById('totalProfit').value = currentProfit;
           updateCalculations();
         };
+    
         listDiv.appendChild(btn);
       });
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      loadCompletedWorkOrders();
+      loadCompletedOrders();
       addPlayer();
     });
   </script>
