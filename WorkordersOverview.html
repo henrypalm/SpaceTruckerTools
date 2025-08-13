@@ -8,6 +8,7 @@
 
 <link rel="stylesheet" href="css/wip-overlay.css" />
 <link rel="stylesheet" href="css/nav-tabs.css" />
+<link rel="stylesheet" href="css/workorders-overview-styles/workorders-profit-modal.css" />
 <link rel="stylesheet" href="css/workorders-overview-styles/workorders-layout.css" />
 <link rel="stylesheet" href="css/workorders-overview-styles/workorders-buttons.css" />
 <link rel="stylesheet" href="css/workorders-overview-styles/workorders-tables.css" />
@@ -29,303 +30,330 @@
       <span>🚧 Work in Progress 🚧</span>
       <p>This page is currently under construction. Features may not be complete.</p>
       <button onclick="closeWIP()">OK, got it</button>
+  </div>
+
+  <div class="main-container">
+
+    <h1>Workorder Overview</h1>
+
+    <div class="container">
+      <div class="list" id="availableList">
+        <h2>Available Workorders</h2>
+      </div>
+
+      <div class="list" id="activeList">
+        <h2>Active Workorders</h2>
+      </div>
     </div>
 
-<div class="main-container">
-
-  <h1>Workorder Overview</h1>
-  
-  <div class="container">
-    <div class="list" id="availableList">
-      <h2>Available Workorders</h2>
+    <div class="bottom-list" id="completedList">
+      <h2>Completed Workorders</h2>
+      <button id="openModalBtn">Profit Splitter</button>
     </div>
-  
-    <div class="list" id="activeList">
-      <h2>Active Workorders</h2>
+
+  </div>
+
+  <!-- Modal container (hidden by default) -->
+  <div id="profitModal" class="modal">
+    <div class="modal-content">
+      <span id="closeModal" class="close-btn">&times;</span>
+      <h2>Profit Splitter Help</h2>
+      <p>Put helpful info or any HTML content you want here.</p>
     </div>
   </div>
-  
-  <div class="bottom-list" id="completedList">
-    <h2>Completed Workorders</h2>
-  </div>
-</div>
 
-<script>
-  // Highlight active tab based on current filename
-  const path = window.location.pathname;
-  const page = path.substring(path.lastIndexOf('/') + 1);
-  const tabs = document.querySelectorAll('.nav-tabs a');
-  tabs.forEach(tab => {
-    if (tab.getAttribute('href') === page) {
-      tab.classList.add('active');
+  <script>
+    // Highlight active tab based on current filename
+    const path = window.location.pathname;
+    const page = path.substring(path.lastIndexOf('/') + 1);
+    const tabs = document.querySelectorAll('.nav-tabs a');
+    tabs.forEach(tab => {
+      if (tab.getAttribute('href') === page) {
+        tab.classList.add('active');
+      }
+    });
+
+    // Modal functionality
+    const modal = document.getElementById("profitModal");
+    const closeBtn = document.getElementById("closeModal");
+
+    document.getElementById("openModalBtn").addEventListener("click", () => {
+      modal.style.display = "flex";
+    });
+
+    closeBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+
+    const availableList = document.getElementById("availableList");
+    const activeList = document.getElementById("activeList");
+    const completedList = document.getElementById("completedList");
+
+    let availableOrders = [];
+    let activeOrders = [];
+    let completedOrders = [];
+
+    // Track multiple expanded keys here
+    let expandedKeys = JSON.parse(localStorage.getItem("expandedKeys")) || [];
+
+    let orderElementMap = {}; // maps key -> { div, tableSection, icon }
+
+    function formatNumber(num) {
+      return Number(num).toLocaleString();
     }
-  });
 
-  const availableList = document.getElementById("availableList");
-  const activeList = document.getElementById("activeList");
-  const completedList = document.getElementById("completedList");
+    function renderManifestTable(manifest) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "manifest-table hidden";
+      manifest.categories.forEach(category => {
+        const catTitle = document.createElement("h4");
+        catTitle.textContent = category.category;
+        wrapper.appendChild(catTitle);
 
-  let availableOrders = [];
-  let activeOrders = [];
-  let completedOrders = [];
-
-  // Track multiple expanded keys here
-  let expandedKeys = JSON.parse(localStorage.getItem("expandedKeys")) || [];
-
-  let orderElementMap = {}; // maps key -> { div, tableSection, icon }
-
-  function formatNumber(num) {
-    return Number(num).toLocaleString();
-  }
-
-  function renderManifestTable(manifest) {
-    const wrapper = document.createElement("div");
-    wrapper.className = "manifest-table hidden";
-    manifest.categories.forEach(category => {
-      const catTitle = document.createElement("h4");
-      catTitle.textContent = category.category;
-      wrapper.appendChild(catTitle);
-
-      const table = document.createElement("table");
-      table.innerHTML = `
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Qty</th>
-            <th>Location</th>
-            <th>SCU</th>
-            <th>Unit Price</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${category.items.map(item => `
+        const table = document.createElement("table");
+        table.innerHTML = `
+          <thead>
             <tr>
-              <td>${item.item}</td>
-              <td>${formatNumber(item.qty)}</td>
-              <td>${item.location}</td>
-              <td>${item.scuType ? item.scuType.toUpperCase() : ''}</td>
-              <td>${formatNumber(item.unitPrice)}</td>
-              <td>${formatNumber(item.total)}</td>
+              <th>Item</th>
+              <th>Qty</th>
+              <th>Location</th>
+              <th>SCU</th>
+              <th>Unit Price</th>
+              <th>Total</th>
             </tr>
-          `).join("")}
-        </tbody>
-      `;
-      wrapper.appendChild(table);
-    });
-
-    const totalDiv = document.createElement("div");
-    totalDiv.className = "grand-total";
-    totalDiv.textContent = `Grand Total: ${formatNumber(manifest.grandTotal)} aUEC`;
-    wrapper.appendChild(totalDiv);
-
-    return wrapper;
-  }
-
-  function renderLists() {
-    orderElementMap = {}; // reset map
-
-    // AVAILABLE
-    availableList.innerHTML = "<h2>Available Workorders</h2>";
-    if (availableOrders.length === 0) {
-      availableList.innerHTML += "<p>No available workorders</p>";
-    } else {
-      availableOrders.forEach(order => {
-        const div = document.createElement("div");
-        div.className = "work-order";
-        div.dataset.key = order.key;
-
-        const header = document.createElement("div");
-        header.className = "order-header";
-        const icon = document.createElement("span");
-        icon.className = "toggle-icon";
-        icon.textContent = expandedKeys.includes(order.key) ? "−" : "+";
-        const headerText = document.createElement("span");
-        headerText.textContent = `${order.title} — Saved: ${new Date(order.dateSaved).toLocaleString()}`;
-        header.appendChild(icon);
-        header.appendChild(headerText);
-        header.onclick = () => toggleManifest(order.key);
-
-        const tableSection = renderManifestTable(order);
-
-        const btn = document.createElement("button");
-        btn.textContent = "Activate";
-        btn.onclick = (e) => {
-          e.stopPropagation();
-          activateOrder(order.key);
-        };
-        tableSection.appendChild(btn);
-
-        div.appendChild(header);
-        div.appendChild(tableSection);
-        availableList.appendChild(div);
-
-        orderElementMap[order.key] = { div, tableSection, icon };
-
-        if (expandedKeys.includes(order.key)) {
-          tableSection.classList.remove("hidden");
-        }
+          </thead>
+          <tbody>
+            ${category.items.map(item => `
+              <tr>
+                <td>${item.item}</td>
+                <td>${formatNumber(item.qty)}</td>
+                <td>${item.location}</td>
+                <td>${item.scuType ? item.scuType.toUpperCase() : ''}</td>
+                <td>${formatNumber(item.unitPrice)}</td>
+                <td>${formatNumber(item.total)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        `;
+        wrapper.appendChild(table);
       });
+
+      const totalDiv = document.createElement("div");
+      totalDiv.className = "grand-total";
+      totalDiv.textContent = `Grand Total: ${formatNumber(manifest.grandTotal)} aUEC`;
+      wrapper.appendChild(totalDiv);
+
+      return wrapper;
     }
 
-    // ACTIVE
-    activeList.innerHTML = "<h2>Active Workorders</h2>";
-    if (activeOrders.length === 0) {
-      activeList.innerHTML += "<p>No active workorders</p>";
-    } else {
-      activeOrders.forEach(order => {
-        const div = document.createElement("div");
-        div.className = "work-order";
-        div.dataset.key = order.key;
+    function renderLists() {
+      orderElementMap = {}; // reset map
 
-        const header = document.createElement("div");
-        header.className = "order-header";
-        const icon = document.createElement("span");
-        icon.className = "toggle-icon";
-        icon.textContent = expandedKeys.includes(order.key) ? "−" : "+";
-        const headerText = document.createElement("span");
-        headerText.textContent = order.title;
-        header.appendChild(icon);
-        header.appendChild(headerText);
-        header.onclick = () => toggleManifest(order.key);
+      // AVAILABLE
+      availableList.innerHTML = "<h2>Available Workorders</h2>";
+      if (availableOrders.length === 0) {
+        availableList.innerHTML += "<p>No available workorders</p>";
+      } else {
+        availableOrders.forEach(order => {
+          const div = document.createElement("div");
+          div.className = "work-order";
+          div.dataset.key = order.key;
 
-        const tableSection = renderManifestTable(order);
+          const header = document.createElement("div");
+          header.className = "order-header";
+          const icon = document.createElement("span");
+          icon.className = "toggle-icon";
+          icon.textContent = expandedKeys.includes(order.key) ? "−" : "+";
+          const headerText = document.createElement("span");
+          headerText.textContent = `${order.title} — Saved: ${new Date(order.dateSaved).toLocaleString()}`;
+          header.appendChild(icon);
+          header.appendChild(headerText);
+          header.onclick = () => toggleManifest(order.key);
 
-        const btn = document.createElement("button");
-        btn.textContent = "Complete";
-        btn.onclick = (e) => {
-          e.stopPropagation();
-          completeOrder(order.key);
-        };
-        tableSection.appendChild(btn);
+          const tableSection = renderManifestTable(order);
 
-        div.appendChild(header);
-        div.appendChild(tableSection);
-        activeList.appendChild(div);
+          const btn = document.createElement("button");
+          btn.textContent = "Activate";
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            activateOrder(order.key);
+          };
+          tableSection.appendChild(btn);
 
-        orderElementMap[order.key] = { div, tableSection, icon };
+          div.appendChild(header);
+          div.appendChild(tableSection);
+          availableList.appendChild(div);
 
-        if (expandedKeys.includes(order.key)) {
-          tableSection.classList.remove("hidden");
-        }
-      });
-    }
+          orderElementMap[order.key] = { div, tableSection, icon };
 
-    // COMPLETED (no expand)
-    completedList.innerHTML = "<h2>Completed Workorders</h2>";
-    if (completedOrders.length === 0) {
-      completedList.innerHTML += "<p>No completed work orders</p>";
-    } else {
-      completedOrders.forEach(order => {
-        const div = document.createElement("div");
-        div.className = "work-order";
-        div.innerHTML = `<strong>${order.title}</strong> — ${formatNumber(order.grandTotal)} aUEC`;
-        completedList.appendChild(div);
-      });
-    }
-  }
-
-  function toggleManifest(key) {
-    const node = orderElementMap[key];
-    if (!node) return;
-
-    const isHidden = node.tableSection.classList.contains("hidden");
-    node.tableSection.classList.toggle("hidden");
-    node.icon.textContent = isHidden ? "−" : "+";
-
-    if (isHidden) {
-      if (!expandedKeys.includes(key)) expandedKeys.push(key);
-    } else {
-      const idx = expandedKeys.indexOf(key);
-      if (idx > -1) expandedKeys.splice(idx, 1);
-    }
-    localStorage.setItem("expandedKeys", JSON.stringify(expandedKeys));
-  }
-
-  function saveOrders() {
-    // Save availableOrders as object keyed by order.key
-    const availableObj = {};
-    availableOrders.forEach(order => {
-      availableObj[order.key] = order;
-    });
-    localStorage.setItem("cargoManifestData", JSON.stringify(availableObj));
-    localStorage.setItem("activeOrders", JSON.stringify(activeOrders));
-    localStorage.setItem("completedOrders", JSON.stringify(completedOrders));
-  }
-
-  function activateOrder(key) {
-    const idx = availableOrders.findIndex(o => o.key === key);
-    if (idx > -1) {
-      activeOrders.push(availableOrders.splice(idx, 1)[0]);
-      const expIdx = expandedKeys.indexOf(key);
-      if (expIdx > -1) expandedKeys.splice(expIdx, 1);
-      localStorage.setItem("expandedKeys", JSON.stringify(expandedKeys));
-      
-      saveOrders();  // Save updated state
-      renderLists();
-    }
-  }
-
-  function completeOrder(key) {
-    const idx = activeOrders.findIndex(o => o.key === key);
-    if (idx > -1) {
-      completedOrders.push(activeOrders.splice(idx, 1)[0]);
-      const expIdx = expandedKeys.indexOf(key);
-      if (expIdx > -1) expandedKeys.splice(expIdx, 1);
-      localStorage.setItem("expandedKeys", JSON.stringify(expandedKeys));
-      
-      saveOrders();  // Save updated state
-      renderLists();
-    }
-  }
-
-  function loadOrders() {
-    const raw = localStorage.getItem("cargoManifestData");
-    let savedManifests = {};
-  
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        savedManifests = {};
-        parsed.forEach(order => {
-          if (order && order.key) {
-            savedManifests[order.key] = order;
+          if (expandedKeys.includes(order.key)) {
+            tableSection.classList.remove("hidden");
           }
         });
-      } else if (typeof parsed === "object" && parsed !== null) {
-        savedManifests = parsed;
+      }
+
+      // ACTIVE
+      activeList.innerHTML = "<h2>Active Workorders</h2>";
+      if (activeOrders.length === 0) {
+        activeList.innerHTML += "<p>No active workorders</p>";
       } else {
+        activeOrders.forEach(order => {
+          const div = document.createElement("div");
+          div.className = "work-order";
+          div.dataset.key = order.key;
+
+          const header = document.createElement("div");
+          header.className = "order-header";
+          const icon = document.createElement("span");
+          icon.className = "toggle-icon";
+          icon.textContent = expandedKeys.includes(order.key) ? "−" : "+";
+          const headerText = document.createElement("span");
+          headerText.textContent = order.title;
+          header.appendChild(icon);
+          header.appendChild(headerText);
+          header.onclick = () => toggleManifest(order.key);
+
+          const tableSection = renderManifestTable(order);
+
+          const btn = document.createElement("button");
+          btn.textContent = "Complete";
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            completeOrder(order.key);
+          };
+          tableSection.appendChild(btn);
+
+          div.appendChild(header);
+          div.appendChild(tableSection);
+          activeList.appendChild(div);
+
+          orderElementMap[order.key] = { div, tableSection, icon };
+
+          if (expandedKeys.includes(order.key)) {
+            tableSection.classList.remove("hidden");
+          }
+        });
+      }
+
+      // COMPLETED (no expand)
+      completedList.innerHTML = "<h2>Completed Workorders</h2>";
+      if (completedOrders.length === 0) {
+        completedList.innerHTML += "<p>No completed work orders</p>";
+      } else {
+        completedOrders.forEach(order => {
+          const div = document.createElement("div");
+          div.className = "work-order";
+          div.innerHTML = `<strong>${order.title}</strong> — ${formatNumber(order.grandTotal)} aUEC`;
+          completedList.appendChild(div);
+        });
+      }
+    }
+
+    function toggleManifest(key) {
+      const node = orderElementMap[key];
+      if (!node) return;
+
+      const isHidden = node.tableSection.classList.contains("hidden");
+      node.tableSection.classList.toggle("hidden");
+      node.icon.textContent = isHidden ? "−" : "+";
+
+      if (isHidden) {
+        if (!expandedKeys.includes(key)) expandedKeys.push(key);
+      } else {
+        const idx = expandedKeys.indexOf(key);
+        if (idx > -1) expandedKeys.splice(idx, 1);
+      }
+      localStorage.setItem("expandedKeys", JSON.stringify(expandedKeys));
+    }
+
+    function saveOrders() {
+      const availableObj = {};
+      availableOrders.forEach(order => {
+        availableObj[order.key] = order;
+      });
+      localStorage.setItem("cargoManifestData", JSON.stringify(availableObj));
+      localStorage.setItem("activeOrders", JSON.stringify(activeOrders));
+      localStorage.setItem("completedOrders", JSON.stringify(completedOrders));
+    }
+
+    function activateOrder(key) {
+      const idx = availableOrders.findIndex(o => o.key === key);
+      if (idx > -1) {
+        activeOrders.push(availableOrders.splice(idx, 1)[0]);
+        const expIdx = expandedKeys.indexOf(key);
+        if (expIdx > -1) expandedKeys.splice(expIdx, 1);
+        localStorage.setItem("expandedKeys", JSON.stringify(expandedKeys));
+
+        saveOrders();
+        renderLists();
+      }
+    }
+
+    function completeOrder(key) {
+      const idx = activeOrders.findIndex(o => o.key === key);
+      if (idx > -1) {
+        completedOrders.push(activeOrders.splice(idx, 1)[0]);
+        const expIdx = expandedKeys.indexOf(key);
+        if (expIdx > -1) expandedKeys.splice(expIdx, 1);
+        localStorage.setItem("expandedKeys", JSON.stringify(expandedKeys));
+
+        saveOrders();
+        renderLists();
+      }
+    }
+
+    function loadOrders() {
+      const raw = localStorage.getItem("cargoManifestData");
+      let savedManifests = {};
+
+      try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          savedManifests = {};
+          parsed.forEach(order => {
+            if (order && order.key) {
+              savedManifests[order.key] = order;
+            }
+          });
+        } else if (typeof parsed === "object" && parsed !== null) {
+          savedManifests = parsed;
+        } else {
+          savedManifests = {};
+        }
+      } catch (e) {
         savedManifests = {};
       }
-    } catch (e) {
-      savedManifests = {};
-    }
-  
-    availableOrders = Object.keys(savedManifests).map(k => ({ key: k, ...savedManifests[k] }));
-  
-    try {
-      activeOrders = JSON.parse(localStorage.getItem("activeOrders")) || [];
-    } catch {
-      activeOrders = [];
-    }
-  
-    try {
-      completedOrders = JSON.parse(localStorage.getItem("completedOrders")) || [];
-    } catch {
-      completedOrders = [];
-    }
-  
-    console.log("Loaded cargoManifestData:", savedManifests);
-    console.log("Available Orders:", availableOrders);
-    console.log("Active Orders:", activeOrders);
-    console.log("Completed Orders:", completedOrders);
-  
-    renderLists();
-  }
 
-  loadOrders();
+      availableOrders = Object.keys(savedManifests).map(k => ({ key: k, ...savedManifests[k] }));
 
-</script>
+      try {
+        activeOrders = JSON.parse(localStorage.getItem("activeOrders")) || [];
+      } catch {
+        activeOrders = [];
+      }
 
+      try {
+        completedOrders = JSON.parse(localStorage.getItem("completedOrders")) || [];
+      } catch {
+        completedOrders = [];
+      }
+
+      console.log("Loaded cargoManifestData:", savedManifests);
+      console.log("Available Orders:", availableOrders);
+      console.log("Active Orders:", activeOrders);
+      console.log("Completed Orders:", completedOrders);
+
+      renderLists();
+    }
+
+    loadOrders();
+
+  </script>
 </body>
 </html>
