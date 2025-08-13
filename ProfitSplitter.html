@@ -309,7 +309,7 @@
     function loadCompletedWorkOrders() {
       const listDiv = document.getElementById("workordersList");
       listDiv.innerHTML = "";
-      let data = JSON.parse(localStorage.getItem("completedWorkOrders") || "[]");
+      let data = JSON.parse(localStorage.getItem("completedOrders") || "[]");
       if (!data.length) {
         listDiv.innerHTML = "<p class='small'>No completed work orders found.</p>";
         return;
