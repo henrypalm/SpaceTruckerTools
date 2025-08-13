@@ -16,6 +16,16 @@
 
 </head>
 <body>
+  <div class="nav-tabs">
+    <a href="index.html">Space Trucker Tools</a>
+    <a href="Scavenger.html">Scavenger</a>
+    <a href="Yield2Sell.html">Yield 2 Sell</a>
+    <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
+    <a href="WorkordersOverview.html">Work Orders Overview</a>
+    <a href="ProfitSplitter.html">Profit Splitter</a>
+    <a href="AaronsJumpData.html">Aaron's Jump Data</a>
+    <a href="Profile.html">Profile</a>
+  </div>
 
 <div class="main-container">
 
@@ -38,6 +48,15 @@
 
   
 <script>
+  // Highlight active tab based on current filename
+    const path = window.location.pathname;
+    const page = path.substring(path.lastIndexOf('/') + 1);
+    const tabs = document.querySelectorAll('.nav-tabs a');
+    tabs.forEach(tab => {
+      if (tab.getAttribute('href') === page) {
+        tab.classList.add('active');
+      }
+    });
   const availableList = document.getElementById("availableList");
   const activeList = document.getElementById("activeList");
   const completedList = document.getElementById("completedList");
