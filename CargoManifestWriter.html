@@ -406,6 +406,7 @@
           category === "Ship Mining" ? shipMiningBody :
           category === "Handheld and Light Ship Mining" ? handMiningBody :
           category === "Salvage" ? salvageBody : null;
+          category === "Ship Parts" ? shipPartsBody : null;
 
         if (!targetBody) return;
         const items = Object.keys(itemPrices[category]);
@@ -428,7 +429,8 @@
       const bodies = [
         { label: "Ship Mining", body: document.getElementById("shipMiningBody") },
         { label: "Handheld and Light Ship Mining", body: document.getElementById("handMiningBody") },
-        { label: "Salvage", body: document.getElementById("salvageBody") }
+        { label: "Salvage", body: document.getElementById("salvageBody") },
+        { label: "Ship Parts", body: document.getElementById("shipPartsBody") }
       ];
       
       let grandTotal = 0;
