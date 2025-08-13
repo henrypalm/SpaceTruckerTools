@@ -11,3 +11,9 @@
 .btn:hover {
   background-color: #666;
 }
+
+/* Highlight selected work order */
+.workorders-section .btn.selected {
+  background-color: #0a8;
+  color: #fff;
+}
