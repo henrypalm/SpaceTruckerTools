@@ -131,7 +131,7 @@ const itemPrices = {
       "ORISON, CRUSADER, STANTON": { scu: 2626, cscu: 1, mscu: 1 },
       "ENDGAME, PYRO": { scu: 2619, cscu: 1, mscu: 1 },
       "ROD'S FUEL 'N SUPPLIES, PYRO": { scu: 2596, cscu: 1, mscu: 1 },
-      "LORVILLE, HURSTON,STANTON": { scu: 2533, cscu: 1, mscu: 1 },
+      "LORVILLE, HURSTON, STANTON": { scu: 2533, cscu: 1, mscu: 1 },
       "STARLIGHT SERVICE STATION, PYRO": { scu: 2527, cscu: 1, mscu: 1 },
       "AREA 18, ARCCORP, STANTON": { scu: 2518, cscu: 1, mscu: 1 }
     },
@@ -166,16 +166,16 @@ const itemPrices = {
   },
   "Handheld and Light Ship Mining": {
     "Janalite" : {
-      "Seraphim Station, Crusder, Stanton" : { scu: 18559790 }
+      "SERAPHIM STATION, CRUSADER, STANTON" : { scu: 18559790 }
     },
     "Hadanite" : {
-      "No Location data": { scu: 123, cscu: 1, mscu: 1 }
+      "NO LOCATION DATA": { scu: 123, cscu: 1, mscu: 1 }
     },
     "Feynmaline" : {
-      "No Location data": { scu: 123, cscu: 1, mscu: 1 }
+      "NO LOCATION DATA": { scu: 123, cscu: 1, mscu: 1 }
     },
     "Aphorite" : {
-      "No Location data": { scu: 123, cscu: 1, mscu: 1 }
+      "NO LOCATION DATA": { scu: 123, cscu: 1, mscu: 1 }
     }
   },
   "Salvage": {
@@ -192,9 +192,9 @@ const itemPrices = {
       "STARLIGHT SERVICE STATION, PYRO": { scu: 10500, cscu: 1, mscu: 1 },
       "ROD'S FUEL 'N SUPPLIES, PYRO": { scu: 10500, cscu: 1, mscu: 1 },
       "ENDGAME, PYRO": { scu: 10500, cscu: 1, mscu: 1 },
-      "Orison, Crusader, Stanton" : { scu: 10424.5, cscu: 1, mscu: 1 },
-      "Providence Platform, Orison, Crusader, Stanton" : { scu: 10339.5, cscu: 1, mscu: 1 },
-      "Grim Hex, Yela, Crusader, Stanton" : { scu: 9265, cscu: 1, mscu: 1 }
+      "ORISON, CRUSADER, STANTON" : { scu: 10424.5, cscu: 1, mscu: 1 },
+      "PROVIDENCE PLATFORM, ORISON, CRUSADER, STANTON" : { scu: 10339.5, cscu: 1, mscu: 1 },
+      "GRIM HEX, YELA, CRUSADER, STANTON" : { scu: 9265, cscu: 1, mscu: 1 }
     },
     "Construction Material": {
       "HUR L1, STANTON": { scu: 2414.5, cscu: 1, mscu: 1 },
@@ -209,6 +209,176 @@ const itemPrices = {
       "OBITUARY, BLOOM, PYRO": { scu: 2147, cscu: 1, mscu: 1 },
       "ORISON, CRUSADER, STANTON": { scu: 2140.51, cscu: 1, mscu: 1 },
       "AREA 18, ARCCORP, STANTON": { scu: 2124.5, cscu: 1, mscu: 1 }
+    }
+  },
+  "Ship Parts": {
+    "Cooler - IcePlunge": {
+      "NO LOCATION DATA": { scu: 1500, cscu: 1, mscu: 1 }
+    },
+    "Cooler - Quikcool": { 
+      "NO LOCATION DATA": { scu: 800, cscu: 1, mscu: 1 }
+    },
+    "Cooler - Polar": { 
+      "NO LOCATION DATA": { scu: 2500, cscu: 1, mscu: 1 }
+    },
+    "Cooler - Bracer": { 
+      "NO LOCATION DATA": { scu: 2000, cscu: 1, mscu: 1 }
+    },
+    "Cooler - VaporBlock": { 
+      "NO LOCATION DATA": { scu: 2200, cscu: 1, mscu: 1 }
+    },
+    "Cooler - HeatSafe": { 
+      "NO LOCATION DATA": { scu: 1800, cscu: 1, mscu: 1 }
+    },
+    "Cooler - AbsoluteZero": { 
+      "NO LOCATION DATA": { scu: 3000, cscu: 1, mscu: 1 }
+    },
+    "Cooler - PermaFrost": { 
+      "NO LOCATION DATA": { scu: 4000, cscu: 1, mscu: 1 }
+    },
+    "Cooler - Artic": { 
+      "NO LOCATION DATA": { scu: 3500, cscu: 1, mscu: 1 }
+    },
+    "Cooler - Boreal": { 
+      "NO LOCATION DATA": { scu: 3000, cscu: 1, mscu: 1 }
+    },
+    "Cooler - HeatSink": { 
+      "NO LOCATION DATA": { scu: 3200, cscu: 1, mscu: 1 }
+    },
+    "Cooler - Blizzard": { 
+      "NO LOCATION DATA": { scu: 6000, cscu: 1, mscu: 1 }
+    },
+    "Cooler - Mercury": { 
+      "NO LOCATION DATA": { scu: 5800, cscu: 1, mscu: 1 }
+    },
+    "Shield - Targa": { 
+      "NO LOCATION DATA": { scu: 1500, cscu: 1, mscu: 1 }
+    },
+    "Shield - Falco": { 
+      "NO LOCATION DATA": { scu: 800, cscu: 1, mscu: 1 }
+    },
+    "Shield - ForceWall": { 
+      "NO LOCATION DATA": { scu: 2000, cscu: 1, mscu: 1 }
+    },
+    "Shield - AllStop": { 
+      "NO LOCATION DATA": { scu: 1800, cscu: 1, mscu: 1 }
+    },
+    "Shield - Suldrath": { 
+      "NO LOCATION DATA": { scu: 1700, cscu: 1, mscu: 1 }
+    },
+    "Shield - SecureHyde": { 
+      "NO LOCATION DATA": { scu: 1200, cscu: 1, mscu: 1 }
+    },
+    "Shield - Veil": { 
+      "NO LOCATION DATA": { scu: 2000, cscu: 1, mscu: 1 }
+    },
+    "Shield - Shimmer": { 
+      "NO LOCATION DATA": { scu: 1900, cscu: 1, mscu: 1 }
+    },
+    "Shield - Cloak": { 
+      "NO LOCATION DATA": { scu: 1400, cscu: 1, mscu: 1 }
+    },
+    "Shield - FullStop": { 
+      "NO LOCATION DATA": { scu: 4000, cscu: 1, mscu: 1 }
+    },
+    "Shield - Sukoran": { 
+      "NO LOCATION DATA": { scu: 3500, cscu: 1, mscu: 1 }
+    },
+    "Shield - SecureShield": { 
+      "NO LOCATION DATA": { scu: 3000, cscu: 1, mscu: 1 }
+    },
+    "Shield - Sheut": { 
+      "NO LOCATION DATA": { scu: 3600, cscu: 1, mscu: 1 }
+    },
+    "Shield - FullBlcock": { 
+      "NO LOCATION DATA": { scu: 6000, cscu: 1, mscu: 1 }
+    },
+    "Quantum Drive - FoxFire": { 
+      "NO LOCATION DATA": { scu: 1500, cscu: 1, mscu: 1 }
+    },
+    "Quantum Drive - LightFire": { 
+      "NO LOCATION DATA": { scu: 1200, cscu: 1, mscu: 1 }
+    },
+    "Quantum Drive - Beacon": { 
+      "NO LOCATION DATA": { scu: 1800, cscu: 1, mscu: 1 }
+    },
+    "Quantum Drive - Drift": { 
+      "NO LOCATION DATA": { scu: 1900, cscu: 1, mscu: 1 }
+    },
+    "Quantum Drive - SparkFire": { 
+      "NO LOCATION DATA": { scu: 3000, cscu: 1, mscu: 1 }
+    },
+    "Quantum Drive - Yeager": { 
+      "NO LOCATION DATA": { scu: 3500, cscu: 1, mscu: 1 }
+    },
+    "Quantum Drive - CrossField": { 
+      "NO LOCATION DATA": { scu: 3800, cscu: 1, mscu: 1 }
+    },
+    "Quantum Drive - Nova": { 
+      "NO LOCATION DATA": { scu: 3600, cscu: 1, mscu: 1 }
+    },
+    "Quantum Drive - Pontes": { 
+      "NO LOCATION DATA": { scu: 5800, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - LumaCore": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - StarHeat": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - JS-3000": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - DynaFlux": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - Firell Cascade": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - Overdrive": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - Regulus": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - Charger": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - Slipstream": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - DeltaMax": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - SonicLite": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - LuxCore": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - UltraFlux": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - Maelstorm": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - TurboDrive": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - Exogen": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - Eclipse": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - GammaMax": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - Centurion": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 }
+    },
+    "Power Plant - SuperDrive": { 
+      "NO LOCATION DATA": { scu: 69000, cscu: 1, mscu: 1 } 
     }
   }
 };
