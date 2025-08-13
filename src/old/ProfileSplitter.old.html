@@ -2,27 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Profit Splitter</title>
-  <link rel="icon" href="ProfitSplitterIcon.ico" type="image/x-icon" />
+  <link rel="icon" href="/imgs/ProfitSplitterIcon.ico" type="image/x-icon" />
+
+  <link rel="stylesheet" href="css/wip-overlay.css" />
+  <link rel="stylesheet" href="css/nav-tabs.css" />
+
   <style>
-
-    .entry { 
-      border: 1px solid #444; 
-      padding: 10px; 
-      margin: 5px 0; 
-      border-radius: 5px;
-      color: white;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;              
-      gap: 30px;
-    }
-
+    /* same styles as before */
     .container {
-      background-color: rgba(0, 0, 0, 0.75); /* semi-transparent dark background */
+      background-color: rgba(0, 0, 0, 0.75);
       padding: 2rem;
       border-radius: 12px;
       max-width: 700px;
@@ -31,289 +20,318 @@
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     }
     
-    .nav-tabs {
-      display: flex;
-      gap: 10px;
-      background-color: #222;
-      padding: 10px;
-      border-bottom: 2px solid #444;
-      margin-bottom: 20px;
-      justify-content: center;
-    }
-    
-    .nav-tabs a {
-      color: #ccc;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      background-color: #333;
-      transition: background-color 0.3s;
-    }
-    
-    .nav-tabs a:hover {
-      background-color: #555;
-      color: white;
-    }
-    
-    .nav-tabs a.active {
-      background-color: #2d89ff;
-      color: white;
-      font-weight: bold;
-    }
-
-    body { 
-      background-color: #111;         
-      background-image: url('SplittingProfitsBackground.png'); 
-      background-size: cover;         
-      background-repeat: no-repeat;   
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url('/imgs/SplittingProfitsBackground.png');
+      background-color: #111;
+      background-size: cover;
+      background-repeat: no-repeat;
       background-attachment: fixed;
-      color:white; 
-      font-family:sans-serif; 
-      padding:20px; 
-    }
-    
-    .entry > div:first-child {
-      display:flex; 
-      gap:10px; 
-      align-items: center;
-    }
-    input, select { padding:5px; font-size:1rem; }
-    button { padding:6px 10px; margin-top:10px; cursor:pointer; }
-    table { width:100%; border-collapse:collapse; margin-top:20px; }
-    td, th { border:1px solid #444; padding:8px; text-align:center; }
-    #results { display:none; }
-
-    .expenses {
-      margin-top: 10px;
-      background: #333;
-      padding: 10px;
-      border-radius: 5px;
-    }
-    .expense-item {
+      color: #fff;
+      margin: 0;
+      padding: 20px;
       display: flex;
-      gap: 10px;
-      margin-bottom: 5px;
+      flex-direction: column;
       align-items: center;
     }
-    .expense-item input {
-      flex: 1;
+    h1, h2 { text-align: center; }
+    .input-section, .player, .export-buttons, .summary, .workorders-section {
+      background-color: #222;
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
     }
-    .expense-item input[type=number] {
-      max-width: 100px;
+    .player { margin-top: 10px; }
+    input, select, button { padding: 5px; margin: 5px; }
+    .expenses { margin-left: 20px; }
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
     }
-    .add-expense-btn {
-      margin-top: 5px;
+    .btn {
+      background-color: #444;
+      color: #fff;
+      border: none;
+      cursor: pointer;
     }
+    .btn:hover { background-color: #666; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #000;
+      color: #0f0;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: left;
+    }
+    th { background-color: #222; }
+    .small { font-size: 0.9em; color: #aaa; }
   </style>
 </head>
 <body>
 
-<div class="nav-tabs">
-  <a href="index.html">Space Trucker Tools</a>
-  <a href="Yield2Sell.html">Yield 2 Sell</a>
-  <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
-  <a href="ProfitSplitter.html" class="active">Profit Splitter</a>
-  <a href="Profile.html">Profile</a>
-</div>
+  <nav class="nav-tabs">
+    <a href="index.html">Space Trucker Tools</a>
+    <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
+    <a href="WorkordersOverview.html">Work Orders Overview</a>
+    <a href="ProfitSplitter.html">Profit Splitter</a>
+    <a href="Yield2Sell.html">Yield 2 Sell</a>
+    <a href="Scavenger.html">Scavenger</a>
+    <a href="AaronsJumpData.html">Aaron's Jump Data</a>
+    <a href="Profile.html">Profile</a>
+  </nav>
 
-<div class="container">
-  <h2>Profit Splitter</h2>
-  
-  <label>Total Pool: $<input id="pool" type="number" min="0" step="0.01" value="0"></label><br><br>
-  
-  <div id="entries"></div>
-  <button onclick="addEntry()">+ Add Entry</button>
-  <br><br>
-  <button onclick="calculate()">Calculate</button>
-  <button onclick="copyToClipboard()">Copy to Clipboard</button>
-  
-  <table id="results">
-    <thead>
-      <tr>
-        <th>Name</th><th>Type</th><th>Value</th><th>Mission Expenses</th><th>Amount</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-    <tfoot>
-      <tr><td colspan="4"><b>Total Distributed</b></td><td id="total">$0.00</td></tr>
-    </tfoot>
-  </table>
-</div>
-
-<script>
-  // Highlight active tab based on current filename
-  const path = window.location.pathname;
-  const page = path.substring(path.lastIndexOf('/') + 1);
-  const tabs = document.querySelectorAll('.nav-tabs a');
-  tabs.forEach(tab => {
-    if (tab.getAttribute('href') === page) {
-      tab.classList.add('active');
+  <div id="wip-overlay">
+      <span>🚧 Work in Progress 🚧</span>
+      <p>This page is currently under construction. Features may not be complete.</p>
+      <button onclick="closeWIP()">OK, got it</button>
+  </div>
+  <script>
+    function closeWIP() {
+      document.getElementById("wip-overlay").style.display = "none";
     }
-  });
+  </script>
 
-  let entriesDiv = document.getElementById("entries");
+  <div class="container">
+    <h1>Profit Splitter</h1>
 
-  function createExpenseItem(expName = '', expAmount = '') {
-    const div = document.createElement('div');
-    div.className = 'expense-item';
-    div.innerHTML = `
-      <input type="text" placeholder="Expense Name" value="${expName}" />
-      <input type="number" placeholder="Amount" min="0" step="0.01" value="${expAmount}" />
-      <button type="button" onclick="this.parentElement.remove(); calculate();">Remove</button>
-    `;
-    // On change recalc
-    div.querySelectorAll('input').forEach(input => {
-      input.addEventListener('input', () => calculate());
+    <div class="workorders-section">
+      <h2>Completed Work Orders</h2>
+      <div id="workordersList"></div>
+    </div>
+  
+    <div class="input-section">
+      <label>Title: <input type="text" id="splitTitle" placeholder="Mission Name" /></label>
+      <label>Total Profit: <input type="number" id="totalProfit" oninput="updateCalculations()" /></label>
+    </div>
+  
+    <div id="players"></div>
+    <button class="btn" onclick="addPlayer()">+ Add Player</button>
+  
+    <h2>Summary</h2>
+    <div class="summary">
+      <p><strong>Post-Expense Profit:</strong> <span id="postExpensesProfit">0</span></p>
+      <p><strong>Accounting Buffer (Auto):</strong> <span id="accountingBuffer">0</span></p>
+      <p><strong>Remaining Pool After All Deductions:</strong> <span id="remainingPool">0</span></p>
+    </div>
+  
+    <h2>Itemized Breakdown</h2>
+    <table id="outputTable">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Type</th>
+          <th>Value</th>
+          <th>Expenses</th>
+          <th>Tax (5%)</th>
+          <th>Final Payout</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  
+    <div class="export-buttons">
+      <button class="btn" onclick="exportTable('csv')">Export as CSV</button>
+      <button class="btn" onclick="exportTable('txt')">Export as TXT</button>
+      <button class="btn" onclick="copyTable()">Copy to Clipboard</button>
+    </div>
+  </div>
+
+  <script>
+    const path = window.location.pathname;
+    const page = path.substring(path.lastIndexOf('/') + 1);
+    const tabs = document.querySelectorAll('.nav-tabs a');
+    tabs.forEach(tab => {
+      if (tab.getAttribute('href') === page) {
+        tab.classList.add('active');
+      }
     });
-    return div;
-  }
 
-  function addEntry(name='', type='Flat Rate', val='') {
-    const div = document.createElement("div");
-    div.className = "entry";
+    let playerCount = 0;
 
-    div.innerHTML = `
-      <div>
-        <input type="text" placeholder="Name" value="${name}" />
-        <select>
-          <option${type === "Flat Rate" ? ' selected' : ''}>Flat Rate</option>
-          <option${type === "Percentage" ? ' selected' : ''}>Percentage</option>
-          <option${type === "Shares" ? ' selected' : ''}>Shares</option>
-        </select>
-        <input type="number" placeholder="Value" step="any" min="0" value="${val}" />
-        <button type="button" onclick="this.closest('.entry').remove(); calculate();">Remove</button>
-      </div>
-      <div class="expenses">
-        <b>Mission Expenses:</b>
-        <div class="expense-items"></div>
-        <button type="button" class="add-expense-btn">+ Add Expense</button>
-      </div>
-    `;
+    function addPlayer() {
+      const container = document.createElement('div');
+      container.className = 'player';
+      container.dataset.playerIndex = playerCount;
 
-    // Add expense button handler
-    const addExpenseBtn = div.querySelector('.add-expense-btn');
-    const expenseItemsDiv = div.querySelector('.expense-items');
+      container.innerHTML = `
+        <div class="flex-row">
+          <label>Player Name: <input type="text" class="playerName" oninput="updateCalculations()" /></label>
+          <label>Split Type:
+            <select class="splitType" onchange="updateCalculations()">
+              <option value="flat">Flat</option>
+              <option value="percent">Percent</option>
+              <option value="share">Share</option>
+            </select>
+          </label>
+          <label>Value: <input type="number" class="splitValue" oninput="updateCalculations()" /></label>
+          <label><input type="checkbox" class="taxed" onchange="updateCalculations()" /> Receives Money (5% Tax)</label>
+          <button class="btn" onclick="addExpense(this)">+ Add Expense</button>
+        </div>
+        <div class="expenses"></div>
+      `;
+      document.getElementById('players').appendChild(container);
+      playerCount++;
+      updateCalculations();
+    }
 
-    addExpenseBtn.addEventListener('click', () => {
-      const expenseItem = createExpenseItem();
-      expenseItemsDiv.appendChild(expenseItem);
-    });
+    function addExpense(button) {
+      const expenseDiv = document.createElement('div');
+      expenseDiv.className = 'expenseRow';
+      expenseDiv.innerHTML = `
+        <label>Label: <input type="text" class="expenseLabel" value="New Expense" oninput="updateCalculations()" /></label>
+        <label>Amount: <input type="number" class="expenseValue" value="0" oninput="updateCalculations()" /></label>
+        <button class="btn" onclick="this.parentElement.remove(); updateCalculations()">✖</button>
+      `;
+      button.parentElement.nextElementSibling.appendChild(expenseDiv);
+    }
 
-    // Recalculate on any input change inside this entry
-    div.querySelectorAll('input, select').forEach(input => {
-      input.addEventListener('input', () => calculate());
-    });
+    function updateCalculations() {
+      const profit = parseFloat(document.getElementById('totalProfit').value) || 0;
+      const players = Array.from(document.getElementsByClassName('player'));
 
-    entriesDiv.appendChild(div);
-  }
+      let entries = [];
+      let totalExpenses = 0;
+      let flatTotal = 0;
+      let percentTotal = 0;
+      let sharesTotal = 0;
+      let requiredTaxBuffer = 0;
 
-  function calculate() {
-    const pool = parseFloat(document.getElementById("pool").value) || 0;
+      players.forEach((playerDiv, index) => {
+        const name = playerDiv.querySelector('.playerName').value || `Player ${index + 1}`;
+        const type = playerDiv.querySelector('.splitType').value;
+        const value = parseFloat(playerDiv.querySelector('.splitValue').value) || 0;
+        const taxed = playerDiv.querySelector('.taxed').checked;
+        const expenseRows = playerDiv.querySelectorAll('.expenseRow');
 
-    const entryDivs = entriesDiv.querySelectorAll(".entry");
-    let people = [];
+        let expenses = [];
+        let expenseTotal = 0;
+        expenseRows.forEach(row => {
+          const label = row.querySelector('.expenseLabel').value;
+          const val = parseFloat(row.querySelector('.expenseValue').value) || 0;
+          expenses.push({ label, value: val });
+          expenseTotal += val;
+        });
 
-    let totalExpenses = 0;
+        if (type === "flat") flatTotal += value;
+        else if (type === "percent") percentTotal += value;
+        else if (type === "share") sharesTotal += value;
 
-    // Collect people data including mission expenses per person
-    entryDivs.forEach(entry => {
-      const inputs = entry.querySelectorAll('div:first-child input, div:first-child select');
-      const name = inputs[0].value.trim();
-      const type = inputs[1].value;
-      const value = parseFloat(inputs[2].value);
-
-      if (!name || isNaN(value)) return; // skip invalid
-
-      // Sum expenses for this person
-      const expenseItems = entry.querySelectorAll('.expense-item');
-      let personExpenses = 0;
-      expenseItems.forEach(expDiv => {
-        const amountInput = expDiv.querySelector('input[type=number]');
-        const amount = parseFloat(amountInput.value);
-        if (!isNaN(amount)) personExpenses += amount;
+        totalExpenses += expenseTotal;
+        entries.push({ name, type, value, taxed, expenses, expenseTotal });
       });
 
-      totalExpenses += personExpenses;
+      const postExpensesProfit = profit - totalExpenses;
+      let taxedEntries = [];
 
-      people.push({ name, type, value, expenses: personExpenses });
+      const flatDeductions = entries.filter(e => e.type === "flat").reduce((sum, e) => {
+        const taxedPortion = e.taxed ? e.value / 0.95 : e.value;
+        if (e.taxed) taxedEntries.push(taxedPortion - e.value);
+        return sum + taxedPortion;
+      }, 0);
+
+      const percentDeductions = entries.filter(e => e.type === "percent").reduce((sum, e) => {
+        const amount = (e.value / 100) * postExpensesProfit;
+        const taxedPortion = e.taxed ? amount / 0.95 : amount;
+        if (e.taxed) taxedEntries.push(taxedPortion - amount);
+        return sum + taxedPortion;
+      }, 0);
+
+      const remainder = postExpensesProfit - flatDeductions - percentDeductions;
+      const valuePerShare = sharesTotal > 0 ? remainder / sharesTotal : 0;
+
+      entries.forEach(e => {
+        if (e.type === "share") {
+          const raw = e.value * valuePerShare;
+          if (e.taxed) {
+            const taxedPortion = raw / 0.95;
+            taxedEntries.push(taxedPortion - raw);
+          }
+        }
+      });
+
+      requiredTaxBuffer = taxedEntries.reduce((sum, t) => sum + t, 0);
+      const accountingBuffer = requiredTaxBuffer;
+      const finalPool = profit - totalExpenses - flatDeductions - percentDeductions - accountingBuffer;
+
+      const tbody = document.querySelector("#outputTable tbody");
+      tbody.innerHTML = "";
+      entries.forEach(entry => {
+        let raw = 0;
+        if (entry.type === "flat") raw = entry.value;
+        else if (entry.type === "percent") raw = (entry.value / 100) * postExpensesProfit;
+        else if (entry.type === "share") raw = entry.value * valuePerShare;
+
+        let taxedAmount = entry.taxed ? raw * 0.05 : 0;
+        let payout = raw - entry.expenseTotal;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${entry.name}</td>
+          <td>${entry.type}</td>
+          <td>${entry.value}</td>
+          <td>${entry.expenseTotal.toFixed(2)}</td>
+          <td>${taxedAmount.toFixed(2)}</td>
+          <td>${payout.toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      document.getElementById("postExpensesProfit").textContent = postExpensesProfit.toFixed(2);
+      document.getElementById("accountingBuffer").textContent = accountingBuffer.toFixed(2);
+      document.getElementById("remainingPool").textContent = finalPool.toFixed(2);
+    }
+
+    function exportTable(type) {
+      const rows = Array.from(document.querySelectorAll("table tr"));
+      const lines = rows.map(row => Array.from(row.cells).map(cell => cell.textContent).join(","));
+      const content = lines.join("\n");
+      const title = document.getElementById('splitTitle').value || 'ProfitSplit';
+      const now = new Date().toISOString().slice(0,16).replace("T","_").replace(":","-");
+      const blob = new Blob([content], { type: "text/plain" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${title}_${now}.${type}`;
+      a.click();
+    }
+
+    function copyTable() {
+      const rows = Array.from(document.querySelectorAll("table tr"));
+      const lines = rows.map(row => Array.from(row.cells).map(cell => cell.textContent).join("\t"));
+      navigator.clipboard.writeText(lines.join("\n")).then(() => alert("Copied to clipboard!"));
+    }
+
+    function loadCompletedWorkOrders() {
+      const listDiv = document.getElementById("workordersList");
+      listDiv.innerHTML = "";
+      let data = JSON.parse(localStorage.getItem("completedOrders") || "[]");
+      if (!data.length) {
+        listDiv.innerHTML = "<p class='small'>No completed work orders found.</p>";
+        return;
+      }
+      data.forEach(order => {
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.textContent = `${order.title} - ${order.grandTotal} aUEC`;
+        btn.onclick = () => {
+          let currentProfit = parseFloat(document.getElementById('totalProfit').value) || 0;
+          currentProfit += parseFloat(order.grandTotal) || 0;
+          document.getElementById('totalProfit').value = currentProfit;
+          updateCalculations();
+        };
+        listDiv.appendChild(btn);
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadCompletedWorkOrders();
+      addPlayer();
     });
-
-    // Available pool after subtracting all mission expenses
-    let available = pool - totalExpenses;
-    if (available < 0) available = 0;
-
-    let flatTotal = 0;
-    let percentTotal = 0;
-    let shareUnits = 0;
-
-    const results = [];
-
-    // Flat Rate first
-    people.filter(p => p.type === "Flat Rate").forEach(p => {
-      flatTotal += p.value;
-      results.push({ ...p, amount: p.value });
-    });
-    available -= flatTotal;
-    if (available < 0) available = 0;
-
-    // Percentage next
-    people.filter(p => p.type === "Percentage").forEach(p => {
-      const amt = available * (p.value / 100);
-      percentTotal += amt;
-      results.push({ ...p, amount: amt });
-    });
-    available -= percentTotal;
-    if (available < 0) available = 0;
-
-    // Shares last
-    people.filter(p => p.type === "Shares").forEach(p => {
-      shareUnits += p.value;
-    });
-
-    const shareValue = shareUnits > 0 ? available / shareUnits : 0;
-
-    people.filter(p => p.type === "Shares").forEach(p => {
-      const amt = p.value * shareValue;
-      results.push({ ...p, amount: amt });
-    });
-
-    // Output table
-    const tbody = document.querySelector("#results tbody");
-    const totalTd = document.getElementById("total");
-    tbody.innerHTML = '';
-    let totalDistributed = 0;
-
-    results.forEach(r => {
-      totalDistributed += r.amount;
-      const row = `<tr>
-        <td>${r.name}</td>
-        <td>${r.type}</td>
-        <td>${r.value}</td>
-        <td>$${r.expenses.toFixed(2)}</td>
-        <td>$${r.amount.toFixed(2)}</td>
-      </tr>`;
-      tbody.insertAdjacentHTML('beforeend', row);
-    });
-
-    totalTd.textContent = `$${totalDistributed.toFixed(2)}`;
-    document.getElementById("results").style.display = "table";
-  }
-
-  function copyToClipboard() {
-    const table = document.getElementById("results");
-    if (!table || table.style.display === "none") return alert("Run a calculation first.");
-    let txt = "Name\tType\tValue\tMission Expenses\tAmount\n";
-    table.querySelectorAll("tbody tr").forEach(tr => {
-      const cells = tr.querySelectorAll("td");
-      txt += `${cells[0].textContent}\t${cells[1].textContent}\t${cells[2].textContent}\t${cells[3].textContent}\t${cells[4].textContent}\n`;
-    });
-    navigator.clipboard.writeText(txt).then(() => alert("Copied to clipboard!"));
-  }
-
-  // Initialize with one empty entry for convenience
-  addEntry();
-
-</script>
-
+  </script>
 </body>
 </html>
