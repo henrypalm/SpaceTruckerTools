@@ -9,7 +9,12 @@ body {
   .container { display: flex; gap: 1rem; margin-bottom: 2rem; }
   .list {
     flex: 1;
-    background-color: #222;
+    background-color: #111;
+    background-image: url('/imgs/WorkordersOverviewBackground.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     border: 1px solid #555;
     border-radius: 8px;
     padding: 1rem;
