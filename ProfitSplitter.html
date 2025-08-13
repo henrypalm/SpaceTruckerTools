@@ -306,27 +306,6 @@
       navigator.clipboard.writeText(lines.join("\n")).then(() => alert("Copied to clipboard!"));
     }
 
-    // Injected example completedOrders data
-    const exampleCompletedOrders = [
-      {
-        "key": "Cargo_Manifest_2025-08-12-17-34",
-        "title": "Cargo Manifest",
-        "dateSaved": "2025-08-12T17:34:57.708Z",
-        "categories": [
-          {
-            "category": "Ship Mining",
-            "items": [
-              { "item": "Quantanium", "qty": 48, "location": "ASHLAND, IGNIS, PYRO V, PYRO", "scuType": "scu", "unitPrice": 24013, "total": 1152624 },
-              { "item": "Borase", "qty": 32, "location": "ARC L5, STANTON", "scuType": "scu", "unitPrice": 3419, "total": 109408 },
-              { "item": "Beryl", "qty": 16, "location": "HUR L3, STANTON", "scuType": "scu", "unitPrice": 2774, "total": 44384 }
-            ]
-          }
-        ],
-        "grandTotal": 1306416
-      }
-    ];
-    localStorage.setItem("completedWorkOrders", JSON.stringify(exampleCompletedOrders));
-
     function loadCompletedWorkOrders() {
       const listDiv = document.getElementById("workordersList");
       listDiv.innerHTML = "";
