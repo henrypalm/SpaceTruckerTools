@@ -1,0 +1,35 @@
+/* Modal backdrop */
+.modal {
+  display: none; /* hidden by default */
+  position: fixed; 
+  z-index: 1000; /* on top */
+  left: 0;
+  top: 0;
+  width: 100vw; 
+  height: 100vh;
+  background-color: rgba(0,0,0,0.6); /* semi-transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal content box */
+.modal-content {
+  background-color: #222;
+  padding: 2rem;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 90%;
+  color: white;
+  position: relative;
+}
+
+/* Close button */
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  font-size: 28px;
+  cursor: pointer;
+  color: gold;
+}
