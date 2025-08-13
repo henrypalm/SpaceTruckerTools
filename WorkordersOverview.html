@@ -6,10 +6,8 @@
 <title>Workorder Overview</title>
 <link rel="icon" href="/imgs/WorkordersOverviewIcon.ico" type="image/x-icon" />
 
-
 <link rel="stylesheet" href="css/wip-overlay.css" />
 <link rel="stylesheet" href="css/nav.css" />
-  
 <link rel="stylesheet" href="css/workorders-overview-styles/workorders-layout.css" />
 <link rel="stylesheet" href="css/workorders-overview-styles/workorders-buttons.css" />
 <link rel="stylesheet" href="css/workorders-overview-styles/workorders-tables.css" />
@@ -46,17 +44,17 @@
   </div>
 </div>
 
-  
 <script>
   // Highlight active tab based on current filename
-    const path = window.location.pathname;
-    const page = path.substring(path.lastIndexOf('/') + 1);
-    const tabs = document.querySelectorAll('.nav-tabs a');
-    tabs.forEach(tab => {
-      if (tab.getAttribute('href') === page) {
-        tab.classList.add('active');
-      }
-    });
+  const path = window.location.pathname;
+  const page = path.substring(path.lastIndexOf('/') + 1);
+  const tabs = document.querySelectorAll('.nav-tabs a');
+  tabs.forEach(tab => {
+    if (tab.getAttribute('href') === page) {
+      tab.classList.add('active');
+    }
+  });
+
   const availableList = document.getElementById("availableList");
   const activeList = document.getElementById("activeList");
   const completedList = document.getElementById("completedList");
@@ -65,7 +63,7 @@
   let activeOrders = [];
   let completedOrders = [];
 
-  // NEW: Track multiple expanded keys here
+  // Track multiple expanded keys here
   let expandedKeys = JSON.parse(localStorage.getItem("expandedKeys")) || [];
 
   let orderElementMap = {}; // maps key -> { div, tableSection, icon }
@@ -135,7 +133,6 @@
         header.className = "order-header";
         const icon = document.createElement("span");
         icon.className = "toggle-icon";
-        // show expanded or collapsed based on expandedKeys
         icon.textContent = expandedKeys.includes(order.key) ? "−" : "+";
         const headerText = document.createElement("span");
         headerText.textContent = `${order.title} — Saved: ${new Date(order.dateSaved).toLocaleString()}`;
@@ -159,7 +156,6 @@
 
         orderElementMap[order.key] = { div, tableSection, icon };
 
-        // Show/hide table depending on expandedKeys state
         if (expandedKeys.includes(order.key)) {
           tableSection.classList.remove("hidden");
         }
@@ -240,14 +236,26 @@
     localStorage.setItem("expandedKeys", JSON.stringify(expandedKeys));
   }
 
+  function saveOrders() {
+    // Save availableOrders as object keyed by order.key
+    const availableObj = {};
+    availableOrders.forEach(order => {
+      availableObj[order.key] = order;
+    });
+    localStorage.setItem("cargoManifestData", JSON.stringify(availableObj));
+    localStorage.setItem("activeOrders", JSON.stringify(activeOrders));
+    localStorage.setItem("completedOrders", JSON.stringify(completedOrders));
+  }
+
   function activateOrder(key) {
     const idx = availableOrders.findIndex(o => o.key === key);
     if (idx > -1) {
       activeOrders.push(availableOrders.splice(idx, 1)[0]);
-      // Remove from expanded keys to avoid orphan expanded on move
       const expIdx = expandedKeys.indexOf(key);
       if (expIdx > -1) expandedKeys.splice(expIdx, 1);
       localStorage.setItem("expandedKeys", JSON.stringify(expandedKeys));
+      
+      saveOrders();  // Save updated state
       renderLists();
     }
   }
@@ -259,6 +267,8 @@
       const expIdx = expandedKeys.indexOf(key);
       if (expIdx > -1) expandedKeys.splice(expIdx, 1);
       localStorage.setItem("expandedKeys", JSON.stringify(expandedKeys));
+      
+      saveOrders();  // Save updated state
       renderLists();
     }
   }
@@ -270,7 +280,6 @@
     try {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) {
-        // Convert array to object keyed by order.key
         savedManifests = {};
         parsed.forEach(order => {
           if (order && order.key) {
@@ -280,11 +289,9 @@
       } else if (typeof parsed === "object" && parsed !== null) {
         savedManifests = parsed;
       } else {
-        // unexpected data type
         savedManifests = {};
       }
     } catch (e) {
-      // JSON parsing failed, reset data
       savedManifests = {};
     }
   
