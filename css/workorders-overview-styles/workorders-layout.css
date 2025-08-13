@@ -16,7 +16,7 @@ body {
   gap: 30px;
 }
 
-.container {
+.main-container {
   background-color: rgba(0, 0, 0, 0.75); /* semi-transparent dark background */
   padding: 2rem;
   border-radius: 12px;
