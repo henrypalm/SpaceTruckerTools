@@ -111,42 +111,6 @@
       background-color: #555;
     }
 
-    /* Overlay background */
-    #wip-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(15, 15, 15, 0.9);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      color: #fff;
-      font-size: 2rem;
-      text-align: center;
-      padding: 1rem;
-      flex-direction: column;
-    }
-  
-    /* Message styling */
-    #wip-overlay span {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: gold;
-    }
-  
-    /* Button to close */
-    #wip-overlay button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: gold;
-      border: none;
-      border-radius: 5px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
     
   </style>
 </head>
@@ -161,18 +125,6 @@
     <a href="AaronsJumpData.html">Aaron's Jump Data</a>
     <a href="Profile.html">Profile</a>
   </div>
-
-   <div id="wip-overlay">
-    <span>🚧 Work in Progress 🚧</span>
-    <p>This page is currently under construction. Features may not be complete.</p>
-    <button onclick="closeWIP()">OK, got it</button>
-  </div>
-  
-  <script>
-    function closeWIP() {
-      document.getElementById("wip-overlay").style.display = "none";
-    }
-  </script>
 
   <div class="container">
     <h1>Quantum Jump Data for Aaron's Halo</h1>
