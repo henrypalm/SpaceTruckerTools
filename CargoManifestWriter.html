@@ -280,7 +280,7 @@
 
       function updateGrandTotal() {
         let total = 0;
-        [shipMiningBody, handMiningBody, salvageBody].forEach(body => {
+        [shipMiningBody, handMiningBody, salvageBody, shipPartsBody].forEach(body => {
           Array.from(body.children).forEach(row => {
             const value = parseFloat(row.children[4].querySelector("span").textContent.replace(/,/g, ""));
             total += isNaN(value) ? 0 : value;
