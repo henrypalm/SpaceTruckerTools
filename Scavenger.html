@@ -176,15 +176,30 @@
   <div id="wip-overlay">
     <span>🚧 Work in Progress 🚧</span>
     <p>This page is currently under construction. Features may not be complete.</p>
+    <label>
+      <input type="checkbox" id="wip-dont-show"> Don't show this again
+    </label>
+    <br>
     <button onclick="closeWIP()">OK, got it</button>
   </div>
   
   <script>
+    const WIP_KEY = "wipDismissed";
+  
+    // Hide overlay if user previously dismissed
+    if(localStorage.getItem(WIP_KEY) === "true"){
+      document.getElementById("wip-overlay").style.display = "none";
+    }
+  
     function closeWIP() {
+      // Save checkbox state
+      const dontShow = document.getElementById("wip-dont-show").checked;
+      if(dontShow){
+        localStorage.setItem(WIP_KEY, "true");
+      }
       document.getElementById("wip-overlay").style.display = "none";
     }
   </script>
-
 
   <script src="scavengingPrices.js"></script>
   <script src="scavengingColors.js"></script>
