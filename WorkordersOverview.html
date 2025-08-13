@@ -97,22 +97,26 @@
 </head>
 <body>
 
-<h1>Workorder Overview</h1>
-
 <div class="container">
-  <div class="list" id="availableList">
-    <h2>Available Workorders</h2>
-  </div>
 
-  <div class="list" id="activeList">
-    <h2>Active Workorders</h2>
+  <h1>Workorder Overview</h1>
+  
+  <div class="container">
+    <div class="list" id="availableList">
+      <h2>Available Workorders</h2>
+    </div>
+  
+    <div class="list" id="activeList">
+      <h2>Active Workorders</h2>
+    </div>
+  </div>
+  
+  <div class="bottom-list" id="completedList">
+    <h2>Completed Workorders</h2>
   </div>
 </div>
 
-<div class="bottom-list" id="completedList">
-  <h2>Completed Workorders</h2>
-</div>
-
+  
 <script>
   const availableList = document.getElementById("availableList");
   const activeList = document.getElementById("activeList");
