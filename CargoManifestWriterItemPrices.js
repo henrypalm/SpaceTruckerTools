@@ -99,7 +99,7 @@ const itemPrices = {
       "MIC L1, STANTON": { scu: 3419, cscu: 1, mscu: 1 },
       "HUR L3, STANTON": { scu: 3419, cscu: 1, mscu: 1 },
       "GASLIGHT, PYRO": { scu: 3256, cscu: 1, mscu: 1 },
-      "NEW CABBAGE, AREA 18": { scu: 3211, cscu: 1, mscu: 1 },
+      "NEW CABBAGE, MICROTECH, STANTON": { scu: 3211, cscu: 1, mscu: 1 },
       "AREA 18, ARCCORP, STANTON": { scu: 3175, cscu: 1, mscu: 1 },
       "ROD'S FUEL 'N SUPPLIES, PYRO": { scu: 3143, cscu: 1, mscu: 1 },
       "LORVILLE, HURSTON, STANTON": { scu: 3122, cscu: 1, mscu: 1 },
