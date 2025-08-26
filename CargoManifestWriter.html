@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cargo Manifest Writer</title>
+  <link rel="icon" href="/imgs/cargoManifest.ico" type="image/x-icon" />
+  <style>
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.75); /* semi-transparent dark background */
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 700px;
+      width: 90%;
+      margin: 2rem auto;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      background-color: #222;
+      padding: 10px;
+      border-bottom: 2px solid #444;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    
+    .nav-tabs a {
+      color: #ccc;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      background-color: #333;
+      transition: background-color 0.3s;
+    }
+    
+    .nav-tabs a:hover {
+      background-color: #555;
+      color: white;
+    }
+    
+    .nav-tabs a.active {
+      background-color: #2d89ff;
+      color: white;
+      font-weight: bold;
+    }
+
+    body {
+      padding-bottom: 120px;
+      background-color: #111;         
+      background-image: url('/imgs/CargoBackground.png'); 
+      background-size: cover;         
+      background-repeat: no-repeat;   
+      background-attachment: fixed;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;              
+      gap: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: gold;
+      padding-top: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+
+    th, td {
+      padding: 0.5rem;
+      border-bottom: 1px solid #444;
+      text-align: left;
+    }
+
+    input, select {
+      background-color: #222;
+      color: white;
+      border: 1px solid #444;
+      padding: 0.3rem;
+      border-radius: 4px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .highlighted-text {
+      color: white;
+      background-color: black;
+      padding: 0 0.2em;
+    }
+
+    #exportBox {
+      position: sticky;
+      bottom: 0;
+      background: #222;
+      padding: 1em;
+      border-top: 2px solid #555;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1em;
+      z-index: 999;
+    }
+
+    details {
+      margin: 1rem;
+      background: #1a1a1a;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 0.5rem;
+    }
+
+    summary {
+      font-weight: bold;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #0ff;
+    }
+
+    #grandTotalDisplay {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: gold;
+      white-space: nowrap;
+    }
+
+    #manifestTitle {
+      width: 50%;
+      margin: 1rem auto;
+      display: block;
+      font-size: 1.2rem;
+    }
+
+    button {
+      background-color: #333;
+      border: 1px solid #555;
+      color: white;
+      padding: 0.6em 1.2em;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
+
+    .quantity-increment button {
+      background-color: #333;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    .quantity-increment button:hover {
+      background-color: #555;
+    }
+
+    /* Modal container */
+    .modal {
+      display: none; 
+      position: fixed; 
+      z-index: 1000; 
+      left: 0; 
+      top: 0; 
+      width: 100%; 
+      height: 100%; 
+      overflow: hidden; 
+      background-color: rgba(0,0,0,0.8);
+    }
+    
+    /* Modal content box */
+    .modal-content {
+      position: relative;
+      background-color: #111;
+      margin: 2% auto;
+      padding: 0;
+      border: 2px solid #444;
+      width: 90%;
+      height: 90%;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Close button */
+    .modal .close {
+      color: #fff;
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    /* Embedded iframe */
+    #workOrdersFrame {
+      flex: 1;
+      width: 100%;
+      border: none;
+      border-radius: 0 0 12px 12px;
+    }
+    
+  </style>
+</head>
+<body>
+  <div class="nav-tabs">
+    <a href="index.html">Space Trucker Tools</a>
+    <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
+    <a href="WorkordersOverview.html">Work Orders Overview</a>
+    <a href="ProfitSplitter.html">Profit Splitter</a>
+    <a href="Yield2Sell.html">Yield 2 Sell</a>
+    <a href="Scavenger.html">Scavenger</a>
+    <a href="AaronsJumpData.html">Aaron's Jump Data</a>
+    <a href="Profile.html">Profile</a>
+  </div>
+
+  <div class="container">
+    <h1 id="manifestTitleDisplay">Cargo Manifest Writer</h1>
+    <input type="text" id="manifestTitle" placeholder="Enter manifest title..." />
+  
+    <details open>
+      <summary>Ship Mining</summary>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Location</th>
+            <th>Unit Price<br>(choose size)</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="shipMiningBody"></tbody>
+      </table>
+    </details>
+  
+    <details open>
+      <summary>Hand Mining</summary>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Location</th>
+            <th>Unit Price<br>(choose size)</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="handMiningBody"></tbody>
+      </table>
+    </details>
+  
+    <details open>
+      <summary>Salvage</summary>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Location</th>
+            <th>Unit Price<br>(choose size)</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="salvageBody"></tbody>
+      </table>
+    </details>
+
+    <details open>
+      <summary>Ship Parts</summary>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Location</th>
+            <th>Unit Price<br>(choose size)</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="shipPartsBody"></tbody>
+      </table>
+    </details>
+  
+    <div id="exportBox">
+      <button onclick="exportCSV()">Export CSV</button>
+      <button onclick="exportTXT()">Export TXT</button>
+      <button onclick="copyToClipboard()">Copy to Clipboard</button>
+      <button onclick="saveManifestToLocalStorage()">Save to Local</button>
+      <button onclick="openWorkOrdersModal()">Open Work Orders</button>
+      <div id="grandTotalDisplay">Total: 0 aUEC</div>
+    </div>
+  </div>
+
+  <div id="workOrdersModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeWorkOrdersModal()">&times;</span>
+      <iframe id="workOrdersFrame" src="" frameborder="0"></iframe>
+    </div>
+  </div>
+  
+  <script src="CargoManifestWriterItemPrices.js"></script>
+  <script src="itemColors.js"></script>
+  <script>
+
+    // Highlight active tab based on current filename
+    const path = window.location.pathname;
+    const page = path.substring(path.lastIndexOf('/') + 1);
+    const tabs = document.querySelectorAll('.nav-tabs a');
+    tabs.forEach(tab => {
+      if (tab.getAttribute('href') === page) {
+        tab.classList.add('active');
+      }
+    });
+    
+    window.onload = function () {
+      const shipMiningBody = document.getElementById("shipMiningBody");
+      const handMiningBody = document.getElementById("handMiningBody");
+      const salvageBody = document.getElementById("salvageBody");
+      const shipPartsBody = document.getElementById("shipPartsBody");
+
+      function updateGrandTotal() {
+        let total = 0;
+        [shipMiningBody, handMiningBody, salvageBody, shipPartsBody].forEach(body => {
+          Array.from(body.children).forEach(row => {
+            const value = parseFloat(row.children[4].querySelector("span").textContent.replace(/,/g, ""));
+            total += isNaN(value) ? 0 : value;
+          });
+        });
+        document.getElementById("grandTotalDisplay").textContent = "Total: " + total.toLocaleString() + " aUEC";
+      }
+
+      function createCargoRow(item, targetBody, itemPricesForItem) {
+        const row = document.createElement("tr");
+        row.style.backgroundColor = itemColors[item] || "#1e1e1e";
+      
+        // Item cell
+        const itemCell = document.createElement("td");
+        itemCell.innerHTML = `<span class="highlighted-text">${item}</span>`;
+      
+        // Quantity cell with input and increment buttons
+        const quantityCell = document.createElement("td");
+        const quantityInput = document.createElement("input");
+        quantityInput.type = "number";
+        quantityInput.min = 0;
+        quantityInput.value = "";
+        quantityInput.style.width = "70px";
+        quantityInput.style.marginBottom = "6px";
+        quantityCell.appendChild(quantityInput);
+      
+        // Increment buttons container
+        const incrementsDiv = document.createElement("div");
+        incrementsDiv.style.display = "flex";
+        incrementsDiv.style.flexWrap = "wrap";
+        incrementsDiv.style.gap = "4px";
+      
+        [1, 2, 4, 8, 16, 32].forEach(num => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = `+${num}`;
+          btn.style.padding = "2px 6px";
+          btn.style.fontSize = "0.75rem";
+          btn.style.backgroundColor = "#333";
+          btn.style.color = "white";
+          btn.style.border = "1px solid #555";
+          btn.style.borderRadius = "3px";
+          btn.style.cursor = "pointer";
+          btn.style.flex = "1 0 30%"; // Make buttons responsive and wrap nicely
+          btn.addEventListener("mouseenter", () => {
+            btn.style.backgroundColor = "#555";
+          });
+          btn.addEventListener("mouseleave", () => {
+            btn.style.backgroundColor = "#333";
+          });
+          btn.addEventListener("click", () => {
+            const currentVal = parseInt(quantityInput.value) || 0;
+            quantityInput.value = currentVal + num;
+            quantityInput.dispatchEvent(new Event("input")); // trigger update
+          });
+          incrementsDiv.appendChild(btn);
+        });
+      
+        quantityCell.appendChild(incrementsDiv);
+      
+        // Location cell with select
+        const locationCell = document.createElement("td");
+        const locationSelect = document.createElement("select");
+        const locations = Object.keys(itemPricesForItem);
+        locations.forEach(location => {
+          const option = document.createElement("option");
+          option.value = location;
+          option.textContent = location;
+          locationSelect.appendChild(option);
+        });
+        locationCell.appendChild(locationSelect);
+      
+        // Unit price cell with scuType select
+        const scuTypeSelect = document.createElement("select");
+        ["scu", "cscu", "mscu"].forEach(type => {
+          const option = document.createElement("option");
+          option.value = type;
+          option.textContent = `per ${type.toUpperCase()}`;
+          scuTypeSelect.appendChild(option);
+        });
+      
+        const unitPriceCell = document.createElement("td");
+        unitPriceCell.innerHTML = `<span class="highlighted-text">0</span><br>`;
+        unitPriceCell.appendChild(scuTypeSelect);
+      
+        // Total cell
+        const totalCell = document.createElement("td");
+        totalCell.innerHTML = `<span class="highlighted-text">0</span>`;
+      
+        // Append all cells to row
+        row.appendChild(itemCell);
+        row.appendChild(quantityCell);
+        row.appendChild(locationCell);
+        row.appendChild(unitPriceCell);
+        row.appendChild(totalCell);
+      
+        // Update totals when inputs change
+        function updateRowTotals() {
+          const location = locationSelect.value;
+          const scuType = scuTypeSelect.value;
+          const priceObj = itemPricesForItem[location];
+          const unitPrice = priceObj?.[scuType] ?? 0;
+      
+          unitPriceCell.querySelector("span").textContent = unitPrice.toLocaleString();
+          const quantity = parseFloat(quantityInput.value) || 0;
+          const total = quantity * unitPrice;
+          totalCell.querySelector("span").textContent = total.toLocaleString();
+      
+          updateGrandTotal();
+        }
+      
+        quantityInput.addEventListener("input", updateRowTotals);
+        locationSelect.addEventListener("change", updateRowTotals);
+        scuTypeSelect.addEventListener("change", updateRowTotals);
+      
+        targetBody.appendChild(row);
+        updateRowTotals();
+      }
+
+      const categories = Object.keys(itemPrices);
+      categories.forEach(category => {
+        const targetBody =
+          category === "Ship Mining" ? shipMiningBody :
+          category === "Handheld and Light Ship Mining" ? handMiningBody :
+          category === "Salvage" ? salvageBody : null;
+          category === "Ship Parts" ? shipPartsBody : null;
+
+        if (!targetBody) return;
+        const items = Object.keys(itemPrices[category]);
+        items.forEach(item => {
+          const itemPricesForItem = itemPrices[category][item];
+          createCargoRow(item, targetBody, itemPricesForItem);
+        });
+      });
+
+      document.getElementById("manifestTitle").addEventListener("input", () => {
+        const title = document.getElementById("manifestTitle").value;
+        document.getElementById("manifestTitleDisplay").textContent = title.trim() !== "" ? title : "Cargo Manifest Calculator";
+      });
+    };
+
+    function openWorkOrdersModal() {
+      document.getElementById("workOrdersFrame").src = "WorkOrdersOverview.html";
+      document.getElementById("workOrdersModal").style.display = "block";
+    }
+    
+    function closeWorkOrdersModal() {
+      document.getElementById("workOrdersModal").style.display = "none";
+      document.getElementById("workOrdersFrame").src = ""; // reset iframe
+    }
+    
+    // Close modal if clicking outside content
+    window.onclick = function(event) {
+      const modal = document.getElementById("workOrdersModal");
+      if (event.target === modal) {
+        closeWorkOrdersModal();
+      }
+    };
+    
+    function exportTXT() {
+      const title = document.getElementById("manifestTitle").value || "Cargo Manifest";
+      let txt = `Title: ${title}\n\n`;
+      
+      const bodies = [
+        { label: "Ship Mining", body: document.getElementById("shipMiningBody") },
+        { label: "Handheld and Light Ship Mining", body: document.getElementById("handMiningBody") },
+        { label: "Salvage", body: document.getElementById("salvageBody") },
+        { label: "Ship Parts", body: document.getElementById("shipPartsBody") }
+      ];
+      
+      let grandTotal = 0;
+      
+      bodies.forEach(({ label, body }) => {
+        const rows = Array.from(body.children);
+        if (!rows.some(row => parseFloat(row.children[1].querySelector("input").value) > 0)) return;
+        
+        txt += `== ${label} ==\n`;
+        txt += `Item\tQuantity\tLocation\tUnit Price\tTotal\n`;
+        
+        rows.forEach(row => {
+          const qty = parseFloat(row.children[1].querySelector("input").value);
+          if (!qty) return;
+          
+          const item = row.children[0].innerText.trim();
+          const location = row.children[2].querySelector("select").value;
+          const unitPrice = row.children[3].querySelector("span").textContent;
+          const total = row.children[4].querySelector("span").textContent;
+          
+          txt += `${item}\t${qty}\t${location}\t${unitPrice}\t${total}\n`;
+          grandTotal += parseFloat(total.replace(/,/g, ""));
+        });
+        
+        txt += `\n`;
+      });
+      
+      txt += `Grand Total: ${grandTotal.toLocaleString()} aUEC\n`;
+      
+      const filename = `${title.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}.txt`;
+      downloadFile(txt, filename);
+    }
+
+    function saveManifestToLocalStorage() {
+      const title = document.getElementById("manifestTitle").value || "Cargo Manifest";
+    
+      const bodies = [
+        { label: "Ship Mining", body: document.getElementById("shipMiningBody") },
+        { label: "Handheld and Light Ship Mining", body: document.getElementById("handMiningBody") },
+        { label: "Salvage", body: document.getElementById("salvageBody") },
+        { label: "Ship Parts", body: document.getElementById("shipPartsBody") }
+      ];
+    
+      const manifestData = {
+        title,
+        dateSaved: new Date().toISOString(),
+        categories: [],
+        grandTotal: 0
+      };
+    
+      bodies.forEach(({ label, body }) => {
+        const rows = Array.from(body.children);
+        const categoryData = { category: label, items: [] };
+    
+        rows.forEach(row => {
+          const qty = parseFloat(row.children[1].querySelector("input").value) || 0;
+          if (!qty) return;
+    
+          const item = row.children[0].innerText.trim();
+          const location = row.children[2].querySelector("select").value;
+          const scuType = row.children[3].querySelector("select").value;
+          const unitPrice = parseFloat(row.children[3].querySelector("span").textContent.replace(/,/g, "")) || 0;
+          const total = parseFloat(row.children[4].querySelector("span").textContent.replace(/,/g, "")) || 0;
+    
+          categoryData.items.push({ item, qty, location, scuType, unitPrice, total });
+          manifestData.grandTotal += total;
+        });
+    
+        if (categoryData.items.length > 0) {
+          manifestData.categories.push(categoryData);
+        }
+      });
+    
+      // Get existing saved manifests object (or empty object if none)
+      const savedManifests = JSON.parse(localStorage.getItem("cargoManifestData")) || {};
+    
+      // Make unique key using title + timestamp
+      const safeTitle = title.replace(/\s+/g, "_");
+      const timestamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
+      const uniqueKey = `${safeTitle}_${timestamp}`;
+    
+      // Save under that unique key
+      savedManifests[uniqueKey] = manifestData;
+    
+      // Store back to localStorage
+      localStorage.setItem("cargoManifestData", JSON.stringify(savedManifests));
+    
+      alert(`Manifest "${title}" saved as ${uniqueKey} in localStorage!`);
+    }
+    
+    function exportCSV() {
+      const title = document.getElementById("manifestTitle").value || "Cargo Manifest";
+      const unitType = document.getElementById("unitSelect")?.value || "SCU"; // Include selected unit type
+      let csv = `Title:|${title}\nUnit Type:|${unitType}\n\n`;
+    
+      const bodies = [
+        { label: "Ship Mining", body: document.getElementById("shipMiningBody") },
+        { label: "Handheld and Light Ship Mining", body: document.getElementById("handMiningBody") },
+        { label: "Salvage", body: document.getElementById("salvageBody") },
+        { label: "Ship Parts", body: document.getElementById("shipPartsBody") }
+      ];
+    
+      let grandTotal = 0;
+    
+      bodies.forEach(({ label, body }) => {
+        const rows = Array.from(body.children);
+        const hasRowsWithQuantity = rows.some(row => {
+          const qty = parseFloat(row.children[1].querySelector("input").value) || 0;
+          return qty > 0;
+        });
+    
+        if (hasRowsWithQuantity) {
+          csv += `Category:|${label}\n`;
+          csv += `Item|Quantity|Location|Unit Price|Total\n`;
+    
+          rows.forEach(row => {
+            const item = row.children[0].innerText.trim();
+            const qty = row.children[1].querySelector("input").value;
+            if (!qty || qty === "0") return;
+    
+            const location = row.children[2].querySelector("select").value;
+            const unitPriceRaw = row.children[3].querySelector("span").textContent;
+            const totalRaw = row.children[4].querySelector("span").textContent;
+    
+            const parsedTotal = parseFloat(totalRaw.replace(/,/g, "")) || 0;
+            const formattedUnitPrice = parseFloat(unitPriceRaw.replace(/,/g, "")).toLocaleString();
+            const formattedTotal = parsedTotal.toLocaleString();
+    
+            csv += `"${item}"|${qty}|"${location}"|${formattedUnitPrice}|${formattedTotal}\n`;
+    
+            grandTotal += parsedTotal;
+          });
+    
+          csv += `\n`;
+        }
+      });
+    
+      csv += `Grand Total:|${grandTotal.toLocaleString()}`;
+    
+      const filename = `${title.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-")}.csv`;
+      downloadFile(csv, filename);
+    
+      alert("Reminder: This CSV uses the pipe (|) character as delimiter.");
+    }
+
+    function copyToClipboard() {
+      const title = document.getElementById("manifestTitle").value || "Cargo Manifest";
+      let textToCopy = `Title: ${title}\n\n`;
+      
+      const bodies = [
+        { label: "Ship Mining", body: document.getElementById("shipMiningBody") },
+        { label: "Handheld and Light Ship Mining", body: document.getElementById("handMiningBody") },
+        { label: "Salvage", body: document.getElementById("salvageBody") },
+        { label: "Ship Parts", body: document.getElementById("shipPartsBody") }
+      ];
+      
+      let grandTotal = 0;
+      
+      bodies.forEach(({ label, body }) => {
+        const rows = Array.from(body.children);
+        if (!rows.some(row => parseFloat(row.children[1].querySelector("input").value) > 0)) return;
+        
+        textToCopy += `${label}:\n`;
+        
+        rows.forEach(row => {
+          const qty = parseFloat(row.children[1].querySelector("input").value);
+          if (!qty) return;
+          
+          const item = row.children[0].innerText.trim();
+          const location = row.children[2].querySelector("select").value;
+          const unitPrice = row.children[3].querySelector("span").textContent;
+          const total = row.children[4].querySelector("span").textContent;
+          
+          textToCopy += `${item}, Qty: ${qty}, Location: ${location}, Unit Price: ${unitPrice}, Total: ${total}\n`;
+          grandTotal += parseFloat(total.replace(/,/g, ""));
+        });
+        
+        textToCopy += `\n`;
+      });
+      
+      textToCopy += `Grand Total: ${grandTotal.toLocaleString()} aUEC\n`;
+      
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          alert("Manifest copied to clipboard!");
+        }).catch(() => {
+          fallbackClipboardCopy(textToCopy);
+        });
+      } else {
+        fallbackClipboardCopy(textToCopy);
+      }
+    }
+    
+    // Fallback for older browsers or insecure contexts
+    function fallbackClipboardCopy(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      // Move it offscreen
+      textArea.style.position = "fixed";
+      textArea.style.left = "-9999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+    
+      try {
+        const successful = document.execCommand("copy");
+        alert(successful ? "Manifest copied to clipboard!" : "Copy failed. Try manually.");
+      } catch (err) {
+        alert("Copy failed. Try manually.");
+      }
+    
+      document.body.removeChild(textArea);
+    }
+
+    
+    function downloadFile(content, filename) {
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
+    
+  </script>
+</body>
+</html>
