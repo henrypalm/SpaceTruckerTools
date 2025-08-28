@@ -548,7 +548,7 @@
       downloadFile(txt, filename);
     }
 
-    function saveManifestToLocalStorage() {
+    function saveManifestToLocalStorage(isNew = false) {
       const title = document.getElementById("manifestTitle").value || "Cargo Manifest";
     
       const bodies = [
@@ -588,21 +588,28 @@
         }
       });
     
-      // Get existing saved manifests object (or empty object if none)
       const savedManifests = JSON.parse(localStorage.getItem("cargoManifestData")) || {};
     
-      // Make unique key using title + timestamp
-      const safeTitle = title.replace(/\s+/g, "_");
-      const timestamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
-      const uniqueKey = `${safeTitle}_${timestamp}`;
+      let currentKey = localStorage.getItem("currentManifestKey");
     
-      // Save under that unique key
-      savedManifests[uniqueKey] = manifestData;
+      if (!currentKey || isNew) {
+        // generate a new key if none exists or user wants a fresh manifest
+        const safeTitle = title.replace(/\s+/g, "_");
+        const timestamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
+        currentKey = `${safeTitle}_${timestamp}`;
+        localStorage.setItem("currentManifestKey", currentKey);
     
-      // Store back to localStorage
+        // Only alert when creating a new manifest
+        alert(`New manifest "${title}" created as ${currentKey} in localStorage!`);
+      }
+    
+      savedManifests[currentKey] = manifestData;
       localStorage.setItem("cargoManifestData", JSON.stringify(savedManifests));
     
-      alert(`Manifest "${title}" saved as ${uniqueKey} in localStorage!`);
+      // Update Last Saved display
+      const lastSavedDiv = document.getElementById("lastSaved");
+      const now = new Date();
+      lastSavedDiv.textContent = `Last saved: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
     }
     
     function exportCSV() {
