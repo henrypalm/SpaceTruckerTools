@@ -304,6 +304,7 @@
       <button onclick="openSavedManifestsModal()">View Saved Manifests</button>
       <button onclick="openWorkOrdersModal()">Open Work Orders</button>
       <div id="grandTotalDisplay">Total: 0 aUEC</div>
+      <div id="lastSaved" style="text-align:center; margin-bottom:1rem; color:#ccc;"></div>
     </div>
   </div>
 
@@ -483,7 +484,7 @@
         const targetBody =
           category === "Ship Mining" ? shipMiningBody :
           category === "Handheld and Light Ship Mining" ? handMiningBody :
-          category === "Salvage" ? salvageBody : null;
+          category === "Salvage" ? salvageBody : 
           category === "Ship Parts" ? shipPartsBody : null;
 
         if (!targetBody) return;
