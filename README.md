@@ -111,12 +111,13 @@ Please adhere to clean code practices, inline commenting, and descriptive commit
 
 ## License & Credits
 
-- **License**: (Specify license here—MIT, Apache 2.0, etc.)  
-- **Developed by**: Henry Palm  
+- **License**:  This project is licensed under the GNU General Public License v3.0 – see the LICENSE
+ file for details.
+- **Developed by**: Richard Goodwin 
 - **Assets**: Icons and backgrounds included under their respective usage rights. See repository for attributions.
 
 ---
 
 ## Additional Notes  
 - All tool assets—HTML pages, `.js` modules, icons, and background images—are bundled in the repository for instant use.  
-- The suite runs fully in-browser—no complex installations required.
+- The suite runs fully in-browser, no installations required.
