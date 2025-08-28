@@ -590,22 +590,25 @@
     
     // Load manifest into editor
     function loadManifest(manifest, key) {
+      if (!manifest) return;
+    
       // Set current manifest key
       localStorage.setItem("currentManifestKey", key);
     
       // Set title
-      document.getElementById("manifestTitle").value = manifest.title;
+      const titleInput = document.getElementById("manifestTitle");
+      titleInput.value = manifest.title;
       document.getElementById("manifestTitleDisplay").textContent = manifest.title;
     
       // Clear all existing rows
-      ["shipMiningBody","handMiningBody","salvageBody","shipPartsBody"].forEach(id => {
+      ["shipMiningBody", "handMiningBody", "salvageBody", "shipPartsBody"].forEach(id => {
         document.getElementById(id).innerHTML = "";
       });
     
       // Rebuild rows from manifest data
       manifest.categories.forEach(categoryData => {
         let targetBodyId = "";
-        switch(categoryData.category){
+        switch (categoryData.category) {
           case "Ship Mining": targetBodyId = "shipMiningBody"; break;
           case "Handheld and Light Ship Mining": targetBodyId = "handMiningBody"; break;
           case "Salvage": targetBodyId = "salvageBody"; break;
@@ -614,25 +617,28 @@
         }
     
         const targetBody = document.getElementById(targetBodyId);
-        categoryData.items.forEach(itemData => {
-          // Check if item exists in itemPrices before creating row
-          if (
-            itemPrices[categoryData.category] &&
-            itemPrices[categoryData.category][itemData.item]
-          ) {
-            createCargoRow(itemData.item, targetBody, itemPrices[categoryData.category][itemData.item]);
     
-            // After creation, set the saved values
-            const row = Array.from(targetBody.children).find(r => r.children[0].innerText.trim() === itemData.item);
-            if(row){
-              row.children[1].querySelector("input").value = itemData.qty;
-              row.children[2].querySelector("select").value = itemData.location;
-              row.children[3].querySelector("select").value = itemData.scuType;
-              // trigger input to update totals
-              row.children[1].querySelector("input").dispatchEvent(new Event("input"));
-            }
-          } else {
+        categoryData.items.forEach(itemData => {
+          const itemExists = itemPrices[categoryData.category]?.[itemData.item];
+    
+          if (!itemExists) {
             console.warn(`Skipped missing item "${itemData.item}" in category "${categoryData.category}"`);
+            return; // skip missing items
+          }
+    
+          // Create the row
+          createCargoRow(itemData.item, targetBody, itemPrices[categoryData.category][itemData.item]);
+    
+          // Find the newly created row
+          const row = Array.from(targetBody.children).find(r => r.children[0].innerText.trim() === itemData.item);
+          if (row) {
+            // Restore saved values
+            row.children[1].querySelector("input").value = itemData.qty;
+            row.children[2].querySelector("select").value = itemData.location;
+            row.children[3].querySelector("select").value = itemData.scuType;
+    
+            // Trigger input to update totals
+            row.children[1].querySelector("input").dispatchEvent(new Event("input"));
           }
         });
       });
