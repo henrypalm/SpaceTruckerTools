@@ -447,9 +447,18 @@
           updateGrandTotal();
         }
       
-        quantityInput.addEventListener("input", updateRowTotals);
-        locationSelect.addEventListener("change", updateRowTotals);
-        scuTypeSelect.addEventListener("change", updateRowTotals);
+        quantityInput.addEventListener("input", () => {
+          updateRowTotals();
+          saveManifestToLocalStorage();
+        });
+        locationSelect.addEventListener("change", () => {
+          updateRowTotals();
+          saveManifestToLocalStorage();
+        });
+        scuTypeSelect.addEventListener("change", () => {
+          updateRowTotals();
+          saveManifestToLocalStorage();
+        });
       
         targetBody.appendChild(row);
         updateRowTotals();
@@ -473,7 +482,9 @@
 
       document.getElementById("manifestTitle").addEventListener("input", () => {
         const title = document.getElementById("manifestTitle").value;
-        document.getElementById("manifestTitleDisplay").textContent = title.trim() !== "" ? title : "Cargo Manifest Calculator";
+        document.getElementById("manifestTitleDisplay").textContent = 
+          title.trim() !== "" ? title : "Cargo Manifest Calculator";
+        saveManifestToLocalStorage();
       });
     };
 
