@@ -637,6 +637,75 @@
         });
       });
     }
+
+    function saveManifestToLocalStorage(startNew = false) {
+      const titleInput = document.getElementById("manifestTitle");
+      const title = titleInput.value.trim() || "Untitled Manifest";
+      const now = new Date();
+      const dateSaved = now.toLocaleString();
+    
+      // Collect all category data
+      const categories = [
+        { id: "shipMiningBody", name: "Ship Mining" },
+        { id: "handMiningBody", name: "Handheld and Light Ship Mining" },
+        { id: "salvageBody", name: "Salvage" },
+        { id: "shipPartsBody", name: "Ship Parts" }
+      ];
+    
+      const manifestData = {
+        title: title,
+        dateSaved: dateSaved,
+        categories: []
+      };
+    
+      categories.forEach(cat => {
+        const tbody = document.getElementById(cat.id);
+        const items = [];
+        Array.from(tbody.children).forEach(row => {
+          const qty = parseFloat(row.children[1].querySelector("input").value) || 0;
+          if (qty <= 0) return; // skip zero quantity items
+    
+          items.push({
+            item: row.children[0].innerText.trim(),
+            qty: qty,
+            location: row.children[2].querySelector("select").value,
+            scuType: row.children[3].querySelector("select").value
+          });
+        });
+    
+        manifestData.categories.push({
+          category: cat.name,
+          items: items
+        });
+      });
+    
+      // Load existing manifests from localStorage
+      const savedManifests = JSON.parse(localStorage.getItem("cargoManifestData")) || {};
+    
+      // Generate a key for this manifest
+      let key = localStorage.getItem("currentManifestKey");
+      if (!key || startNew) {
+        key = "manifest_" + Date.now(); // unique key
+      }
+    
+      // Save the manifest
+      savedManifests[key] = manifestData;
+      localStorage.setItem("cargoManifestData", JSON.stringify(savedManifests));
+      localStorage.setItem("currentManifestKey", key);
+    
+      // Optional: display last saved time
+      document.getElementById("lastSaved").textContent = `Last saved: ${dateSaved}`;
+    
+      // If starting new, clear input and table rows
+      if (startNew) {
+        titleInput.value = "";
+        document.getElementById("manifestTitleDisplay").textContent = "Cargo Manifest Writer";
+        categories.forEach(cat => {
+          document.getElementById(cat.id).innerHTML = "";
+        });
+        localStorage.removeItem("currentManifestKey"); // reset current key
+      }
+    }
     
     function exportCSV() {
       const title = document.getElementById("manifestTitle").value || "Cargo Manifest";
