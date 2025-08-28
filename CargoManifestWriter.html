@@ -610,22 +610,29 @@
           case "Handheld and Light Ship Mining": targetBodyId = "handMiningBody"; break;
           case "Salvage": targetBodyId = "salvageBody"; break;
           case "Ship Parts": targetBodyId = "shipPartsBody"; break;
-          default: return;
+          default: return; // skip unknown category
         }
     
         const targetBody = document.getElementById(targetBodyId);
         categoryData.items.forEach(itemData => {
-          // reuse your existing createCargoRow function if available
-          createCargoRow(itemData.item, targetBody, itemPrices[categoryData.category][itemData.item]);
+          // Check if item exists in itemPrices before creating row
+          if (
+            itemPrices[categoryData.category] &&
+            itemPrices[categoryData.category][itemData.item]
+          ) {
+            createCargoRow(itemData.item, targetBody, itemPrices[categoryData.category][itemData.item]);
     
-          // After creation, set the saved values
-          const row = Array.from(targetBody.children).find(r => r.children[0].innerText.trim() === itemData.item);
-          if(row){
-            row.children[1].querySelector("input").value = itemData.qty;
-            row.children[2].querySelector("select").value = itemData.location;
-            row.children[3].querySelector("select").value = itemData.scuType;
-            // trigger input to update totals
-            row.children[1].querySelector("input").dispatchEvent(new Event("input"));
+            // After creation, set the saved values
+            const row = Array.from(targetBody.children).find(r => r.children[0].innerText.trim() === itemData.item);
+            if(row){
+              row.children[1].querySelector("input").value = itemData.qty;
+              row.children[2].querySelector("select").value = itemData.location;
+              row.children[3].querySelector("select").value = itemData.scuType;
+              // trigger input to update totals
+              row.children[1].querySelector("input").dispatchEvent(new Event("input"));
+            }
+          } else {
+            console.warn(`Skipped missing item "${itemData.item}" in category "${categoryData.category}"`);
           }
         });
       });
