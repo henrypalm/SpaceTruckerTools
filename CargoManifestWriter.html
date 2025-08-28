@@ -555,11 +555,7 @@
           loadBtn.textContent = "Load";
           loadBtn.style.marginRight = "4px";
           loadBtn.onclick = () => {
-            try {
-              loadManifest(manifest, key);
-            } catch(e) {
-              alert("Error loading manifest: category/item mismatch. Manifest may be corrupted or outdated.");
-            }
+            loadManifest(manifest, key);
             closeSavedManifestsModal();
           };
     
@@ -578,138 +574,61 @@
     
           buttonsDiv.appendChild(loadBtn);
           buttonsDiv.appendChild(deleteBtn);
+    
           div.appendChild(info);
           div.appendChild(buttonsDiv);
           listDiv.appendChild(div);
         });
       }
     
-      // Add a “Start New Manifest” button inside the modal
-      const newBtn = document.createElement("button");
-      newBtn.textContent = "Start New Manifest";
-      newBtn.style.marginTop = "1rem";
-      newBtn.style.width = "100%";
-      newBtn.onclick = () => {
-        saveManifestToLocalStorage(true); // creates a new manifest
-        clearAllTables();
-        document.getElementById("manifestTitle").value = "";
-        document.getElementById("manifestTitleDisplay").textContent = "Cargo Manifest Writer";
-        closeSavedManifestsModal();
-      };
-      listDiv.appendChild(newBtn);
-    
       modal.style.display = "block";
     }
     
-    // Clear all table rows
-    function clearAllTables() {
+    function closeSavedManifestsModal() {
+      document.getElementById("savedManifestsModal").style.display = "none";
+    }
+    
+    // Load manifest into editor
+    function loadManifest(manifest, key) {
+      // Set current manifest key
+      localStorage.setItem("currentManifestKey", key);
+    
+      // Set title
+      document.getElementById("manifestTitle").value = manifest.title;
+      document.getElementById("manifestTitleDisplay").textContent = manifest.title;
+    
+      // Clear all existing rows
       ["shipMiningBody","handMiningBody","salvageBody","shipPartsBody"].forEach(id => {
         document.getElementById(id).innerHTML = "";
       });
-    }
     
-    function exportTXT() {
-      const title = document.getElementById("manifestTitle").value || "Cargo Manifest";
-      let txt = `Title: ${title}\n\n`;
-      
-      const bodies = [
-        { label: "Ship Mining", body: document.getElementById("shipMiningBody") },
-        { label: "Handheld and Light Ship Mining", body: document.getElementById("handMiningBody") },
-        { label: "Salvage", body: document.getElementById("salvageBody") },
-        { label: "Ship Parts", body: document.getElementById("shipPartsBody") }
-      ];
-      
-      let grandTotal = 0;
-      
-      bodies.forEach(({ label, body }) => {
-        const rows = Array.from(body.children);
-        if (!rows.some(row => parseFloat(row.children[1].querySelector("input").value) > 0)) return;
-        
-        txt += `== ${label} ==\n`;
-        txt += `Item\tQuantity\tLocation\tUnit Price\tTotal\n`;
-        
-        rows.forEach(row => {
-          const qty = parseFloat(row.children[1].querySelector("input").value);
-          if (!qty) return;
-          
-          const item = row.children[0].innerText.trim();
-          const location = row.children[2].querySelector("select").value;
-          const unitPrice = row.children[3].querySelector("span").textContent;
-          const total = row.children[4].querySelector("span").textContent;
-          
-          txt += `${item}\t${qty}\t${location}\t${unitPrice}\t${total}\n`;
-          grandTotal += parseFloat(total.replace(/,/g, ""));
-        });
-        
-        txt += `\n`;
-      });
-      
-      txt += `Grand Total: ${grandTotal.toLocaleString()} aUEC\n`;
-      
-      const filename = `${title.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}.txt`;
-      downloadFile(txt, filename);
-    }
-
-    function saveManifestToLocalStorage(isNew = false) {
-      const title = document.getElementById("manifestTitle").value || "Cargo Manifest";
-    
-      const bodies = [
-        { label: "Ship Mining", body: document.getElementById("shipMiningBody") },
-        { label: "Handheld and Light Ship Mining", body: document.getElementById("handMiningBody") },
-        { label: "Salvage", body: document.getElementById("salvageBody") },
-        { label: "Ship Parts", body: document.getElementById("shipPartsBody") }
-      ];
-    
-      const manifestData = {
-        title,
-        dateSaved: new Date().toISOString(),
-        categories: [],
-        grandTotal: 0
-      };
-    
-      bodies.forEach(({ label, body }) => {
-        const rows = Array.from(body.children);
-        const categoryData = { category: label, items: [] };
-    
-        rows.forEach(row => {
-          const qty = parseFloat(row.children[1].querySelector("input").value) || 0;
-          if (!qty) return;
-    
-          const item = row.children[0].innerText.trim();
-          const location = row.children[2].querySelector("select").value;
-          const scuType = row.children[3].querySelector("select").value;
-          const unitPrice = parseFloat(row.children[3].querySelector("span").textContent.replace(/,/g, "")) || 0;
-          const total = parseFloat(row.children[4].querySelector("span").textContent.replace(/,/g, "")) || 0;
-    
-          categoryData.items.push({ item, qty, location, scuType, unitPrice, total });
-          manifestData.grandTotal += total;
-        });
-    
-        if (categoryData.items.length > 0) {
-          manifestData.categories.push(categoryData);
+      // Rebuild rows from manifest data
+      manifest.categories.forEach(categoryData => {
+        let targetBodyId = "";
+        switch(categoryData.category){
+          case "Ship Mining": targetBodyId = "shipMiningBody"; break;
+          case "Handheld and Light Ship Mining": targetBodyId = "handMiningBody"; break;
+          case "Salvage": targetBodyId = "salvageBody"; break;
+          case "Ship Parts": targetBodyId = "shipPartsBody"; break;
+          default: return;
         }
+    
+        const targetBody = document.getElementById(targetBodyId);
+        categoryData.items.forEach(itemData => {
+          // reuse your existing createCargoRow function if available
+          createCargoRow(itemData.item, targetBody, itemPrices[categoryData.category][itemData.item]);
+    
+          // After creation, set the saved values
+          const row = Array.from(targetBody.children).find(r => r.children[0].innerText.trim() === itemData.item);
+          if(row){
+            row.children[1].querySelector("input").value = itemData.qty;
+            row.children[2].querySelector("select").value = itemData.location;
+            row.children[3].querySelector("select").value = itemData.scuType;
+            // trigger input to update totals
+            row.children[1].querySelector("input").dispatchEvent(new Event("input"));
+          }
+        });
       });
-    
-      const savedManifests = JSON.parse(localStorage.getItem("cargoManifestData")) || {};
-    
-      let currentKey = localStorage.getItem("currentManifestKey");
-    
-      // Always create a new key if requested, otherwise use current key if exists
-      if (!currentKey || isNew) {
-        const safeTitle = title.replace(/\s+/g, "_");
-        const timestamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
-        currentKey = `${safeTitle}_${timestamp}`;
-        localStorage.setItem("currentManifestKey", currentKey);
-    
-        if (isNew) alert(`New manifest "${title}" created as ${currentKey}!`);
-      }
-    
-      savedManifests[currentKey] = manifestData;
-      localStorage.setItem("cargoManifestData", JSON.stringify(savedManifests));
-    
-      const lastSavedDiv = document.getElementById("lastSaved");
-      const now = new Date();
-      lastSavedDiv.textContent = `Last saved: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
     }
     
     function exportCSV() {
