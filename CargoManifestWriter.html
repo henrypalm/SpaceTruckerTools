@@ -300,7 +300,8 @@
       <button onclick="exportCSV()">Export CSV</button>
       <button onclick="exportTXT()">Export TXT</button>
       <button onclick="copyToClipboard()">Copy to Clipboard</button>
-      <button onclick="saveManifestToLocalStorage()">Save to Local - done automatically, repurpose to clear</button>
+      <button onclick="saveManifestToLocalStorage()">Save Manifest</button>
+      <button onclick="saveManifestToLocalStorage(true)">Save As New Manifest</button>
       <button onclick="openSavedManifestsModal()">View Saved Manifests</button>
       <button onclick="openWorkOrdersModal()">Open Work Orders</button>
       <div id="grandTotalDisplay">Total: 0 aUEC</div>
@@ -716,21 +717,19 @@
     
       let currentKey = localStorage.getItem("currentManifestKey");
     
+      // Always create a new key if requested, otherwise use current key if exists
       if (!currentKey || isNew) {
-        // generate a new key if none exists or user wants a fresh manifest
         const safeTitle = title.replace(/\s+/g, "_");
         const timestamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
         currentKey = `${safeTitle}_${timestamp}`;
         localStorage.setItem("currentManifestKey", currentKey);
     
-        // Only alert when creating a new manifest
-        alert(`New manifest "${title}" created as ${currentKey} in localStorage!`);
+        if (isNew) alert(`New manifest "${title}" created as ${currentKey}!`);
       }
     
       savedManifests[currentKey] = manifestData;
       localStorage.setItem("cargoManifestData", JSON.stringify(savedManifests));
     
-      // Update Last Saved display
       const lastSavedDiv = document.getElementById("lastSaved");
       const now = new Date();
       lastSavedDiv.textContent = `Last saved: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
