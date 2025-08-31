@@ -373,7 +373,7 @@
       document.getElementById("rockModal").style.display = "flex";
       if (document.getElementsByClassName("material-row").length === 0) {
         addMaterial(); // start with empty row
-        addMaterial("Inert Material", "0"); // add inert material row
+        addMaterial("Inert Material", "%"); // add inert material row
       }
     }
   
@@ -437,7 +437,7 @@
       table.style.width = "100%";
       container.appendChild(table);
     
-      // --- NEW: Editable section with inert + blank row ---
+      //  Editable section with inert + blank row ---
       const editableTable = document.createElement("table");
       editableTable.className = "editable-composition";
       editableTable.innerHTML = `
@@ -451,7 +451,7 @@
         <tbody>
           <tr>
             <td>Inert Material</td>
-            <td><input type="number" value="0" /></td>
+            <td><input type="number" placeholder="%" /></td>
             <td></td>
           </tr>
           <tr>
