@@ -93,12 +93,14 @@
   <!-- Rock Composition Modal -->
   <div id="rockModal" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="closeRockModal()">&times;</span>
-      <h2 style="display:inline-block; margin-right:1rem;">Rock Composition</h2>
-      <button onclick="saveCompositionTable()">Save Composition</button>
+      <div class="modal-title-and-button">
+        <span class="close" onclick="closeRockModal()">&times;</span>
+        <h2 style="display:inline-block; margin-right:1rem;">Rock Composition</h2>
+        <button onclick="saveCompositionTable()">Save Composition</button>
+      </div>
   
       <label>Rock Size (SCU): 
-        <input type="number" id="rockSize" value="32" oninput="updateRockTable()">
+        <input type="number" id="rockSize" value="0" oninput="updateRockTable()">
       </label>
   
       <label>Inert Material Filtering (%):
@@ -373,7 +375,7 @@
       document.getElementById("rockModal").style.display = "flex";
       if (document.getElementsByClassName("material-row").length === 0) {
         addMaterial(); // start with empty row
-        addMaterial("Inert Material", "%"); // add inert material row
+        addMaterial("Inert Material", "%"); // changed "0" to "%"
       }
     }
   
