@@ -87,38 +87,36 @@
       </div>
 
       <!-- Rock Composition Modal -->
-      <button onclick="openRockModal()" style="margin-bottom:2rem;">Open Rock Composition</button>
-      
-      <div id="rockModal" class="modal">
-        <div class="modal-content">
-          <span class="close" onclick="closeRockModal()">&times;</span>
-          <h2 style="color:gold;">Rock Composition</h2>
-      
-          <label>Rock Size (SCU):</label>
-          <input type="number" id="rockSize" placeholder="Enter SCU" oninput="updateRockTable()">
-      
-          <div id="materialsContainer"></div>
-          <button onclick="addMaterial()">+ Add Material</button>
-      
-          <table id="compositionTable">
-            <thead>
-              <tr>
-                <th>Material</th>
-                <th>Percentage (%)</th>
-                <th>SCU</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-          <div id="percentWarning" style="color:red; font-weight:bold; margin-top:0.5rem;"></div>
-      
-          <!-- Save table button -->
-          <button onclick="saveCompositionTable()" style="margin-top:1rem;">➕ Add Table</button>
-        </div>
-      </div>
-      
-      <!-- Where finished tables will appear -->
-      <div id="savedTables" style="margin-top:2rem;"></div>
+      <button id="openRockModal">Open Rock Composition</button>
+
+  <!-- Rock Composition Modal -->
+  <div id="rockModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeRockModal()">&times;</span>
+      <h2>Rock Composition</h2>
+
+      <label>Rock Size (SCU): 
+        <input type="number" id="rockSize" value="32" oninput="updateRockTable()">
+      </label>
+      <div id="materialsContainer"></div>
+      <button onclick="addMaterial()">Add Material</button>
+
+      <p id="percentWarning" style="color: red;"></p>
+
+      <table id="compositionTable">
+        <thead>
+          <tr>
+            <th>Material</th>
+            <th>Percentage (%)</th>
+            <th>SCU</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="savedTables"></div>
+      <button onclick="saveCompositionTable()">Save Composition</button>
+    </div>
+  </div>
   
     </main>
   </div>
@@ -370,25 +368,23 @@
     function closeRockModal() {
       document.getElementById("rockModal").style.display = "none";
     }
+/*
+    const modal = document.getElementById("rockModal");
+    document.getElementById("openRockModal").onclick = () => modal.style.display = "flex";
+    function closeModal() { modal.style.display = "none"; }
+*/
   
-    function addMaterial() {
+    function addMaterial(name="", percent="") {
       const container = document.getElementById("materialsContainer");
       const row = document.createElement("div");
       row.className = "material-row";
-  
-      const nameInput = document.createElement("input");
-      nameInput.type = "text";
-      nameInput.placeholder = "Material Name";
-      nameInput.oninput = updateRockTable;
-  
-      const percentInput = document.createElement("input");
-      percentInput.type = "number";
-      percentInput.placeholder = "%";
-      percentInput.oninput = updateRockTable;
-  
-      row.appendChild(nameInput);
-      row.appendChild(percentInput);
+      row.innerHTML = `
+        <input type="text" placeholder="Material" value="${name}" oninput="updateRockTable()">
+        <input type="number" placeholder="%" value="${percent}" oninput="updateRockTable()">
+        <button class="removeBtn" onclick="this.parentElement.remove(); updateRockTable()">x</button>
+      `;
       container.appendChild(row);
+      updateRockTable();
     }
   
     function updateRockTable() {
@@ -396,20 +392,19 @@
       const rows = document.querySelectorAll("#materialsContainer .material-row");
       const tbody = document.querySelector("#compositionTable tbody");
       tbody.innerHTML = "";
-  
+
       let totalPercent = 0;
-  
       rows.forEach(row => {
         const name = row.children[0].value || "—";
         const percent = parseFloat(row.children[1].value) || 0;
         totalPercent += percent;
         const scu = ((percent / 100) * rockSize).toFixed(2);
-  
+
         const tr = document.createElement("tr");
         tr.innerHTML = `<td>${name}</td><td>${percent}%</td><td>${scu}</td>`;
         tbody.appendChild(tr);
       });
-  
+
       const warning = document.getElementById("percentWarning");
       if (totalPercent > 0 && totalPercent !== 100) {
         warning.textContent = `⚠ Percentages total ${totalPercent}%. Should equal 100%.`;
@@ -417,6 +412,9 @@
         warning.textContent = "";
       }
     }
+
+    // Start with one blank row
+    addMaterial();
   
     function saveCompositionTable() {
       const rockSize = document.getElementById("rockSize").value || "0";
