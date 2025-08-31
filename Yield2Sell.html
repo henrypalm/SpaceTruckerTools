@@ -93,24 +93,27 @@
   <!-- Rock Composition Modal -->
   <div id="rockModal" class="modal">
     <div class="modal-content">
-      <div class="modal-title-and-button">
-        <span class="close" onclick="closeRockModal()">&times;</span>
-        <h2 style="display:inline-block; margin-right:1rem;">Rock Composition</h2>
-        <button onclick="saveCompositionTable()">Save Composition</button>
-      </div>
-  
-      <label>Rock Size (SCU): 
-        <input type="number" id="rockSize" value="0" oninput="updateRockTable()">
-      </label>
-  
-      <label>Inert Material Filtering (%):
-        <input type="number" id="inertFilter" value="%" min="0" max="100" oninput="updateRockTable()">
-      </label>
-  
-      <div id="materialsWrapper" style="border:1px solid #555; padding:0.5rem; margin:0.5rem 0; border-radius:5px; background:#1a1a1a;">
-        <div id="materialsContainer"></div>
-        <button onclick="addMaterial()">Add Material</button>
-      </div>
+      <div class="initial-container">
+        <div class="modal-title-and-button">
+          <span class="close" onclick="closeRockModal()">&times;</span>
+          <h2 style="display:inline-block; margin-right:1rem;">Rock Composition</h2>
+          <button onclick="saveCompositionTable()">Save Composition</button>
+        </div>
+    
+        <label>Rock Size (SCU): 
+          <input type="number" id="rockSize" value="0" oninput="updateRockTable()">
+        </label>
+    
+        <label>Inert Material Filtering (%):
+          <input type="number" id="inertFilter" value="%" min="0" max="100" oninput="updateRockTable()">
+        </label>
+    
+        <div id="materialsWrapper" style="border:1px solid #555; padding:0.5rem; margin:0.5rem 0; border-radius:5px; background:#1a1a1a;">
+          <div id="materialsContainer"></div>
+          <button onclick="addMaterial()">Add Material</button>
+        </div>
+      </div> 
+      <!-- testing end of initial container -->
   
       <table id="compositionTable">
         <thead>
