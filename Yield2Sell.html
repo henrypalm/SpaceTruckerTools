@@ -87,7 +87,7 @@
         <button id="copyClipboardBtn">Copy to Clipboard</button>
       </div>
 
-      <!-- Rock Composition Modal -->
+      <!-- Rock Composition Modal Button-->
       <button id="openRockModal">Open Rock Composition</button>
 
   <!-- Rock Composition Modal -->
@@ -95,15 +95,20 @@
     <div class="modal-content">
       <span class="close" onclick="closeRockModal()">&times;</span>
       <h2>Rock Composition</h2>
-
+  
       <label>Rock Size (SCU): 
         <input type="number" id="rockSize" value="32" oninput="updateRockTable()">
       </label>
-      <div id="materialsContainer"></div>
-      <button onclick="addMaterial()">Add Material</button>
-
-      <p id="percentWarning" style="color: red;"></p>
-
+  
+      <label>Inert Material Filtering (%):
+        <input type="number" id="inertFilter" value="0" min="0" max="100" oninput="updateRockTable()">
+      </label>
+  
+      <div id="materialsWrapper" style="border:1px solid #555; padding:0.5rem; margin:0.5rem 0; border-radius:5px; background:#1a1a1a;">
+        <div id="materialsContainer"></div>
+        <button onclick="addMaterial()">Add Material</button>
+      </div>
+  
       <table id="compositionTable">
         <thead>
           <tr>
@@ -114,10 +119,12 @@
         </thead>
         <tbody></tbody>
       </table>
+  
       <div id="savedTables"></div>
       <button onclick="saveCompositionTable()">Save Composition</button>
     </div>
   </div>
+  <!-- END Rock Composition Modal -->
   
     </main>
   </div>
@@ -360,20 +367,14 @@
       updateOrderReadyAt();
     });
 
+    /* Rock Composition Modal Script */
     function openRockModal() {
       document.getElementById("rockModal").style.display = "flex";
       if (document.getElementsByClassName("material-row").length === 0) {
-        addMaterial();
+        addMaterial(); // start with empty row
+        addMaterial("Inert Material", "0"); // add inert material row
       }
     }
-    function closeRockModal() {
-      document.getElementById("rockModal").style.display = "none";
-    }
-
-    const modal = document.getElementById("rockModal");
-    document.getElementById("openRockModal").onclick = () => modal.style.display = "flex";
-    function closeModal() { modal.style.display = "none"; }
-
   
     function addMaterial(name="", percent="") {
       const container = document.getElementById("materialsContainer");
@@ -390,70 +391,63 @@
   
     function updateRockTable() {
       const rockSize = parseFloat(document.getElementById("rockSize").value) || 0;
+      const inertFilter = parseFloat(document.getElementById("inertFilter").value) || 0;
       const rows = document.querySelectorAll("#materialsContainer .material-row");
       const tbody = document.querySelector("#compositionTable tbody");
       tbody.innerHTML = "";
-
-      let totalPercent = 0;
+  
       rows.forEach(row => {
         const name = row.children[0].value || "—";
-        const percent = parseFloat(row.children[1].value) || 0;
-        totalPercent += percent;
-        const scu = ((percent / 100) * rockSize).toFixed(2);
-
+        let percent = parseFloat(row.children[1].value) || 0;
+        let scu = (percent / 100) * rockSize;
+  
+        // If it's inert material, apply filtering
+        if (name.toLowerCase() === "inert material") {
+          scu = scu * (1 - inertFilter / 100);
+        }
+  
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${name}</td><td>${percent}%</td><td>${scu}</td>`;
+        tr.innerHTML = `<td>${name}</td><td>${percent}%</td><td>${scu.toFixed(2)}</td>`;
         tbody.appendChild(tr);
       });
-
-      const warning = document.getElementById("percentWarning");
-      if (totalPercent > 0 && totalPercent !== 100) {
-        warning.textContent = `⚠ Percentages total ${totalPercent}%. Should equal 100%.`;
-      } else {
-        warning.textContent = "";
-      }
     }
   
     function saveCompositionTable() {
       const rockSize = document.getElementById("rockSize").value || "0";
       const rows = document.querySelectorAll("#compositionTable tbody tr");
-  
       if (rows.length === 0) return;
   
-      // Create wrapper
       const container = document.createElement("div");
       container.className = "saved-composition";
   
-      // Add remove button
       const removeBtn = document.createElement("button");
       removeBtn.className = "remove-btn";
       removeBtn.textContent = "×";
       removeBtn.onclick = () => container.remove();
       container.appendChild(removeBtn);
   
-      // Add a header
       const header = document.createElement("h3");
       header.textContent = `Rock Composition (Size: ${rockSize} SCU)`;
       container.appendChild(header);
   
-      // Clone the table
       const table = document.createElement("table");
       table.innerHTML = document.getElementById("compositionTable").innerHTML;
       table.style.width = "100%";
       container.appendChild(table);
   
-      // Append to savedTables section
       document.getElementById("savedTables").appendChild(container);
-  
-      // Close modal (optional)
-      closeRockModal();
   
       // Reset modal for next use
       document.getElementById("rockSize").value = "";
       document.getElementById("materialsContainer").innerHTML = "";
       document.querySelector("#compositionTable tbody").innerHTML = "";
       document.getElementById("percentWarning").textContent = "";
+  
+      // start fresh with empty row + inert material
+      addMaterial();
+      addMaterial("Inert Material", "0");
     }
+    /* END Rock Composition Modal Script */
 
   </script>
 
