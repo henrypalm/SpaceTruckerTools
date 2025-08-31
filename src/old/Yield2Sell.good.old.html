@@ -4,136 +4,136 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Yield 2 Sell</title>
-  <link rel="icon" href="Yield2SellIcon.ico" type="image/x-icon" />
-
+  <link rel="icon" href="/imgs/Yield2SellIcon.ico" type="image/x-icon" />
+  
+  <link rel="stylesheet" href="css/nav-tabs.css" />
+  <link rel="stylesheet" href="css/yield-2-sell-styles/yield-rock-composition-modal.css" />
+  <link rel="stylesheet" href="css/yield-2-sell-styles/yield-buttons.css" />
+  <link rel="stylesheet" href="css/yield-2-sell-styles/yield-total-displays.css" />
+  <link rel="stylesheet" href="css/yield-2-sell-styles/yield-table.css" />
+  <link rel="stylesheet" href="css/yield-2-sell-styles/yield-layout.css" />
+  
+  
   <!-- Load item data and color mappings -->
   <script src="Yield2SellItemPrices.js"></script>
   <script src="itemColors.js"></script>
 
   <style>
-    body {
-      background-color: #000;
-      color: white;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
 
-    nav {
-      display: flex;
-      justify-content: center;
-      background-color: #000;
-      border-bottom: 2px solid #555;
-      padding: 0.5em 0;
-      gap: 2em;
-    }
 
-    nav a {
-      color: gold;
-      text-decoration: none;
-      font-weight: bold;
-      padding: 0.5em 1em;
-      border-radius: 8px 8px 0 0;
-      background-color: #111;
-      border: 1px solid #555;
-      border-bottom: none;
-    }
-
-    nav a:hover {
-      background-color: #222;
-      color: white;
-    }
-
-    nav a.active {
-      background-color: #222;
-      color: white;
-      border-bottom: 2px solid #111;
-    }
-
-    main {
-      padding: 2rem;
-    }
-
-    h1 {
-      text-align: center;
-      color: gold;
-      margin-bottom: 1rem;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-
-    th, td {
-      padding: 0.5rem;
-      border: 1px solid #444;
-      text-align: left;
-    }
-
-    th {
-      background-color: #111;
-      color: gold;
-    }
-
-    input[type="number"] {
-      width: 100px;
-      background-color: #111;
-      border: 1px solid #555;
-      color: white;
-      padding: 0.3rem;
-    }
-
-    select {
-      background-color: #111;
-      border: 1px solid #555;
-      color: white;
-      padding: 0.3rem;
-      width: 100%;
-    }
-
-    .total-display {
-      text-align: right;
-      font-size: 1.2rem;
-      color: lightgreen;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
   </style>
 </head>
 <body>
 
-  <nav>
+  <div class="nav-tabs">
     <a href="index.html">Space Trucker Tools</a>
-    <a href="Yield2Sell.html" class="active">Yield 2 Sell</a>
     <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
+    <a href="WorkordersOverview.html">Work Orders Overview</a>
     <a href="ProfitSplitter.html">Profit Splitter</a>
+    <a href="Yield2Sell.html">Yield 2 Sell</a>
+    <a href="Scavenger.html">Scavenger</a>
+    <a href="AaronsJumpData.html">Aaron's Jump Data</a>
     <a href="Profile.html">Profile</a>
-  </nav>
+  </div>
 
-  <main>
-    <h1>Yield 2 Sell</h1>
+  <div class="container">
+    <main>
+      <h1>Yield 2 Sell</h1>
+  
+      <label for="refineryTitle" style="display:block; text-align:center; color: gold; margin-bottom: 0.5rem;">
+        Refinery Name:
+      </label>
+      <input type="text" id="refineryTitle" placeholder="Enter refinery name" style="display:block; margin: 0 auto 1rem auto; width: 300px; padding: 0.3rem; font-size: 1rem; border-radius: 4px; border: 1px solid #555; background-color: #111; color: white;" />
+  
+      <div style="text-align:center; margin-bottom:1rem; color: gold;">
+        <label for="refiningType">Refining Type: </label>
+        <select id="refiningType" style="background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px; width:150px;">
+          <option value="Ferron">Ferron</option>
+          <option value="Dynix">Dynix</option>
+        </select>
+      
+        <label for="refiningCost" style="margin-left:1rem;">Refining Cost: </label>
+        <input type="number" id="refiningCost" placeholder="aUEC" min="0" style="width:100px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
+      
+        <label for="refiningHours" style="margin-left:1rem;">Duration: </label>
+        <input type="number" id="refiningHours" placeholder="Hours" min="0" max="23" style="width:60px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
+        <input type="number" id="refiningMinutes" placeholder="Minutes" min="0" max="59" style="width:60px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
+      
+        <div style="margin-top:0.5rem; font-weight:bold;">
+          Order Ready At: <span id="orderReadyAt" style="color: lightgreen;">--:--</span>
+        </div>
+      </div>
+  
+      <table id="priceTable">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Yield</th>
+            <th>Location</th>
+            <th>Price Per SCU (aUEC)</th>
+            <th>Item Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Dynamically populated -->
+        </tbody>
+      </table>
+  
+      <div class="total-display" id="grandTotal">Total: 0 aUEC</div>
+  
+      <div style="margin-top:1rem; text-align: center; gap: 1rem; display: flex; justify-content: center;">
+        <button id="exportTxtBtn">Export TXT</button>
+        <button id="exportCsvBtn">Export CSV</button>
+        <button id="copyClipboardBtn">Copy to Clipboard</button>
+      </div>
 
-    <table id="priceTable">
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Yield</th>
-          <th>Location</th>
-          <th>Price Per SCU (aUEC)</th>
-          <th>Item Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Dynamically populated -->
-      </tbody>
-    </table>
+      <!-- Rock Composition Modal -->
+      <button id="openRockModal">Open Rock Composition</button>
 
-    <div class="total-display" id="grandTotal">Total: 0 aUEC</div>
-  </main>
+  <!-- Rock Composition Modal -->
+  <div id="rockModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeRockModal()">&times;</span>
+      <h2>Rock Composition</h2>
+
+      <label>Rock Size (SCU): 
+        <input type="number" id="rockSize" value="32" oninput="updateRockTable()">
+      </label>
+      <div id="materialsContainer"></div>
+      <button onclick="addMaterial()">Add Material</button>
+
+      <p id="percentWarning" style="color: red;"></p>
+
+      <table id="compositionTable">
+        <thead>
+          <tr>
+            <th>Material</th>
+            <th>Percentage (%)</th>
+            <th>SCU</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="savedTables"></div>
+      <button onclick="saveCompositionTable()">Save Composition</button>
+    </div>
+  </div>
+  
+    </main>
+  </div>
 
   <script>
+
+    // Highlight active tab based on current filename
+    const path = window.location.pathname;
+    const page = path.substring(path.lastIndexOf('/') + 1);
+    const tabs = document.querySelectorAll('nav a');
+    tabs.forEach(tab => {
+      if (tab.getAttribute('href') === page) {
+        tab.classList.add('active');
+      }
+    });
+    
     function populateTable() {
       const tbody = document.querySelector('#priceTable tbody');
       tbody.innerHTML = '';
@@ -226,6 +226,235 @@
 
     // Initial population
     populateTable();
+
+    function downloadFile(content, filename) {
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
+    
+    function exportTXT() {
+      const refineryNameInput = document.getElementById("refineryTitle");
+      const titleRaw = refineryNameInput ? refineryNameInput.value.trim() : "";
+      const title = titleRaw.length > 0 ? titleRaw : "Yield 2 Sell Export";
+      const refiningType = document.getElementById("refiningType").value;
+      const refiningCost = document.getElementById("refiningCost").value || "0";
+      const refiningHours = document.getElementById("refiningHours").value || "0";
+      const refiningMinutes = document.getElementById("refiningMinutes").value || "0";
+      const orderReady = document.getElementById("orderReadyAt").textContent;
+    
+      // Initialize the TXT content with the header info and table header
+      let txt = `Title: ${title}\nRefining Type: ${refiningType}\nRefining Cost: ${refiningCost} aUEC\nDuration: ${refiningHours}h ${refiningMinutes}m\nOrder Ready At: ${orderReady}\n\nItem | Yield | Location | Price Per SCU | Item Total\n`;
+    
+      // Append each row with yield > 0
+      const rows = document.querySelectorAll("#priceTable tbody tr");
+      rows.forEach(row => {
+        const item = row.children[0].textContent.trim();
+        const yieldVal = row.children[1].querySelector("input").value || "0";
+        const location = row.children[2].querySelector("select").value;
+        const price = row.children[3].textContent.trim();
+        const itemTotal = row.children[4].textContent.trim();
+    
+        if (parseInt(yieldVal) > 0) {
+          txt += `${item} | ${yieldVal} | ${location} | ${price} | ${itemTotal}\n`;
+        }
+      });
+    
+      // Format filename with refinery title and datetime
+      const filename = `${title.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0,16).replace(/[:T]/g, "-")}.txt`;
+    
+      // Trigger file download
+      downloadFile(txt, filename);
+    }
+    
+    function exportCSV() {
+      const refineryNameInput = document.getElementById("refineryTitle");
+      const titleRaw = refineryNameInput ? refineryNameInput.value.trim() : "";
+      const title = titleRaw.length > 0 ? titleRaw : "Yield 2 Sell Export";
+      const refiningType = document.getElementById("refiningType").value;
+      const refiningCost = document.getElementById("refiningCost").value || "0";
+      const refiningHours = document.getElementById("refiningHours").value || "0";
+      const refiningMinutes = document.getElementById("refiningMinutes").value || "0";
+      const orderReady = document.getElementById("orderReadyAt").textContent;
+    
+      let csv = `Title:,${title}\nRefining Type:,${refiningType}\nRefining Cost:,${refiningCost} aUEC\nDuration:,${refiningHours}h ${refiningMinutes}m\nOrder Ready At:,${orderReady}\n\nItem,Yield,Location,Price Per SCU,Item Total\n`;
+    
+      const rows = document.querySelectorAll("#priceTable tbody tr");
+      rows.forEach(row => {
+        const item = row.children[0].textContent.trim();
+        const yieldVal = row.children[1].querySelector("input").value || "0";
+        const location = row.children[2].querySelector("select").value;
+        const price = row.children[3].textContent.trim();
+        const itemTotal = row.children[4].textContent.trim();
+    
+        if (parseInt(yieldVal) > 0) {
+          // Quote values to handle commas in text
+          csv += `"${item}","${yieldVal}","${location}","${price}","${itemTotal}"\n`;
+        }
+      });
+    
+      const filename = `${title.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0,16).replace(/[:T]/g, "-")}.csv`;
+      downloadFile(csv, filename);
+    
+      alert("Reminder: This CSV uses commas as delimiters.");
+    }
+    
+    function copyToClipboard() {
+      const refineryNameInput = document.getElementById("refineryTitle");
+      const titleRaw = refineryNameInput ? refineryNameInput.value.trim() : "";
+      const title = titleRaw.length > 0 ? titleRaw : "Yield 2 Sell Export";
+      const refiningType = document.getElementById("refiningType").value;
+      const refiningCost = document.getElementById("refiningCost").value || "0";
+      const refiningHours = document.getElementById("refiningHours").value || "0";
+      const refiningMinutes = document.getElementById("refiningMinutes").value || "0";
+      const orderReady = document.getElementById("orderReadyAt").textContent;
+    
+      let textToCopy = `Title: ${title}\nRefining Type: ${refiningType}\nRefining Cost: ${refiningCost} aUEC\nDuration: ${refiningHours}h ${refiningMinutes}m\nOrder Ready At: ${orderReady}\n\nItem | Yield | Location | Price Per SCU | Item Total\n`;
+    
+      const rows = document.querySelectorAll("#priceTable tbody tr");
+      rows.forEach(row => {
+        const item = row.children[0].textContent.trim();
+        const yieldVal = row.children[1].querySelector("input").value || "0";
+        const location = row.children[2].querySelector("select").value;
+        const price = row.children[3].textContent.trim();
+        const itemTotal = row.children[4].textContent.trim();
+    
+        if (parseInt(yieldVal) > 0) {
+          textToCopy += `${item} | ${yieldVal} | ${location} | ${price} | ${itemTotal}\n`;
+        }
+      });
+    
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        alert("Export data copied to clipboard!");
+      }).catch(() => {
+        alert("Clipboard copy failed. Please copy manually.");
+      });
+    }
+    
+    function updateOrderReadyAt() {
+      const refiningHours = parseInt(document.getElementById('refiningHours').value) || 0;
+      const refiningMinutes = parseInt(document.getElementById('refiningMinutes').value) || 0;
+    
+      const now = new Date();
+      now.setHours(now.getHours() + refiningHours);
+      now.setMinutes(now.getMinutes() + refiningMinutes);
+    
+      const hh = now.getHours().toString().padStart(2, '0');
+      const mm = now.getMinutes().toString().padStart(2, '0');
+    
+      document.getElementById('orderReadyAt').textContent = `${hh}:${mm}`;
+    }
+    
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("exportTxtBtn").addEventListener("click", exportTXT);
+      document.getElementById("exportCsvBtn").addEventListener("click", exportCSV);
+      document.getElementById("copyClipboardBtn").addEventListener("click", copyToClipboard);
+    
+      // Hook refining hours and minutes inputs
+      document.getElementById('refiningHours').addEventListener('input', updateOrderReadyAt);
+      document.getElementById('refiningMinutes').addEventListener('input', updateOrderReadyAt);
+    
+      // Initial update of order ready time on page load
+      updateOrderReadyAt();
+    });
+
+    function openRockModal() {
+      document.getElementById("rockModal").style.display = "flex";
+      if (document.getElementsByClassName("material-row").length === 0) {
+        addMaterial();
+      }
+    }
+    function closeRockModal() {
+      document.getElementById("rockModal").style.display = "none";
+    }
+
+    const modal = document.getElementById("rockModal");
+    document.getElementById("openRockModal").onclick = () => modal.style.display = "flex";
+    function closeModal() { modal.style.display = "none"; }
+
+  
+    function addMaterial(name="", percent="") {
+      const container = document.getElementById("materialsContainer");
+      const row = document.createElement("div");
+      row.className = "material-row";
+      row.innerHTML = `
+        <input type="text" placeholder="Material" value="${name}" oninput="updateRockTable()">
+        <input type="number" placeholder="%" value="${percent}" oninput="updateRockTable()">
+        <button class="remove-btn" onclick="this.parentElement.remove(); updateRockTable()">x</button>
+      `;
+      container.appendChild(row);
+      updateRockTable();
+    }
+  
+    function updateRockTable() {
+      const rockSize = parseFloat(document.getElementById("rockSize").value) || 0;
+      const rows = document.querySelectorAll("#materialsContainer .material-row");
+      const tbody = document.querySelector("#compositionTable tbody");
+      tbody.innerHTML = "";
+
+      let totalPercent = 0;
+      rows.forEach(row => {
+        const name = row.children[0].value || "—";
+        const percent = parseFloat(row.children[1].value) || 0;
+        totalPercent += percent;
+        const scu = ((percent / 100) * rockSize).toFixed(2);
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${name}</td><td>${percent}%</td><td>${scu}</td>`;
+        tbody.appendChild(tr);
+      });
+
+      const warning = document.getElementById("percentWarning");
+      if (totalPercent > 0 && totalPercent !== 100) {
+        warning.textContent = `⚠ Percentages total ${totalPercent}%. Should equal 100%.`;
+      } else {
+        warning.textContent = "";
+      }
+    }
+  
+    function saveCompositionTable() {
+      const rockSize = document.getElementById("rockSize").value || "0";
+      const rows = document.querySelectorAll("#compositionTable tbody tr");
+  
+      if (rows.length === 0) return;
+  
+      // Create wrapper
+      const container = document.createElement("div");
+      container.className = "saved-composition";
+  
+      // Add remove button
+      const removeBtn = document.createElement("button");
+      removeBtn.className = "remove-btn";
+      removeBtn.textContent = "×";
+      removeBtn.onclick = () => container.remove();
+      container.appendChild(removeBtn);
+  
+      // Add a header
+      const header = document.createElement("h3");
+      header.textContent = `Rock Composition (Size: ${rockSize} SCU)`;
+      container.appendChild(header);
+  
+      // Clone the table
+      const table = document.createElement("table");
+      table.innerHTML = document.getElementById("compositionTable").innerHTML;
+      table.style.width = "100%";
+      container.appendChild(table);
+  
+      // Append to savedTables section
+      document.getElementById("savedTables").appendChild(container);
+  
+      // Close modal (optional)
+      closeRockModal();
+  
+      // Reset modal for next use
+      document.getElementById("rockSize").value = "";
+      document.getElementById("materialsContainer").innerHTML = "";
+      document.querySelector("#compositionTable tbody").innerHTML = "";
+      document.getElementById("percentWarning").textContent = "";
+    }
+
   </script>
 
 </body>
