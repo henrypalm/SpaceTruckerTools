@@ -416,34 +416,78 @@
       const rockSize = document.getElementById("rockSize").value || "0";
       const rows = document.querySelectorAll("#compositionTable tbody tr");
       if (rows.length === 0) return;
-  
+    
       const container = document.createElement("div");
       container.className = "saved-composition";
-  
+    
       const removeBtn = document.createElement("button");
       removeBtn.className = "remove-btn";
       removeBtn.textContent = "×";
       removeBtn.onclick = () => container.remove();
       container.appendChild(removeBtn);
-  
+    
       const header = document.createElement("h3");
       header.textContent = `Rock Composition (Size: ${rockSize} SCU)`;
       container.appendChild(header);
-  
+    
+      // Saved snapshot (read-only)
       const table = document.createElement("table");
       table.innerHTML = document.getElementById("compositionTable").innerHTML;
       table.style.width = "100%";
       container.appendChild(table);
-  
+    
+      // --- NEW: Editable section with inert + blank row ---
+      const editableTable = document.createElement("table");
+      editableTable.className = "editable-composition";
+      editableTable.innerHTML = `
+        <thead>
+          <tr>
+            <th>Material</th>
+            <th>Percentage (%)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Inert Material</td>
+            <td><input type="number" value="0" /></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><input type="text" placeholder="Material name" /></td>
+            <td><input type="number" placeholder="%" /></td>
+            <td><button class="remove-btn">x</button></td>
+          </tr>
+        </tbody>
+      `;
+    
+      // Add button to append rows dynamically
+      const addBtn = document.createElement("button");
+      addBtn.textContent = "Add Material";
+      addBtn.onclick = () => {
+        const tbody = editableTable.querySelector("tbody");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input type="text" placeholder="Material name" /></td>
+          <td><input type="number" placeholder="%" /></td>
+          <td><button class="remove-btn">x</button></td>
+        `;
+        // make remove button work
+        tr.querySelector(".remove-btn").onclick = () => tr.remove();
+        tbody.appendChild(tr);
+      };
+    
+      container.appendChild(editableTable);
+      container.appendChild(addBtn);
+    
       document.getElementById("savedTables").appendChild(container);
-  
+    
       // Reset modal for next use
       document.getElementById("rockSize").value = "";
       document.getElementById("materialsContainer").innerHTML = "";
       document.querySelector("#compositionTable tbody").innerHTML = "";
-      document.getElementById("percentWarning").textContent = "";
-  
-      // start fresh with empty row + inert material
+    
+      // start fresh with blank + inert material
       addMaterial();
       addMaterial("Inert Material", "0");
     }
