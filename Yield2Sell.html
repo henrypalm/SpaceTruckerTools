@@ -5,167 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Yield 2 Sell</title>
   <link rel="icon" href="/imgs/Yield2SellIcon.ico" type="image/x-icon" />
-
+  <link rel="stylesheet" href="css/yield-2-sell-styles/yield-rock-composition-modal.css" />
+  <link rel="stylesheet" href="css/yield-2-sell-styles/yield-buttons.css" />
+  <link rel="stylesheet" href="css/yield-2-sell-styles/yield-total-displays.css" />
+  <link rel="stylesheet" href="css/yield-2-sell-styles/yield-table.css" />
+  <link rel="stylesheet" href="css/yield-2-sell-styles/yield-layout.css" />
+  
   <!-- Load item data and color mappings -->
   <script src="Yield2SellItemPrices.js"></script>
   <script src="itemColors.js"></script>
 
   <style>
 
-    .container {
-      background-color: rgba(0, 0, 0, 0.75); /* semi-transparent dark background */
-      padding: 2rem;
-      border-radius: 12px;
-      max-width: 700px;
-      width: 90%;
-      margin: 2rem auto;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    }
-
-    .nav-tabs {
-      display: flex;
-      gap: 10px;
-      background-color: #222;
-      padding: 10px;
-      border-bottom: 2px solid #444;
-      margin-bottom: 20px;
-      justify-content: center;
-    }
-    
-    .nav-tabs a {
-      color: #ccc;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      background-color: #333;
-      transition: background-color 0.3s;
-    }
-    
-    .nav-tabs a:hover {
-      background-color: #555;
-      color: white;
-    }
-    
-    .nav-tabs a.active {
-      background-color: #2d89ff;
-      color: white;
-      font-weight: bold;
-    }
-
-    nav {
-      display: flex;
-      justify-content: center;
-      background-color: #000;
-      border-bottom: 2px solid #555;
-      padding: 0.5em 0;
-      gap: 2em;
-    }
-
-    nav a {
-      color: gold;
-      text-decoration: none;
-      font-weight: bold;
-      padding: 0.5em 1em;
-      border-radius: 8px 8px 0 0;
-      background-color: #111;
-      border: 1px solid #555;
-      border-bottom: none;
-    }
-
-    nav a:hover {
-      background-color: #222;
-      color: white;
-    }
-
-    nav a.active {
-      background-color: #2d89ff;
-      color: white;
-      font-weight: bold;
-    }
-    
-    body {
-      background-color: #111;         
-      background-image: url('/imgs/MoltenFoundryBackground.png'); 
-      background-size: cover;         
-      background-repeat: no-repeat;   
-      background-attachment: fixed;
-      color: white;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;              
-      gap: 30px;
-    }
-
-    
-
-    main {
-      padding: 2rem;
-    }
-
-    h1 {
-      text-align: center;
-      color: gold;
-      margin-bottom: 1rem;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-
-    th, td {
-      padding: 0.5rem;
-      border: 1px solid #444;
-      text-align: left;
-    }
-
-    th {
-      background-color: #111;
-      color: gold;
-    }
-
-    input[type="number"] {
-      width: 100px;
-      background-color: #111;
-      border: 1px solid #555;
-      color: white;
-      padding: 0.3rem;
-    }
-
-    select {
-      background-color: #111;
-      border: 1px solid #555;
-      color: white;
-      padding: 0.3rem;
-      width: 100%;
-    }
-
-    .total-display {
-      text-align: right;
-      font-size: 1.2rem;
-      color: lightgreen;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
-    button {
-      background-color: #222;
-      border: 1px solid #555;
-      color: gold;
-      padding: 0.5rem 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-button:hover {
-  background-color: #333;
-  color: white;
-}  
 
   </style>
 </head>
@@ -232,6 +83,40 @@ button:hover {
         <button id="exportCsvBtn">Export CSV</button>
         <button id="copyClipboardBtn">Copy to Clipboard</button>
       </div>
+
+      <!-- Rock Composition Modal -->
+      <button onclick="openRockModal()" style="margin-bottom:2rem;">Open Rock Composition</button>
+      
+      <div id="rockModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeRockModal()">&times;</span>
+          <h2 style="color:gold;">Rock Composition</h2>
+      
+          <label>Rock Size (SCU):</label>
+          <input type="number" id="rockSize" placeholder="Enter SCU" oninput="updateRockTable()">
+      
+          <div id="materialsContainer"></div>
+          <button onclick="addMaterial()">+ Add Material</button>
+      
+          <table id="compositionTable">
+            <thead>
+              <tr>
+                <th>Material</th>
+                <th>Percentage (%)</th>
+                <th>SCU</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div id="percentWarning" style="color:red; font-weight:bold; margin-top:0.5rem;"></div>
+      
+          <!-- Save table button -->
+          <button onclick="saveCompositionTable()" style="margin-top:1rem;">➕ Add Table</button>
+        </div>
+      </div>
+      
+      <!-- Where finished tables will appear -->
+      <div id="savedTables" style="margin-top:2rem;"></div>
   
     </main>
   </div>
@@ -473,6 +358,104 @@ button:hover {
       // Initial update of order ready time on page load
       updateOrderReadyAt();
     });
+
+    function openRockModal() {
+      document.getElementById("rockModal").style.display = "flex";
+      if (document.getElementsByClassName("material-row").length === 0) {
+        addMaterial();
+      }
+    }
+    function closeRockModal() {
+      document.getElementById("rockModal").style.display = "none";
+    }
+  
+    function addMaterial() {
+      const container = document.getElementById("materialsContainer");
+      const row = document.createElement("div");
+      row.className = "material-row";
+  
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.placeholder = "Material Name";
+      nameInput.oninput = updateRockTable;
+  
+      const percentInput = document.createElement("input");
+      percentInput.type = "number";
+      percentInput.placeholder = "%";
+      percentInput.oninput = updateRockTable;
+  
+      row.appendChild(nameInput);
+      row.appendChild(percentInput);
+      container.appendChild(row);
+    }
+  
+    function updateRockTable() {
+      const rockSize = parseFloat(document.getElementById("rockSize").value) || 0;
+      const rows = document.querySelectorAll("#materialsContainer .material-row");
+      const tbody = document.querySelector("#compositionTable tbody");
+      tbody.innerHTML = "";
+  
+      let totalPercent = 0;
+  
+      rows.forEach(row => {
+        const name = row.children[0].value || "—";
+        const percent = parseFloat(row.children[1].value) || 0;
+        totalPercent += percent;
+        const scu = ((percent / 100) * rockSize).toFixed(2);
+  
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${name}</td><td>${percent}%</td><td>${scu}</td>`;
+        tbody.appendChild(tr);
+      });
+  
+      const warning = document.getElementById("percentWarning");
+      if (totalPercent > 0 && totalPercent !== 100) {
+        warning.textContent = `⚠ Percentages total ${totalPercent}%. Should equal 100%.`;
+      } else {
+        warning.textContent = "";
+      }
+    }
+  
+    function saveCompositionTable() {
+      const rockSize = document.getElementById("rockSize").value || "0";
+      const rows = document.querySelectorAll("#compositionTable tbody tr");
+  
+      if (rows.length === 0) return;
+  
+      // Create wrapper
+      const container = document.createElement("div");
+      container.className = "saved-composition";
+  
+      // Add remove button
+      const removeBtn = document.createElement("button");
+      removeBtn.className = "remove-btn";
+      removeBtn.textContent = "×";
+      removeBtn.onclick = () => container.remove();
+      container.appendChild(removeBtn);
+  
+      // Add a header
+      const header = document.createElement("h3");
+      header.textContent = `Rock Composition (Size: ${rockSize} SCU)`;
+      container.appendChild(header);
+  
+      // Clone the table
+      const table = document.createElement("table");
+      table.innerHTML = document.getElementById("compositionTable").innerHTML;
+      table.style.width = "100%";
+      container.appendChild(table);
+  
+      // Append to savedTables section
+      document.getElementById("savedTables").appendChild(container);
+  
+      // Close modal (optional)
+      closeRockModal();
+  
+      // Reset modal for next use
+      document.getElementById("rockSize").value = "";
+      document.getElementById("materialsContainer").innerHTML = "";
+      document.querySelector("#compositionTable tbody").innerHTML = "";
+      document.getElementById("percentWarning").textContent = "";
+    }
 
   </script>
 
