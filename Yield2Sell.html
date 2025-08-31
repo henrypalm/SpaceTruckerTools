@@ -381,7 +381,7 @@
       row.innerHTML = `
         <input type="text" placeholder="Material" value="${name}" oninput="updateRockTable()">
         <input type="number" placeholder="%" value="${percent}" oninput="updateRockTable()">
-        <button class="removeBtn" onclick="this.parentElement.remove(); updateRockTable()">x</button>
+        <button class="remove-btn" onclick="this.parentElement.remove(); updateRockTable()">x</button>
       `;
       container.appendChild(row);
       updateRockTable();
@@ -424,11 +424,11 @@
       container.className = "saved-composition";
   
       // Add remove button
-      const removeBtn = document.createElement("button");
-      removeBtn.className = "remove-btn";
-      removeBtn.textContent = "×";
-      removeBtn.onclick = () => container.remove();
-      container.appendChild(removeBtn);
+      const remove-btn = document.createElement("button");
+      remove-btn.className = "remove-btn";
+      remove-btn.textContent = "×";
+      remove-btn.onclick = () => container.remove();
+      container.appendChild(remove-btn);
   
       // Add a header
       const header = document.createElement("h3");
