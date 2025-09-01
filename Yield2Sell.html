@@ -17,6 +17,7 @@
   <!-- Load item data and color mappings -->
   <script src="Yield2SellItemPrices.js"></script>
   <script src="itemColors.js"></script>
+  <script src="JumpData.js"></script>
 
   <style>
 
@@ -87,6 +88,9 @@
         <button id="copyClipboardBtn">Copy to Clipboard</button>
       </div>
 
+      <!-- Jump Data Modal Button-->
+      <button onclick="openJumpDataModal()">Open Jump Data</button>
+
       <!-- Rock Composition Modal Button-->
       <button id="openRockModal" onclick="openRockModal()">Open Rock Composition</button>
 
@@ -131,6 +135,36 @@
     </div>
   </div>
   <!-- END Rock Composition Modal -->
+
+  <!-- Jump Data Modal -->
+  <div id="jumpDataModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+  
+      <div class="container">
+        <h1>Quantum Jump Data for Aaron's Halo</h1>
+        <table id="jumpTable">
+          <thead>
+            <tr>
+              <th>From</th>
+              <th>To</th>
+              <th>Drop-Out Range (millions of km)</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+  
+        <div id="exportBox">
+          <button onclick="exportJumpDataToTXT()">Export TXT</button>
+          <button onclick="exportJumpDataToCSV()">Export CSV</button>
+          <button onclick="copyJumpDataToClipboard()">Copy to Clipboard</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- END Jump Data Modal -->
   
     </main>
   </div>
@@ -140,7 +174,7 @@
     // Highlight active tab based on current filename
     const path = window.location.pathname;
     const page = path.substring(path.lastIndexOf('/') + 1);
-    const tabs = document.querySelectorAll('nav a');
+    const tabs = document.querySelectorAll('nav-tabs a');
     tabs.forEach(tab => {
       if (tab.getAttribute('href') === page) {
         tab.classList.add('active');
@@ -240,6 +274,93 @@
     // Initial population
     populateTable();
 
+
+
+
+    (function(){
+
+      // Modal element
+      const modal = document.getElementById("jumpDataModal");
+      const closeBtn = modal.querySelector(".close");
+      const tbody = modal.querySelector("#jumpTable tbody");
+    
+      // Populate table from JumpData.js
+      function aaronsJumpData_populateTable() {
+        tbody.innerHTML = "";
+        JumpData.forEach(entry => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${entry.from}</td>
+            <td>${entry.to}</td>
+            <td class="highlight">${entry.range}</td>
+            <td>${entry.notes || ""}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+    
+      // Open modal
+      window.openJumpDataModal = function() {
+        aaronsJumpData_populateTable();
+        modal.style.display = "flex";
+      };
+    
+      // Close modal
+      closeBtn.onclick = () => { modal.style.display = "none"; };
+      window.onclick = (e) => { if(e.target === modal) modal.style.display = "none"; };
+    
+      // Modal-specific download function
+      function aaronsJumpData_downloadFile(content, filename) {
+        const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+      }
+    
+      // Exports
+      window.exportJumpDataToTXT = function() {
+        let txt = "Quantum Jump Reference to Aaron's Halo\n\nFrom | To | Range (mil km) | Notes\n";
+        JumpData.forEach(entry => {
+          txt += `${entry.from} | ${entry.to} | ${entry.range} | ${entry.notes || ""}\n`;
+        });
+        const filename = `AaronJumpData_${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.txt`;
+        aaronsJumpData_downloadFile(txt, filename);
+      };
+    
+      window.exportJumpDataToCSV = function() {
+        let csv = "From,To,Range (mil km),Notes\n";
+        JumpData.forEach(entry => {
+          csv += `"${entry.from}","${entry.to}","${entry.range}","${entry.notes || ""}"\n`;
+        });
+        const filename = `AaronJumpData_${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.csv`;
+        aaronsJumpData_downloadFile(csv, filename);
+      };
+    
+      window.copyJumpDataToClipboard = function() {
+        let text = "Quantum Jump Reference to Aaron's Halo\n\nFrom | To | Range (mil km) | Notes\n";
+        JumpData.forEach(entry => {
+          text += `${entry.from} | ${entry.to} | ${entry.range} | ${entry.notes || ""}\n`;
+        });
+        if(navigator.clipboard){
+          navigator.clipboard.writeText(text).then(()=>alert("Copied Jump Data to clipboard!"));
+        } else {
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.style.position = "fixed";
+          textarea.style.left = "-9999px";
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand("copy");
+          document.body.removeChild(textarea);
+          alert("Copied Jump Data to clipboard!");
+        }
+      };
+    
+    })();
+
+
+    
     function downloadFile(content, filename) {
       const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
       const link = document.createElement("a");
@@ -502,7 +623,7 @@
     
       // start fresh with blank + inert material
       addMaterial();
-      addMaterial("Inert Material", "0");
+      addMaterial("Inert Material", "%");
     }
     /* END Rock Composition Modal Script */
 
