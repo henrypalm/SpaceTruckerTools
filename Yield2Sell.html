@@ -381,6 +381,10 @@
         addMaterial("Inert Material", "%"); // changed "0" to "%"
       }
     }
+
+    function closeRockModal() {
+      document.getElementById("rockModal").style.display = "none";
+    }
   
     function addMaterial(name="", percent="") {
       const container = document.getElementById("materialsContainer");
