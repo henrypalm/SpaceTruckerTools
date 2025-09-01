@@ -7,10 +7,12 @@
   width: 100%; height: 100%;
   overflow: auto;
   background-color: rgba(0,0,0,0.8);
+  background: url('/imgs/QuantumBackground.png') no-repeat center center fixed;
+  background-size: cover;
 }
 
 .modal-content {
-  background: #111 url('/imgs/QuantumBackground.png') no-repeat center center fixed;
+  background: url('/imgs/QuantumBackground.png') no-repeat center center fixed;
   background-size: cover;
   margin: 3% auto;
   padding: 20px;
