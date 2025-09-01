@@ -101,7 +101,7 @@
         </div>
     
         <label>Rock Size (SCU): 
-          <input type="number" id="rockSize" value="0" oninput="updateRockTable()">
+          <input type="number" id="rockSize" placeholder="SCU" oninput="updateRockTable()">
         </label>
     
         <label>Inert Material Filtering (%):
@@ -445,7 +445,8 @@
       table.innerHTML = document.getElementById("compositionTable").innerHTML;
       table.style.width = "100%";
       container.appendChild(table);
-    
+
+  /*
       //  Editable section with inert + blank row ---
       const editableTable = document.createElement("table");
       editableTable.className = "editable-composition";
@@ -470,7 +471,7 @@
           </tr>
         </tbody>
       `;
-    
+  
       // Add button to append rows dynamically
       const addBtn = document.createElement("button");
       addBtn.textContent = "Add Material";
@@ -489,6 +490,8 @@
     
       container.appendChild(editableTable);
       container.appendChild(addBtn);
+
+  */
     
       document.getElementById("savedTables").appendChild(container);
     
