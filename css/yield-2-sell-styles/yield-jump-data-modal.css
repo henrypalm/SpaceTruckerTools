@@ -1,3 +1,4 @@
+
 .modal {
   display: none;
   position: fixed;
@@ -29,9 +30,7 @@
   font-weight: bold;
   cursor: pointer;
 }
-.modal-content .close:hover {
-  color: #fff;
-}
+.modal-content .close:hover { color: #fff; }
 
 .container {
   background-color: rgba(0, 0, 0, 0.75);
