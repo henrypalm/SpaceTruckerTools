@@ -162,6 +162,64 @@ const itemPrices = {
       "PATCH CITY, PYRO": { scu: 2315, cscu: 1, mscu: 1 },
       "GASLIGHT, PYRO": { scu: 2315, cscu: 1, mscu: 1 },
       "STARLIGHT SERVICE STATION, PYRO": { scu: 2315, cscu: 1, mscu: 1 }
+    },
+    "Corundum": {
+      "NEW CABBAGE, MICROTECH, STANTON": { scu: 1876, cscu: 1, mscu: 1 },
+      "AREA 18, ARCCORP, STANTON": { scu: 1825, cscu: 1, mscu: 1 },
+      "ORISON, CRUSADER, STANTON": { scu: 1789, cscu: 1, mscu: 1 },
+      "LORVILLE, HURSTON, STANTON": { scu: 1765, cscu: 1, mscu: 1 },
+      "PATCH CITY, PYRO": { scu: 1711, cscu: 1, mscu: 1 },
+      "DUDLEY & DAUGHTERS, PYRO": { scu: 1711, cscu: 1, mscu: 1 }
+    },
+    "Quartz": {
+      "NEW CABBAGE, MICROTECH, STANTON": { scu: 1550, cscu: 1, mscu: 1 },
+      "AREA 18, ARCCORP, STANTON": { scu: 1525, cscu: 1, mscu: 1 },
+      "ORISON, CRUSADER, STANTON": { scu: 1512, cscu: 1, mscu: 1 },
+      "LORVILLE, HURSTON, STANTON": { scu: 1500, cscu: 1, mscu: 1 },
+      "ROD'S FUEL 'N SUPPLIES, PYRO": { scu: 1450, cscu: 1, mscu: 1 },
+      "STARLIGHT SERVICE STATION, PYRO": { scu: 1450, cscu: 1, mscu: 1 }
+    },
+    "Graphite": {
+      "NEW CABBAGE, MICROTECH, STANTON": { scu: 1325, cscu: 1, mscu: 1 },
+      "AREA 18, ARCCORP, STANTON": { scu: 1300, cscu: 1, mscu: 1 },
+      "ORISON, CRUSADER, STANTON": { scu: 1290, cscu: 1, mscu: 1 },
+      "LORVILLE, HURSTON, STANTON": { scu: 1275, cscu: 1, mscu: 1 },
+      "ENDGAME, PYRO": { scu: 1240, cscu: 1, mscu: 1 },
+      "PATCH CITY, PYRO": { scu: 1240, cscu: 1, mscu: 1 }
+    },
+    "AmioshiPlasma": {
+      "AREA 18, ARCCORP, STANTON": { scu: 1200, cscu: 1, mscu: 1 },
+      "LORVILLE, HURSTON, STANTON": { scu: 1180, cscu: 1, mscu: 1 },
+      "ORISON, CRUSADER, STANTON": { scu: 1150, cscu: 1, mscu: 1 },
+      "NEW CABBAGE, MICROTECH, STANTON": { scu: 1150, cscu: 1, mscu: 1 },
+      "RAT'S NEST, PYRO": { scu: 1125, cscu: 1, mscu: 1 }
+    },
+    "Copper": {
+      "AREA 18, ARCCORP, STANTON": { scu: 1100, cscu: 1, mscu: 1 },
+      "LORVILLE, HURSTON, STANTON": { scu: 1085, cscu: 1, mscu: 1 },
+      "ORISON, CRUSADER, STANTON": { scu: 1075, cscu: 1, mscu: 1 },
+      "NEW CABBAGE, MICROTECH, STANTON": { scu: 1075, cscu: 1, mscu: 1 },
+      "ROD'S FUEL 'N SUPPLIES, PYRO": { scu: 1050, cscu: 1, mscu: 1 },
+      "STARLIGHT SERVICE STATION, PYRO": { scu: 1050, cscu: 1, mscu: 1 }
+    },
+    "Tungsten": {
+      "NEW CABBAGE, MICROTECH, STANTON": { scu: 1025, cscu: 1, mscu: 1 },
+      "AREA 18, ARCCORP, STANTON": { scu: 1010, cscu: 1, mscu: 1 },
+      "ORISON, CRUSADER, STANTON": { scu: 1005, cscu: 1, mscu: 1 },
+      "LORVILLE, HURSTON, STANTON": { scu: 1000, cscu: 1, mscu: 1 },
+      "ENDGAME, PYRO": { scu: 975, cscu: 1, mscu: 1 },
+      "PATCH CITY, PYRO": { scu: 975, cscu: 1, mscu: 1 }
+    },
+    "Aluminum": {
+      "LORVILLE, HURSTON, STANTON": { scu: 950, cscu: 1, mscu: 1 },
+      "ORISON, CRUSADER, STANTON": { scu: 940, cscu: 1, mscu: 1 },
+      "AREA 18, ARCCORP, STANTON": { scu: 925, cscu: 1, mscu: 1 },
+      "NEW CABBAGE, MICROTECH, STANTON": { scu: 910, cscu: 1, mscu: 1 },
+      "DUDLEY & DAUGHTERS, PYRO": { scu: 875, cscu: 1, mscu: 1 },
+      "PATCH CITY, PYRO": { scu: 875, cscu: 1, mscu: 1 }
+    },
+    "Inert Materials": {
+      "ALL LOCATIONS": { scu: 100, cscu: 1, mscu: 1 }
     }
   },
   "Handheld and Light Ship Mining": {
