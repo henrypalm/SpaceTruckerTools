@@ -80,7 +80,7 @@
         </tbody>
       </table>
   
-      <div class="total-display" id="grandTotal">Total: 0 aUEC</div>
+      <div class="total-display" id="grandTotal">Estimated Total: 0 aUEC</div>
   
       <div style="margin-top:1rem; text-align: center; gap: 1rem; display: flex; justify-content: center;">
         <button id="exportTxtBtn">Export TXT</button>
@@ -268,7 +268,7 @@
       totalCells.forEach(cell => {
         total += parseFloat(cell.textContent.replace(/,/g, '')) || 0;
       });
-      document.getElementById('grandTotal').textContent = `Total: ${total.toLocaleString()} aUEC`;
+      document.getElementById('grandTotal').textContent = `Estimated Total: ${total.toLocaleString()} aUEC`;
     }
 
     // Initial population
@@ -459,6 +459,10 @@
           textToCopy += `${item} | ${yieldVal} | ${location} | ${price} | ${itemTotal}\n`;
         }
       });
+    
+      // Add grand total line
+      const grandTotalText = document.getElementById("grandTotal").textContent;
+      textToCopy += `\n${grandTotalText}`;
     
       navigator.clipboard.writeText(textToCopy).then(() => {
         alert("Export data copied to clipboard!");
