@@ -26,7 +26,7 @@
 </head>
 <body>
 
-  <div class=".nav-tabs">
+  <div class="nav-tabs">
     <a href="index.html">Space Trucker Tools</a>
     <a href="CargoManifestWriter.html">Cargo Manifest Writer</a>
     <a href="WorkordersOverview.html">Work Orders Overview</a>
@@ -174,7 +174,7 @@
     // Highlight active tab based on current filename
     const path = window.location.pathname;
     const page = path.substring(path.lastIndexOf('/') + 1);
-    const tabs = document.querySelectorAll('.nav-tabs a');
+    const tabs = document.querySelectorAll('nav-tabs a');
     tabs.forEach(tab => {
       if (tab.getAttribute('href') === page) {
         tab.classList.add('active');
