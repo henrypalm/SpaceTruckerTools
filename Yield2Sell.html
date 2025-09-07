@@ -174,7 +174,7 @@
     // Highlight active tab based on current filename
     const path = window.location.pathname;
     const page = path.substring(path.lastIndexOf('/') + 1);
-    const tabs = document.querySelectorAll('nav-tabs a');
+    const tabs = document.querySelectorAll('.nav-tabs a');
     tabs.forEach(tab => {
       if (tab.getAttribute('href') === page) {
         tab.classList.add('active');
@@ -459,6 +459,10 @@
           textToCopy += `${item} | ${yieldVal} | ${location} | ${price} | ${itemTotal}\n`;
         }
       });
+    
+      // Add grand total line
+      const grandTotalText = document.getElementById("grandTotal").textContent;
+      textToCopy += `\n${grandTotalText}`;
     
       navigator.clipboard.writeText(textToCopy).then(() => {
         alert("Export data copied to clipboard!");
