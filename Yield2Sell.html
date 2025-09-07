@@ -396,9 +396,7 @@
         }
       });
 
-      // Add grand total line
-      const grandTotalText = document.getElementById("grandTotal").textContent;
-      txt += `\n${grandTotalText}`;
+      
     
       // Format filename with refinery title and datetime
       const filename = `${title.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0,16).replace(/[:T]/g, "-")}.txt`;
