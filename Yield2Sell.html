@@ -174,7 +174,7 @@
     // Highlight active tab based on current filename
     const path = window.location.pathname;
     const page = path.substring(path.lastIndexOf('/') + 1);
-    const tabs = document.querySelectorAll('nav-tabs a');
+    const tabs = document.querySelectorAll('.nav-tabs a');
     tabs.forEach(tab => {
       if (tab.getAttribute('href') === page) {
         tab.classList.add('active');
@@ -435,73 +435,45 @@
       alert("Reminder: This CSV uses commas as delimiters.");
     }
         function copyToClipboard() {
-      const title = document.getElementById("manifestTitle").value || "Cargo Manifest";
-      let textToCopy = `Title: ${title}\n\n`;
+  const title = document.getElementById("refineryTitle").value || "Yield 2 Sell Export";
+  const refiningType = document.getElementById("refiningType").value;
+  const refiningCost = document.getElementById("refiningCost").value || "0";
+  const refiningHours = document.getElementById("refiningHours").value || "0";
+  const refiningMinutes = document.getElementById("refiningMinutes").value || "0";
+  const orderReady = document.getElementById("orderReadyAt").textContent || "--:--";
 
-      const bodies = [
-        { label: "Ship Mining", body: document.getElementById("shipMiningBody") },
-        { label: "Handheld and Light Ship Mining", body: document.getElementById("handMiningBody") },
-        { label: "Salvage", body: document.getElementById("salvageBody") },
-        { label: "Ship Parts", body: document.getElementById("shipPartsBody") }
-      ];
+  let textToCopy = `Title: ${title}\nRefining Type: ${refiningType}\nRefining Cost: ${refiningCost} aUEC\nDuration: ${refiningHours}h ${refiningMinutes}m\nOrder Ready At: ${orderReady}\n\nItem | Yield | Location | Price Per SCU | Item Total\n`;
 
-      let grandTotal = 0;
+  const rows = document.querySelectorAll("#priceTable tbody tr");
+  let grandTotal = 0;
 
-      bodies.forEach(({ label, body }) => {
-        const rows = Array.from(body.children);
-        if (!rows.some(row => parseFloat(row.children[1].querySelector("input").value) > 0)) return;
+  rows.forEach(row => {
+    const yieldInput = row.children[1].querySelector("input");
+    const yieldVal = yieldInput ? yieldInput.value || "0" : "0";
+    if (parseInt(yieldVal, 10) > 0) {
+      const item = row.children[0].textContent.trim();
+      const locationSelect = row.children[2].querySelector("select");
+      const location = locationSelect ? locationSelect.value : "";
+      const price = row.children[3].textContent.trim();
+      const itemTotal = row.children[4].textContent.trim();
 
-        textToCopy += `${label}:\n`;
-
-        rows.forEach(row => {
-          const qty = parseFloat(row.children[1].querySelector("input").value);
-          if (!qty) return;
-
-          const item = row.children[0].innerText.trim();
-          const location = row.children[2].querySelector("select").value;
-          const unitPrice = row.children[3].querySelector("span").textContent;
-          const total = row.children[4].querySelector("span").textContent;
-
-          textToCopy += `${item}, Qty: ${qty}, Location: ${location}, Unit Price: ${unitPrice}, Total: ${total}\n`;
-          grandTotal += parseFloat(total.replace(/,/g, ""));
-        });
-
-        textToCopy += `\n`;
-      });
-
-      textToCopy += `Grand Total: ${grandTotal.toLocaleString()} aUEC\n`;
-
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          alert("Manifest copied to clipboard!");
-        }).catch(() => {
-          fallbackClipboardCopy(textToCopy);
-        });
-      } else {
-        fallbackClipboardCopy(textToCopy);
-      }
+      textToCopy += `${item} | ${yieldVal} | ${location} | ${price} | ${itemTotal}\n`;
+      grandTotal += parseFloat(itemTotal.replace(/,/g, "")) || 0;
     }
+  });
 
-    // Fallback for older browsers or insecure contexts
-    function fallbackClipboardCopy(text) {
-      const textArea = document.createElement("textarea");
-      textArea.value = text;
-      // Move it offscreen
-      textArea.style.position = "fixed";
-      textArea.style.left = "-9999px";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
+  textToCopy += `\nGrand Total: ${grandTotal.toLocaleString()} aUEC\n`;
 
-      try {
-        const successful = document.execCommand("copy");
-        alert(successful ? "Manifest copied to clipboard!" : "Copy failed. Try manually.");
-      } catch (err) {
-        alert("Copy failed. Try manually.");
-      }
-
-      document.body.removeChild(textArea);
-    }
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      alert("Yield 2 Sell data copied to clipboard!");
+    }).catch(() => {
+      fallbackClipboardCopy(textToCopy);
+    });
+  } else {
+    fallbackClipboardCopy(textToCopy);
+  }
+}
     
     function updateOrderReadyAt() {
       const refiningHours = parseInt(document.getElementById('refiningHours').value) || 0;
