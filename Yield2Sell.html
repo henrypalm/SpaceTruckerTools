@@ -433,9 +433,7 @@
         }
       });
 
-      // Add grand total line
-      const grandTotalText = document.getElementById("grandTotal").textContent;
-      csv += `\n${grandTotalText}`;
+      
     
       const filename = `${title.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0,16).replace(/[:T]/g, "-")}.csv`;
       downloadFile(csv, filename);
