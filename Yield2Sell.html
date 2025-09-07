@@ -434,37 +434,73 @@
     
       alert("Reminder: This CSV uses commas as delimiters.");
     }
-    
-    function copyToClipboard() {
-      const refineryNameInput = document.getElementById("refineryTitle");
-      const titleRaw = refineryNameInput ? refineryNameInput.value.trim() : "";
-      const title = titleRaw.length > 0 ? titleRaw : "Yield 2 Sell Export";
-      const refiningType = document.getElementById("refiningType").value;
-      const refiningCost = document.getElementById("refiningCost").value || "0";
-      const refiningHours = document.getElementById("refiningHours").value || "0";
-      const refiningMinutes = document.getElementById("refiningMinutes").value || "0";
-      const orderReady = document.getElementById("orderReadyAt").textContent;
-    
-      let textToCopy = `Title: ${title}\nRefining Type: ${refiningType}\nRefining Cost: ${refiningCost} aUEC\nDuration: ${refiningHours}h ${refiningMinutes}m\nOrder Ready At: ${orderReady}\n\nItem | Yield | Location | Price Per SCU | Item Total\n`;
-    
-      const rows = document.querySelectorAll("#priceTable tbody tr");
-      rows.forEach(row => {
-        const item = row.children[0].textContent.trim();
-        const yieldVal = row.children[1].querySelector("input").value || "0";
-        const location = row.children[2].querySelector("select").value;
-        const price = row.children[3].textContent.trim();
-        const itemTotal = row.children[4].textContent.trim();
-    
-        if (parseInt(yieldVal) > 0) {
-          textToCopy += `${item} | ${yieldVal} | ${location} | ${price} | ${itemTotal}\n`;
-        }
+        function copyToClipboard() {
+      const title = document.getElementById("manifestTitle").value || "Cargo Manifest";
+      let textToCopy = `Title: ${title}\n\n`;
+
+      const bodies = [
+        { label: "Ship Mining", body: document.getElementById("shipMiningBody") },
+        { label: "Handheld and Light Ship Mining", body: document.getElementById("handMiningBody") },
+        { label: "Salvage", body: document.getElementById("salvageBody") },
+        { label: "Ship Parts", body: document.getElementById("shipPartsBody") }
+      ];
+
+      let grandTotal = 0;
+
+      bodies.forEach(({ label, body }) => {
+        const rows = Array.from(body.children);
+        if (!rows.some(row => parseFloat(row.children[1].querySelector("input").value) > 0)) return;
+
+        textToCopy += `${label}:\n`;
+
+        rows.forEach(row => {
+          const qty = parseFloat(row.children[1].querySelector("input").value);
+          if (!qty) return;
+
+          const item = row.children[0].innerText.trim();
+          const location = row.children[2].querySelector("select").value;
+          const unitPrice = row.children[3].querySelector("span").textContent;
+          const total = row.children[4].querySelector("span").textContent;
+
+          textToCopy += `${item}, Qty: ${qty}, Location: ${location}, Unit Price: ${unitPrice}, Total: ${total}\n`;
+          grandTotal += parseFloat(total.replace(/,/g, ""));
+        });
+
+        textToCopy += `\n`;
       });
-    
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        alert("Export data copied to clipboard!");
-      }).catch(() => {
-        alert("Clipboard copy failed. Please copy manually.");
-      });
+
+      textToCopy += `Grand Total: ${grandTotal.toLocaleString()} aUEC\n`;
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          alert("Manifest copied to clipboard!");
+        }).catch(() => {
+          fallbackClipboardCopy(textToCopy);
+        });
+      } else {
+        fallbackClipboardCopy(textToCopy);
+      }
+    }
+
+    // Fallback for older browsers or insecure contexts
+    function fallbackClipboardCopy(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      // Move it offscreen
+      textArea.style.position = "fixed";
+      textArea.style.left = "-9999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      try {
+        const successful = document.execCommand("copy");
+        alert(successful ? "Manifest copied to clipboard!" : "Copy failed. Try manually.");
+      } catch (err) {
+        alert("Copy failed. Try manually.");
+      }
+
+      document.body.removeChild(textArea);
     }
     
     function updateOrderReadyAt() {
