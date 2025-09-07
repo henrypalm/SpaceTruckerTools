@@ -202,13 +202,6 @@ const Yield2SellItemPrices = {
     "ENDGAME, PYRO": 1240,
     "PATCH CITY, PYRO": 1240
   },
-  "AmioshiPlasma": {
-    "AREA 18, ARCCORP, STANTON": 1200,
-    "LORVILLE, HURSTON, STANTON": 1180,
-    "ORISON, CRUSADER, STANTON": 1150,
-    "NEW CABBAGE, MICROTECH, STANTON": 1150,
-    "RAT'S NEST, PYRO": 1125
-  },
   "Aluminum": {
     "LORVILLE, HURSTON, STANTON": 950,
     "ORISON, CRUSADER, STANTON": 940,
@@ -220,7 +213,6 @@ const Yield2SellItemPrices = {
   "Inert Materials": {
     "ALL LOCATIONS": 100
     }
-  }
 };
 
 const itemPrices = Yield2SellItemPrices;
