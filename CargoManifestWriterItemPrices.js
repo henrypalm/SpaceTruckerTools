@@ -171,6 +171,22 @@ const itemPrices = {
       "PATCH CITY, PYRO": { scu: 1711, cscu: 1, mscu: 1 },
       "DUDLEY & DAUGHTERS, PYRO": { scu: 1711, cscu: 1, mscu: 1 }
     },
+    "Copper": {
+      "AREA 18, ARCCORP, STANTON": { scu: 1100, cscu: 1, mscu: 1 },
+      "LORVILLE, HURSTON, STANTON": { scu: 1085, cscu: 1, mscu: 1 },
+      "ORISON, CRUSADER, STANTON": { scu: 1075, cscu: 1, mscu: 1 },
+      "NEW CABBAGE, MICROTECH, STANTON": { scu: 1075, cscu: 1, mscu: 1 },
+      "ROD'S FUEL 'N SUPPLIES, PYRO": { scu: 1050, cscu: 1, mscu: 1 },
+      "STARLIGHT SERVICE STATION, PYRO": { scu: 1050, cscu: 1, mscu: 1 }
+    },
+    "Tungsten": {
+      "NEW CABBAGE, MICROTECH, STANTON": { scu: 1025, cscu: 1, mscu: 1 },
+      "AREA 18, ARCCORP, STANTON": { scu: 1010, cscu: 1, mscu: 1 },
+      "ORISON, CRUSADER, STANTON": { scu: 1005, cscu: 1, mscu: 1 },
+      "LORVILLE, HURSTON, STANTON": { scu: 1000, cscu: 1, mscu: 1 },
+      "ENDGAME, PYRO": { scu: 975, cscu: 1, mscu: 1 },
+      "PATCH CITY, PYRO": { scu: 975, cscu: 1, mscu: 1 }
+    },
     "Quartz": {
       "NEW CABBAGE, MICROTECH, STANTON": { scu: 1550, cscu: 1, mscu: 1 },
       "AREA 18, ARCCORP, STANTON": { scu: 1525, cscu: 1, mscu: 1 },
@@ -193,22 +209,6 @@ const itemPrices = {
       "ORISON, CRUSADER, STANTON": { scu: 1150, cscu: 1, mscu: 1 },
       "NEW CABBAGE, MICROTECH, STANTON": { scu: 1150, cscu: 1, mscu: 1 },
       "RAT'S NEST, PYRO": { scu: 1125, cscu: 1, mscu: 1 }
-    },
-    "Copper": {
-      "AREA 18, ARCCORP, STANTON": { scu: 1100, cscu: 1, mscu: 1 },
-      "LORVILLE, HURSTON, STANTON": { scu: 1085, cscu: 1, mscu: 1 },
-      "ORISON, CRUSADER, STANTON": { scu: 1075, cscu: 1, mscu: 1 },
-      "NEW CABBAGE, MICROTECH, STANTON": { scu: 1075, cscu: 1, mscu: 1 },
-      "ROD'S FUEL 'N SUPPLIES, PYRO": { scu: 1050, cscu: 1, mscu: 1 },
-      "STARLIGHT SERVICE STATION, PYRO": { scu: 1050, cscu: 1, mscu: 1 }
-    },
-    "Tungsten": {
-      "NEW CABBAGE, MICROTECH, STANTON": { scu: 1025, cscu: 1, mscu: 1 },
-      "AREA 18, ARCCORP, STANTON": { scu: 1010, cscu: 1, mscu: 1 },
-      "ORISON, CRUSADER, STANTON": { scu: 1005, cscu: 1, mscu: 1 },
-      "LORVILLE, HURSTON, STANTON": { scu: 1000, cscu: 1, mscu: 1 },
-      "ENDGAME, PYRO": { scu: 975, cscu: 1, mscu: 1 },
-      "PATCH CITY, PYRO": { scu: 975, cscu: 1, mscu: 1 }
     },
     "Aluminum": {
       "LORVILLE, HURSTON, STANTON": { scu: 950, cscu: 1, mscu: 1 },
