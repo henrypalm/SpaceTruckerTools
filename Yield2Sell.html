@@ -272,7 +272,7 @@
     }
 
     // Initial population
-    //populateTable();
+    populateTable();
 
 
 
@@ -459,10 +459,6 @@
           textToCopy += `${item} | ${yieldVal} | ${location} | ${price} | ${itemTotal}\n`;
         }
       });
-    
-      // Add grand total line
-      const grandTotalText = document.getElementById("grandTotal").textContent;
-      textToCopy += `\n${grandTotalText}`;
     
       navigator.clipboard.writeText(textToCopy).then(() => {
         alert("Export data copied to clipboard!");
