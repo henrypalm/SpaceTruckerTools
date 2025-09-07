@@ -212,7 +212,7 @@ const Yield2SellItemPrices = {
   },
   "Inert Materials": {
     "ALL LOCATIONS": 100
-    }
+  }
 };
 
 const itemPrices = Yield2SellItemPrices;
