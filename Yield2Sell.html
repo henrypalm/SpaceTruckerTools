@@ -460,10 +460,6 @@
         }
       });
     
-      // Add grand total line
-      const grandTotalText = document.getElementById("grandTotal").textContent;
-      textToCopy += `\n${grandTotalText}`;
-    
       navigator.clipboard.writeText(textToCopy).then(() => {
         alert("Export data copied to clipboard!");
       }).catch(() => {
