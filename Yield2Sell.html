@@ -647,68 +647,7 @@
     }
     /* END Rock Composition Modal Script */
 
-    /* START populating solar system and refineries scripts */
-    // Make sure refineryBonuses points to your updated object
-    const refineryBonuses = Yield2SellRefineryBonuses;
-      
-    const solarSystemSelect = document.getElementById("solarSystem");
-    const refinerySelect = document.getElementById("refineryName");
-      
-    // Populate Solar System dropdown
-    Object.keys(refineryBonuses).forEach(system => {
-      const option = document.createElement("option");
-      option.value = system;
-      option.textContent = system;
-      solarSystemSelect.appendChild(option);
-    });
-      
-    // Update refinery dropdown whenever a system is selected
-    solarSystemSelect.addEventListener("change", () => {
-      const selectedSystem = solarSystemSelect.value;
-      refinerySelect.innerHTML = '<option value="">--Select Refinery--</option>';
-      
-      if (refineryBonuses[selectedSystem]) {
-        Object.keys(refineryBonuses[selectedSystem]).forEach(refinery => {
-          const option = document.createElement("option");
-          option.value = refinery;
-          option.textContent = refinery;
-          refinerySelect.appendChild(option);
-        });
-      }
-      
-      // Trigger recalculation of totals in case bonus affects anything
-      updateAllRows();
-    });
-      
-    // Function to apply refinery bonus to each row
-    function updateAllRows() {
-      const rows = document.querySelectorAll("#priceTable tbody tr");
-      const selectedSystem = solarSystemSelect.value;
-      const selectedRefinery = refinerySelect.value;
-      const bonus = (refineryBonuses[selectedSystem] && refineryBonuses[selectedSystem][selectedRefinery]) || 1;
-      
-      rows.forEach(row => {
-        const select = row.children[2].querySelector("select");
-        const yieldInput = row.children[1].querySelector("input");
-        const destinations = itemPrices[row.children[0].textContent];
-      
-        if (!select || !yieldInput || !destinations) return;
-      
-        const price = destinations[select.value] || 0;
-        row.children[3].textContent = (price * bonus).toLocaleString();
-      
-        const yieldVal = Math.floor(parseFloat(yieldInput.value) || 0);
-        const scu = Math.floor(yieldVal / 100);
-        const total = scu * price * bonus;
-        row.children[4].textContent = total.toLocaleString();
-      });
-      
-      calculateTotal();
-    }
-      
-    // Update rows whenever refinery changes
-    refinerySelect.addEventListener("change", updateAllRows);
-  /* END populating solar system and refineries scripts */
+    
 
   </script>
 
