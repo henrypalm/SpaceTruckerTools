@@ -1,4 +1,4 @@
-const refineryBonuses = {
+const Yield2SellRefineryBonuses = {
   "Stanton": {
     "Area 18, ARCCORP, STANTON": 1.05,
     "Lorville, HURSTON, STANTON": 1.03
@@ -11,3 +11,5 @@ const refineryBonuses = {
     "Levski, NYX": 1.04
   }
 };
+
+const refineryBonuses = Yield2SellRefineryBonuses;
