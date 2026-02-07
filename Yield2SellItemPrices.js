@@ -1,7 +1,7 @@
 const Yield2SellItemPrices = {
   "Stileron": {
     "Levski, Nyx": 105473,
-    "Nyx GatewY, Pyro": 105473
+    "Nyx GatewY, Pyro": 105473,
     "Deakins Research Outpost, Yela, Crusader, Stanton": 97083,
     "Terra Mills HydroFarm, Cellin, Crusader, Stanton": 90611,
     "ArcCorp Mining Area 141, Daymar, Crusader, Stanton": 89748,
