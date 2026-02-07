@@ -224,6 +224,7 @@ const Yield2SellRefineryBonuses = {
       "Copper": 0.95,
       "Aluminum": 0.95
     }
+  }
 };
 
 const refineryBonuses = Yield2SellRefineryBonuses;
