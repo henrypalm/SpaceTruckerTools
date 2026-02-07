@@ -242,6 +242,7 @@
         row.children[1].appendChild(yieldInput);
   
         function updateRow() {
+          const itemName = row.children[0].textContent;
           const selectedLoc = select.value;
           const price = destinations[selectedLoc] || 0;
           row.children[3].textContent = price.toLocaleString();
@@ -285,32 +286,15 @@
   
     function updateAllRows() {
       const rows = document.querySelectorAll("#priceTable tbody tr");
-      const selectedSystem = solarSystemSelect.value;
-      const selectedRefinery = refinerySelect.value;
-  
       rows.forEach(row => {
-        const itemName = row.children[0].textContent;
         const select = row.children[2].querySelector("select");
         const yieldInput = row.children[1].querySelector("input");
-        const destinations = itemPrices[row.children[0].textContent];
-  
-        if (!select || !yieldInput || !destinations) return;
-  
-        const price = destinations[select.value] || 0;
-        const yieldVal = parseFloat(yieldInput.value) || 0;   // raw yield input
-        let scu = Math.floor(yieldVal / 100);                 // base SCU
-        
-        // Apply the refinery bonus per item
-        const itemBonus = (refineryBonuses[selectedSystem]?.[selectedRefinery]?.[itemName]) || 1;
-        scu = scu * itemBonus;
-        
-        const total = scu  * price;
-        
-        row.children[3].textContent = price.toLocaleString();   // price per SCU
-        row.children[4].textContent = total.toLocaleString();   // total aUEC
+        if (!select || !yieldInput) return;
+    
+        // Trigger the row's own update
+        const event = new Event('input');   // or 'change'
+        yieldInput.dispatchEvent(event);
       });
-  
-      calculateTotal();
     }
   
     // Populate Solar System dropdown
