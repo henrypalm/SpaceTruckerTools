@@ -233,7 +233,7 @@
           }
         });
   
-        row.children[2].appendChild(select);
+        row.children[3].appendChild(select);
   
         row.children[4].textContent = bestPrice.toLocaleString();
   
@@ -241,7 +241,7 @@
         yieldInput.type = 'number';
         yieldInput.min = 0;
         yieldInput.placeholder = 'Yield';
-        row.children[1].appendChild(yieldInput);
+        row.children[2].appendChild(yieldInput);
   
         function updateRow() {
           const itemName = row.children[0].textContent;
