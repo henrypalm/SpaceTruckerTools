@@ -205,8 +205,7 @@ const Yield2SellRefineryBonuses = {
       "Aluminum": 1.08,
       "Tin": 1.09,
       "Silicon": 1.08
-    }
-  },
+    },
     "Stanton Gateway": {
       "Quantanium": 1.03,
       "Bexalite": 0.98,
