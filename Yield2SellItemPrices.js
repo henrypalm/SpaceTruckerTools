@@ -13,20 +13,6 @@ const Yield2SellItemPrices = {
     "Rayari Anvik Research Outpost, Calliope, MicroTech, Stanton": 86296,
     "Rayari Kaltag Research Outpost, Calliope, MicroTech, Stanton": 86296
   },
-  "Quantanium": {
-    "ArcCorp Mining Area 141, Daymar, Crusader, Stanton": 94378,
-    "Fallow Field, Pyro IV, Pyro V, Pyro": 94378,
-    "Canard View, Terminus, Pyro": 94378,
-    "The Golden Riviera, Bloom, Pyro": 89884,
-    "Ashland, Ignis, Pyro V, Pyro": 89884,
-    "Orison, Crusader, Stanton": 88574.5,
-    "Stanton Gateway, Nyx": 85389,
-    "New Cabbage, MicroTech, Stanton": 85389,
-    "Lorville, Hurston, Stanton": 85262.01,
-    "Area 18, ArcCorp, Stanton": 84744.01,
-    "Maintenance Area, CRU-L5, Stanton": 80895,
-    "Levski, Nyx": 80895
-  },
   "Riccite": {
     "ArcCorp Mining Area 157, Yela, Crusader, Stanton": 103957,
     "Ashland, Ignis, Pyro V, Pyro": 98590.5,
@@ -41,19 +27,33 @@ const Yield2SellItemPrices = {
     "Gaslight, Pyro": 81199,
     "Area 18, ArcCorp, Stanton": 80353
   },
-  "Taranite": {
-    "Farrow Field, Pyro IV, Pyro V, Pyro": 22776,
-    "Levski, Nyx": 22417,
-    "New Cabbage, MicroTech, Stanton": 22350.51,
-    "Orison, Crusader, Stanton": 22135,
-    "Stanton Gateway, Nyx": 22076,
-    "Area 18, ArcCorp, Stanton": 21660,
-    "Lorville, Hurston, Stanton": 21459,
-    "Patch City, Pyro": 20498,
-    "Sacren's Plot, Pyro IV, Pyro V, Pyro": 20498,
-    "Ashland, Ignis, Pyro V, Pyro": 20498,
-    "Jackson's Swap, Monox, Pyro": 20498,
-    "Canard View, Terminus, Pyro": 20498
+  "Savrilium": {
+    "Sacren's Plot, Pyro IV, Pyro V, Pyro": 89964,
+    "Orison, Crusader, Stanton": 88558,
+    "Ruin Station, Terminus, Pyro": 75907,
+    "Levski, Nyx": 75907
+  },
+  "Quantanium": {
+    "ArcCorp Mining Area 141, Daymar, Crusader, Stanton": 94378,
+    "Fallow Field, Pyro IV, Pyro V, Pyro": 94378,
+    "Canard View, Terminus, Pyro": 94378,
+    "The Golden Riviera, Bloom, Pyro": 89884,
+    "Ashland, Ignis, Pyro V, Pyro": 89884,
+    "Orison, Crusader, Stanton": 88574.5,
+    "Stanton Gateway, Nyx": 85389,
+    "New Cabbage, MicroTech, Stanton": 85389,
+    "Lorville, Hurston, Stanton": 85262.01,
+    "Area 18, ArcCorp, Stanton": 84744.01,
+    "Maintenance Area, CRU-L5, Stanton": 80895,
+    "Levski, Nyx": 80895
+  },
+  "Lindinium": {
+    "New Cabbage, MicroTech, Stanton": 24292,
+    "Area 18, ArcCorp, Stanton": 24292,
+    "Orison, Crusader, Stanton": 24292,
+    "Megumi Refueling, Pyro": 21978,
+    "Levski, Nyx": 20822,
+    "Ruin Station, Terminus, Pyro": 20822
   },
   "Bexalite": {
     "Sacren's Plot, Pyro IV, Pyro V, Pyro": 21154,
@@ -69,19 +69,33 @@ const Yield2SellItemPrices = {
     "Orison, Crusader, Stanton": 18396,
     "Lorville, Hurston, Stanton": 18396
   },
-  "Gold": {
-    "Rat's Nest, Pyro": 8376,
-    "ARC L1, Stanton": 8215,
-    "Pyro Gateway, Nyx": 8149,
-    "Area 18, ArcCorp, Stanton": 8131,
-    "New Cabbage, MicroTech, Stanton": 7915,
-    "Orison, Crusader, Stanton": 7915,
-    "Lorville, Hurston, Stanton": 7911,
-    "Ashland, Ignis, Pyro V, Pyro": 7161,
-    "The Golden Riviera, Bloom, Pyro": 7118,
-    "Levski, Nyx": 6784,
-    "Sacren's Plot, Pyro IV, Pyro V, Pyro": 6407,
-    "Fallow Field, Pyro IV, Pyro V, Pyro": 6407
+  "Taranite": {
+    "Farrow Field, Pyro IV, Pyro V, Pyro": 22776,
+    "Levski, Nyx": 22417,
+    "New Cabbage, MicroTech, Stanton": 22350.51,
+    "Orison, Crusader, Stanton": 22135,
+    "Stanton Gateway, Nyx": 22076,
+    "Area 18, ArcCorp, Stanton": 21660,
+    "Lorville, Hurston, Stanton": 21459,
+    "Patch City, Pyro": 20498,
+    "Sacren's Plot, Pyro IV, Pyro V, Pyro": 20498,
+    "Ashland, Ignis, Pyro V, Pyro": 20498,
+    "Jackson's Swap, Monox, Pyro": 20498,
+    "Canard View, Terminus, Pyro": 20498
+  },
+  "Construction Material": {
+    "ARC L4, Stanton": 11549,
+    "HUR L1, Stanton": 11514,
+    "MIC L4, Stanton": 11340,
+    "HUR L3, Stanton": 11340,
+    "CRU L4, Stanton": 11340,
+    "MIC L5, Stanton": 11340,
+    "Port Tressler, MicroTech, Stanton": 11340,
+    "HUR L4, Stanton": 11340,
+    "Everus Harbor, Hurston, Stanton": 11340,
+    "ARC L3, Stanton": 11340,
+    "MIC L1, Stanton": 11340,
+    "MIC L2, Stanton": 11340
   },
   "Diamond": {
     "HUR L1, Stanton": 8367,
@@ -97,6 +111,20 @@ const Yield2SellItemPrices = {
     "Area 18, ArcCorp, Stanton": 7403,
     "Starlight Service Station, Pyro": 7403
   },
+  "Gold": {
+    "Rat's Nest, Pyro": 8376,
+    "ARC L1, Stanton": 8215,
+    "Pyro Gateway, Nyx": 8149,
+    "Area 18, ArcCorp, Stanton": 8131,
+    "New Cabbage, MicroTech, Stanton": 7915,
+    "Orison, Crusader, Stanton": 7915,
+    "Lorville, Hurston, Stanton": 7911,
+    "Ashland, Ignis, Pyro V, Pyro": 7161,
+    "The Golden Riviera, Bloom, Pyro": 7118,
+    "Levski, Nyx": 6784,
+    "Sacren's Plot, Pyro IV, Pyro V, Pyro": 6407,
+    "Fallow Field, Pyro IV, Pyro V, Pyro": 6407
+  },
   "Borase": {
     "Gaslight, Pyro": 7871,
     "MIC L3, Stanton": 7347,
@@ -110,6 +138,20 @@ const Yield2SellItemPrices = {
     "New Cabbage, MicroTech, Stanton": 6612,
     "Megumi Refueling, Pyro": 6297,
     "Ruin Station, Terminus, Pyro": 6297
+  },
+  "Recycled Material Composite": {
+    "Seer's Canyon, Vatra, Pyro V, Pyro": 7139.5,
+    "Terra Mills HydroFarm, Cellin, Crusader, Stanton": 7042.5,
+    "Endgame, Pyro": 6426,
+    "Rod's Fuel 'N Supplies, Pyro": 6426,
+    "Dudley & Daughters, Pyro": 6426,
+    "Fallow Field, Pyro IV, Pyro V, Pyro": 6426,
+    "Ashland, Ignis, Pyro V, Pyro": 6426,
+    "Rustville, Pyro I, Pyro": 6426,
+    "Last Landings, Terminus, Pyro": 6426,
+    "The Golden Riviera, Bloom, Pyro": 6426,
+    "Starlight Service Station, Pyro": 6426,
+    "Gaslight, Pyro": 6426
   },
   "Laranite": {
     "HUR L1, Stanton": 6192.51,
@@ -167,6 +209,84 @@ const Yield2SellItemPrices = {
     "Lorville, Hurston, Stanton": 4078,
     "Area 18, ArcCorp, Stanton": 4040
   },
+  "Ice": {
+    "Baijini Point, ArcCorp, Stanton": 2981,
+    "Endgame, Pyro": 2626,
+    "Rustville, Pyro I, Pyro": 2516,
+    "Jackson's Swap, Monox, Pyro": 2516,
+    "Last Landings, Terminus, Pyro": 2516,
+    "Sunset Mesa, Monox, Pyro": 2516,
+    "Canard View, Terminus, Pyro": 2516,
+    "The Golden Riviera, Bloom, Pyro": 2516,
+    "Chawla's Beach, Pyro IV, Pyro V, Pyro": 2516,
+    "Ashland, Ignis, Pyro V, Pyro": 2516,
+    "Sacren's Plot, Pyro IV, Pyro V, Pyro": 2516,
+    "Fallow Field, Pyro IV, Pyro V, Pyro": 2516
+  },
+  "Tungsten": {
+    "Megumi Refueling, Pyro": 2734,
+    "Stanton Gateway, Pyro": 2551,
+    "Pyro Gateway, Stanton": 2551,
+    "Nyx Gateway, Stanton": 2551,
+    "Terra Gateway, Stanton": 2551,
+    "New Cabbage, MicroTech, Stanton": 2187,
+    "Stanton Gateway, Nyx": 2187,
+    "Area 18, ArcCorp, Stanton": 2187,
+    "Orison, Crusader, Stanton": 2187,
+    "Lorville, Hurston, Stanton": 2187,
+    "Ruin Station, Terminus, Pyro": 2077,
+    "Levski, Nyx": 1968
+  },
+  "Titanium": {
+    "Megumi Refueling, Pyro": 2569,
+    "Starlight Service Station, Pyro": 2284,
+    "ARC-L3 Modern Express Station, ARC L3, Stanton": 2284,
+    "Gaslight, Pyro": 2055,
+    "ARC-L5 Yellow Core Station, ARC L5, Stanton": 2055,
+    "Patch City, Pyro": 2055,
+    "Dudley & Daughters, Pyro": 2055,
+    "Rod's Fuel 'N Supplies, Pyro": 2055,
+    "Endgame, Pyro": 2055,
+    "Rat's Nest, Pyro": 2055,
+    "Orison, Crusader, Stanton": 2055,
+    "New Cabbage, MicroTech, Stanton": 2055
+  },
+  "Torite": {
+    "Port Tressler, MicroTech, Stanton": 2417,
+    "Area18, ArcCorp, Stanton": 2175,
+    "New Cabbage, MicroTech, Stanton": 2175,
+    "Orison, Crusader, Stanton": 2175,
+    "Ruin Station, Terminus, Pyro": 1968,
+    "Levski, Nyx": 1865
+  },
+  "Iron": {
+    "Endgame, Pyro": 2315,
+  "Gaslight, Pyro": 2305,
+  "Terra Gateway, Stanton": 2225,
+  "Megumi Refueling, Pyro": 2138,
+  "Rod's Fuel 'N Supplies, Pyro": 2138,
+  "Dudley & Daughters, Pyro": 2138,
+  "Nyx Gateway, Stanton": 2117,
+  "Orison, Crusader, Stanton": 2020,
+  "Area18, ArcCorp, Stanton": 2020,
+  "New Cabbage, MicroTech, Stanton": 2020,
+  "Lorville, Hurston, Stanton": 2020,
+  "Starlight Service Station, Pyro": 1924
+  },
+  "Quartz": {
+    "Nyx Gateway, Stanton": 2189,
+    "Stanton Gateway, Pyro": 2189,
+    "Pyro Gateway, Stanton": 2166,
+    "Seraphim Station, Crusader, Stanton": 1864,
+    "Patch City, Pyro": 1853,
+    "Area18, ArcCorp, Stanton": 1751,
+    "Orison, Crusader, Stanton": 1751,
+    "New Cabbage, MicroTech, Stanton": 1751,
+    "Lorville, Hurston, Stanton": 1751,
+    "Stanton Gateway, Nyx": 1751,
+    "Orbituary, Bloom, Pyro": 1668,
+    "Dudley & Daughters, Pyro": 1668
+  },
   "Corundum": {
     "Orbituary, Bloom, Pyro": 2046,
     "Rod's Fuel 'N Supplies, Pyro": 2046,
@@ -195,30 +315,6 @@ const Yield2SellItemPrices = {
     "Area 18, ArcCorp, Stanton": 1633,
     "Lorville, Hurston, Stanton": 1633
   },
-  "Tungsten": {
-    "NEW CABBAGE, MICROTECH, STANTON": 1025,
-    "AREA 18, ARCCORP, STANTON": 1010,
-    "ORISON, CRUSADER, STANTON": 1005,
-    "LORVILLE, HURSTON, STANTON": 1000,
-    "ENDGAME, PYRO": 975,
-    "PATCH CITY, PYRO": 975
-  },
-  "Quartz": {
-    "NEW CABBAGE, MICROTECH, STANTON": 1550,
-    "AREA 18, ARCCORP, STANTON": 1525,
-    "ORISON, CRUSADER, STANTON": 1512,
-    "LORVILLE, HURSTON, STANTON": 1500,
-    "ROD'S FUEL 'N SUPPLIES, PYRO": 1450,
-    "STARLIGHT SERVICE STATION, PYRO": 1450
-  },
-  "Graphite": {
-    "NEW CABBAGE, MICROTECH, STANTON": 1325,
-    "AREA 18, ARCCORP, STANTON": 1300,
-    "ORISON, CRUSADER, STANTON": 1290,
-    "LORVILLE, HURSTON, STANTON": 1275,
-    "ENDGAME, PYRO": 1240,
-    "PATCH CITY, PYRO": 1240
-  },
   "Aluminum": {
     "Terra Gateway, Stanton": 1933.5,
     "Port Tresslar, MicroTech, Stanton": 1924,
@@ -232,6 +328,34 @@ const Yield2SellItemPrices = {
     "Orbituary, Bloom, Pyro": 1551,
     "Endgame, Pyro": 1628,
     "Gaslight, Pyro": 1551
+  },
+  "Tin": {
+    "Dudley & Daughters, Pyro": 1871,
+    "Port Tressler, MicroTech, Stanton": 1814,
+    "Baijini Point, ArcCorp, Stanton": 1814,
+    "Megumi Refueling, Pyro": 1728,
+    "Gaslight, Pyro": 1728,
+    "Levski, Nyx": 1632,
+    "Pyro Gateway, Nyx": 1632,
+    "New Cabbage, MicroTech, Stanton": 1632,
+    "Orison, Crusader, Stanton": 1632,
+    "Area18, ArcCorp, Stanton": 1632,
+    "Lorville, Hurston, Stanton": 1632,
+    "Orbituary, Bloom, Pyro": 1555
+  },
+  "Silicon": {
+    "Terra Gateway, Stanton": 1394,
+    "Patch City, Pyro": 1328,
+    "Gaslight, Pyro": 1180,
+    "Rat's Nest, Pyro": 1180,
+    "Orison, Crusader, Stanton": 1115,
+    "New Cabbage, MicroTech, Stanton": 1115,
+    "Lorville, Hurston, Stanton": 1115,
+    "Seraphim Station, Crusader, Stanton": 1115,
+    "Port Tressler, MicroTech, Stanton": 1115,
+    "Area18, ArcCorp, Stanton": 1115,
+    "Levski, Nyx": 1115,
+    "Dudley & Daughters, Pyro": 1062
   },
   "Inert Materials": {
     "ALL LOCATIONS": 100
