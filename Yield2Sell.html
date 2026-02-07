@@ -45,19 +45,31 @@
       <label for="refineryTitle" style="display:block; text-align:center; color: gold; margin-bottom: 0.5rem;">
         Refinery Selection:
       </label>
+      
       <div style="text-align:center; margin-bottom:1rem; color: gold;">
-        <label for="solarSystem">Solar System: </label>
-        <select id="solarSystem" style="background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px; width:150px;">
-          <option value="">--Select System--</option>
-        </select>
 
-        <label for="refineryName" style="margin-left:1rem;">Refinery: </label>
-        <select id="refineryName" style="background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px; width:300px;">
-          <option value="">--Select Refinery--</option>
-        </select>
+        <!-- Solar System row -->
+        <div style="margin-bottom:0.5rem;">
+          <label for="solarSystem" style="margin-right:0.5rem;">Solar System:</label>
+          <select id="solarSystem"
+            style="background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px; width:150px;">
+            <option value="">--Select System--</option>
+          </select>
+        </div>
+      
+        <!-- Refinery row -->
+        <div style="display:inline-block; text-align:left;">
+          <label for="refineryName" style="display:block; margin-bottom:0.25rem;">
+            Refinery:
+          </label>
+          <select id="refineryName"
+            style="background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px; width:300px;">
+            <option value="">--Select Refinery--</option>
+          </select>
+        </div>
+      
       </div>
 
-  
       <div style="text-align:center; margin-bottom:1rem; color: gold;">
         <label for="refiningType">Refining Type: </label>
         <select id="refiningType" style="background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px; width:150px;">
