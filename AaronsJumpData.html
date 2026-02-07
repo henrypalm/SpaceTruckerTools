@@ -27,24 +27,7 @@
   <div class="container">
     <h1>Quantum Jump Data — Aaron’s Halo</h1>
 
-    <!-- SELECTORS -->
-    <div class="controls">
-      <label>
-        System:
-        <select id="systemSelect"></select>
-      </label>
-
-      <label>
-        Start Point:
-        <select id="startSelect"></select>
-      </label>
-    </div>
-
-    <!-- TABLE -->
-    <table id="jumpTable">
-      <thead></thead>
-      <tbody></tbody>
-    </table>
+    <div id="tables"></div>
   </div>
 
   <!-- DATA -->
@@ -52,77 +35,63 @@
 
   <!-- LOGIC -->
   <script>
-    const systemSelect = document.getElementById("systemSelect");
-    const startSelect = document.getElementById("startSelect");
-    const thead = document.querySelector("#jumpTable thead");
-    const tbody = document.querySelector("#jumpTable tbody");
+    const tablesContainer = document.getElementById("tables");
 
-    function initSelectors() {
-      systemSelect.innerHTML = "";
+    function buildAllTables() {
+      for (const system in JumpData) {
+        const systemHeader = document.createElement("h2");
+        systemHeader.textContent = system;
+        systemHeader.className = "system-title";
+        tablesContainer.appendChild(systemHeader);
 
-      Object.keys(JumpData).forEach(system => {
-        const option = document.createElement("option");
-        option.value = system;
-        option.textContent = system;
-        systemSelect.appendChild(option);
-      });
+        for (const start in JumpData[system]) {
+          const startHeader = document.createElement("h3");
+          startHeader.textContent = start;
+          startHeader.className = "start-title";
+          tablesContainer.appendChild(startHeader);
 
-      systemSelect.addEventListener("change", updateStartPoints);
-      startSelect.addEventListener("change", buildMatrix);
+          const table = document.createElement("table");
+          table.className = "jump-matrix";
 
-      updateStartPoints();
+          const thead = document.createElement("thead");
+          const tbody = document.createElement("tbody");
+
+          const endpoints = Object.keys(JumpData[system][start]);
+
+          /* HEADER ROW */
+          const headerRow = document.createElement("tr");
+          headerRow.innerHTML = `<th>${start}</th>`;
+          endpoints.forEach(end => {
+            headerRow.innerHTML += `<th>${end}</th>`;
+          });
+          thead.appendChild(headerRow);
+
+          /* DISTANCE ROW */
+          const distanceRow = document.createElement("tr");
+          distanceRow.innerHTML = `<td>Distance (mil km)</td>`;
+          endpoints.forEach(end => {
+            const value = JumpData[system][start][end].distance;
+            distanceRow.innerHTML += `<td class="highlight">${value}</td>`;
+          });
+          tbody.appendChild(distanceRow);
+
+          /* REVERSE ROW */
+          const reverseRow = document.createElement("tr");
+          reverseRow.innerHTML = `<td>Reverse</td>`;
+          endpoints.forEach(end => {
+            const value = JumpData[system][start][end].reverse;
+            reverseRow.innerHTML += `<td>${value}</td>`;
+          });
+          tbody.appendChild(reverseRow);
+
+          table.appendChild(thead);
+          table.appendChild(tbody);
+          tablesContainer.appendChild(table);
+        }
+      }
     }
 
-    function updateStartPoints() {
-      const system = systemSelect.value;
-      startSelect.innerHTML = "";
-
-      Object.keys(JumpData[system]).forEach(start => {
-        const option = document.createElement("option");
-        option.value = start;
-        option.textContent = start;
-        startSelect.appendChild(option);
-      });
-
-      buildMatrix();
-    }
-
-    function buildMatrix() {
-      const system = systemSelect.value;
-      const start = startSelect.value;
-      const routes = JumpData[system][start];
-
-      thead.innerHTML = "";
-      tbody.innerHTML = "";
-
-      const endpoints = Object.keys(routes);
-
-      /* HEADER ROW */
-      const headerRow = document.createElement("tr");
-      headerRow.innerHTML = `<th>${start}</th>`;
-      endpoints.forEach(end => {
-        headerRow.innerHTML += `<th>${end}</th>`;
-      });
-      thead.appendChild(headerRow);
-
-      /* DISTANCE ROW */
-      const distanceRow = document.createElement("tr");
-      distanceRow.innerHTML = `<td>Distance (mil km)</td>`;
-      endpoints.forEach(end => {
-        distanceRow.innerHTML += `<td class="highlight">${routes[end].distance}</td>`;
-      });
-      tbody.appendChild(distanceRow);
-
-      /* REVERSE ROW */
-      const reverseRow = document.createElement("tr");
-      reverseRow.innerHTML = `<td>Reverse</td>`;
-      endpoints.forEach(end => {
-        reverseRow.innerHTML += `<td>${routes[end].reverse}</td>`;
-      });
-      tbody.appendChild(reverseRow);
-    }
-
-    initSelectors();
+    buildAllTables();
   </script>
 
 </body>
