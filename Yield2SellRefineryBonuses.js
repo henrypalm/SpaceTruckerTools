@@ -1,15 +1,230 @@
 const Yield2SellRefineryBonuses = {
   "Stanton": {
-    "Area 18, ARCCORP, STANTON": 1.05,
-    "Lorville, HURSTON, STANTON": 1.03
+    "ARC L1": {
+      "Quantanium": 1.03,
+      "Taranite": 0.94,
+      "Laranite": 0.98,
+      "Beryl": 1.07,
+      "Hephaestanite": 0.96,
+      "Titanium": 1.05,
+      "Iron": 1.01,
+      "Quartz": 1.11,
+      "Corundum": 0.96,
+      "Aluminum": 0.95
+    },
+    "ARC L2": {
+      "Quantanium": 1.03,
+      "Bexalite": 1.02,
+      "Gold": 1.07,
+      "Borase": 1.02,
+      "Hephaestanite": 0.92,
+      "Tungsten": 0.94,
+      "Titanium": 1.03,
+      "Corundum": 0.97,
+      "Copper": 1.06
+    },
+    "ARC L4": {
+      "Taranite": 1.05,
+      "Gold": 0.96,
+      "Beryl": 0.96,
+      "Agricium": 0.96,
+      "Hephaestanite": 0.95,
+      "Tungsten": 0.95,
+      "Titanium": 0.98,
+      "Quartz": 0.98,
+      "Corundum": 0.91,
+      "Copper": 0.96,
+      "Aluminum": 0.97
+    },
+    "CRU L1": {
+      "Bexalite": 0.94,
+      "Gold": 0.94,
+      "Laranite": 0.92,
+      "Beryl": 1.07,
+      "Hephaestanite": 0.98,
+      "Tungsten": 1.02,
+      "Titanium": 0.99,
+      "Iron": 1.02,
+      "Corundum": 1.07
+    },
+    "HUR L1": {
+      "Quantanium": 1.02,
+      "Bexalite": 0.98,
+      "Gold": 0.97,
+      "Borase": 1.01,
+      "Laranite": 1.02,
+      "Agricium": 0.92,
+      "Tungsten": 1.04,
+      "Iron": 0.95,
+      "Corundum": 0.95,
+      "Copper": 0.95,
+      "Aluminum": 0.96
+    },
+    "HUR L2": {
+      "Quantanium": 1.02,
+      "Taranite": 0.97,
+      "Gold": 1.01,
+      "Laranite": 0.99,
+      "Beryl": 1.01,
+      "Agricium": 0.98,
+      "Corundum": 1.01,
+      "Copper": 0.97
+    },
+    "MIC L1": {
+      "Gold": 1.01,
+      "Laranite": 1.02,
+      "Beryl": 0.94,
+      "Agricium": 1.08,
+      "Quartz": 0.97,
+      "Corundum": 1.02,
+      "Copper": 1.04,
+      "Aluminum": 1.07
+    },
+    "MIC L2": {
+      "Quantanium": 1.01,
+      "Bexalite": 1.09,
+      "Gold": 1.09,
+      "Borase": 0.97,
+      "Laranite": 0.99,
+      "Beryl": 0.92,
+      "Tungsten": 1.09,
+      "Titanium": 1.06,
+      "Quartz": 0.95,
+      "Corundum": 1.06,
+      "Copper": 1.02
+    },
+    "MIC L5": {
+      "Savrilium": 1.06,
+      "Lindinium": 1.07,
+      "Bexalite": 1.12,
+      "Borase": 1.09,
+      "Beryl": 1.07,
+      "Hephaestanite": 1.08,
+      "Titanium": 1.13,
+      "Torite": 1.08,
+      "Iron": 1.08,
+      "Copper": 1.09
+    },
+    "Pyro Gateway": {
+      "Bexalite": 0.94,
+      "Gold": 0.94,
+      "Laranite": 0.92,
+      "Beryl": 1.07,
+      "Hephaestanite": 0.98,
+      "Tungsten": 1.02,
+      "Titanium": 1.01,
+      "Iron": 1.02,
+      "Corundum": 1.07
+    },
+    "Terra Gateway": {
+      "Gold": 1.01,
+      "Laranite": 1.02,
+      "Beryl": 0.94,
+      "Agricium": 1.08,
+      "Quartz": 0.97,
+      "Corundum": 1.02,
+      "Copper": 1.04,
+      "Aluminum": 1.07
+    }
   },
   "Pyro": {
-    "Rod's Fuel 'N Supplies, PYRO": 1.02,
-    "Jackson's Swap, MONOX, PYRO": 1.01
+    "Checkmate Station": {
+      "Quantanium": 1.02,
+      "Bexalite": 0.98,
+      "Gold": 0.97,
+      "Borase": 1.01,
+      "Laranite": 1.02,
+      "Agricium": 0.92,
+      "Tungsten": 1.04,
+      "Iron": 0.95,
+      "Corundum": 0.95,
+      "Copper": 0.95,
+      "Aluminum": 0.96
+    },
+    "Orbituary Station": {
+      "Quantanium": 1.02,
+      "Bexalite": 0.98,
+      "Gold": 0.97,
+      "Borase": 1.01,
+      "Laranite": 1.02,
+      "Agricium": 0.92,
+      "Tungsten": 1.04,
+      "Iron": 0.95,
+      "Corundum": 0.95,
+      "Copper": 0.95,
+      "Aluminum": 0.96
+    },
+    "Ruin Station": {
+      "Quantanium": 1.02,
+      "Bexalite": 0.98,
+      "Gold": 0.97,
+      "Borase": 1.01,
+      "Laranite": 1.02,
+      "Agricium": 0.92,
+      "Tungsten": 1.04,
+      "Iron": 0.95,
+      "Corundum": 0.95,
+      "Copper": 0.95,
+      "Aluminum": 0.96
+    },
+    "Stanton Gateway": {
+      "Quantanium": 1.02,
+      "Bexalite": 0.98,
+      "Gold": 0.97,
+      "Borase": 1.01,
+      "Laranite": 1.02,
+      "Agricium": 0.92,
+      "Tungsten": 1.04,
+      "Iron": 0.95,
+      "Corundum": 0.95,
+      "Copper": 0.95,
+      "Aluminum": 0.96
+    }
   },
   "Nyx": {
-    "Levski, NYX": 1.04
-  }
+    "Levski": {
+      "Savrilium": 1.01,
+      "Quantanium": 1.05,
+      "Lindium": 1.04,
+      "Bexalite": 1.08,
+      "Taranite": 1.08,
+      "Gold": 1.05,
+      "Borase": 1.08,
+      "Laranite": 1.07,
+      "Beryl": 1.08,
+      "Agricium": 1.08,
+      "Hephaestanite": 1.08,
+      "Ice": 1.10,
+      "Tungsten": 1.08,
+      "Titanium": 1.08,
+      "Torite": 1.01,
+      "Iron": 1.08,
+      "Quartz": 1.08,
+      "Corundum": 1.08,
+      "Copper": 1.08,
+      "Aluminum": 1.08,
+      "Tin": 1.09,
+      "Silicon": 1.08
+    }
+  },
+    "Stanton Gateway": {
+      "Quantanium": 1.03,
+      "Bexalite": 0.98,
+      "Taranite": 0.94,
+      "Gold": 0.97,
+      "Borase": 1.01,
+      "Laranite": 0.98,
+      "Beryl": 1.07,
+      "Agricium": 0.92,
+      "Hephaestanite": 0.96,
+      "Tungsten": 1.04,
+      "Titanium": 1.05,
+      "Iron": 1.01,
+      "Quartz": 1.11,
+      "Corundum": 0.96,
+      "Copper": 0.95,
+      "Aluminum": 0.95
+    }
 };
 
 const refineryBonuses = Yield2SellRefineryBonuses;
