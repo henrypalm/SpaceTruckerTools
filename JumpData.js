@@ -62,22 +62,22 @@ const JumpData = {
   },
   "Pyro": {
     "Pyro Gateway": {
-      "Checkmate Station": { distance: , reverse:  },
-      "Ruin Station": { distance: , reverse:  }
+      "Checkmate Station": { distance: 123, reverse: 123 },
+      "Ruin Station": { distance: 123, reverse: 123 }
     }
   },
   "Nyx": {
     "Levski": {
-      "Stanton Gateway": { distance: , reverse:  },
-      "Pyro Gateway": { distance: , reverse:  }
+      "Stanton Gateway": { distance: 123, reverse: 123 },
+      "Pyro Gateway": { distance: 123, reverse: 123 }
     },
     "Stanton Gateway": {
-      "Levski": { distance: , reverse:  },
-      "Pyro Gateway": { distance: , reverse:  }
+      "Levski": { distance: 123123, reverse: 123 },
+      "Pyro Gateway": { distance: 123, reverse: 123 }
     },
     "Pyro Gateway": {
-      "Levski": { distance: , reverse:  },
-      "Stanton Gateway": { distance: , reverse:  }
+      "Levski": { distance: 123, reverse: 123 },
+      "Stanton Gateway": { distance: 123, reverse: 123 }
     }
   }
 };
