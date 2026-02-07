@@ -194,6 +194,16 @@
 
   <script>
   document.addEventListener("DOMContentLoaded", () => {
+
+    // ===== Column constants =====
+    const COL = {
+      ITEM: 0,
+      BONUS: 1,
+      YIELD: 2,
+      LOCATION: 3,
+      PRICE: 4,
+      TOTAL: 5
+    };
   
     // ====== Highlight active tab ======
     const path = window.location.pathname;
@@ -220,7 +230,7 @@
           <td class="priceCell"></td>     <!-- Price per SCU -->
           <td class="rowTotal">0</td>     <!-- Item total -->
         `;
-        row.children[0].style.color = itemColors[item] || 'white';
+        row.children[COL.ITEM].style.color = itemColors[item] || 'white';
   
         const entries = Object.entries(destinations);
         const bestLocation = entries.reduce((a,b) => (b[1] > a[1] ? b : a));
@@ -243,21 +253,21 @@
           }
         });
   
-        row.children[3].appendChild(select);
+        row.children[COL.LOCATION].appendChild(select);
   
-        row.children[4].textContent = bestPrice.toLocaleString();
+        row.children[COL.PRICE].textContent = bestPrice.toLocaleString();
   
         const yieldInput = document.createElement('input');
         yieldInput.type = 'number';
         yieldInput.min = 0;
         yieldInput.placeholder = 'Yield';
-        row.children[2].appendChild(yieldInput);
+        row.children[COL.YIELD].appendChild(yieldInput);
   
         function updateRow() {
-          const itemName = row.children[0].textContent;
+          const itemName = row.children[COL.ITEM].textContent;
           const selectedLoc = select.value;
           const price = destinations[selectedLoc] || 0;
-          row.children[4].textContent = price.toLocaleString();
+          row.children[COL.PRICE].textContent = price.toLocaleString();
   
           const yieldVal = parseFloat(yieldInput.value) || 0;
           let scu = Math.floor(yieldVal / 100);
@@ -269,7 +279,7 @@
 
           // BONUS COLUMN (display only)
           const bonusPercent = (itemBonus - 1) * 100;
-          const bonusCell = row.children[1];
+          const bonusCell = row.children[COL.BONUS];
 
           bonusCell.textContent = `${bonusPercent.toFixed(1)}%`;
         
@@ -288,7 +298,7 @@
 
           // Item total
           const total = scu * price;
-          row.children[5].textContent = total.toLocaleString();
+          row.children[COL.TOTAL].textContent = total.toLocaleString();
   
           calculateTotal();
         }
@@ -318,8 +328,8 @@
     function updateAllRows() {
       const rows = document.querySelectorAll("#priceTable tbody tr");
       rows.forEach(row => {
-        const select = row.children[3].querySelector("select");
-        const yieldInput = row.children[2].querySelector("input");
+        const select = row.children[COL.LOCATION].querySelector("select");
+        const yieldInput = row.children[COL.YIELD].querySelector("input");
         if (!select || !yieldInput) return;
     
         // Trigger the row's own update
@@ -355,6 +365,7 @@
     });
   
     refinerySelect.addEventListener("change", updateAllRows);
+
   
     // ====== Export / Clipboard ======
     function downloadFile(content, filename) {
@@ -374,15 +385,16 @@
       const orderReady = document.getElementById("orderReadyAt").textContent;
   
       let txt = `Title: ${title}\nRefining Type: ${refiningType}\nRefining Cost: ${refiningCost} aUEC\nDuration: ${refiningHours}h ${refiningMinutes}m\nOrder Ready At: ${orderReady}\n\nItem | Yield | Location | Price Per SCU | Item Total\n`;
-  
+
       const rows = document.querySelectorAll("#priceTable tbody tr");
       rows.forEach(row => {
-        const yieldVal = row.children[1].querySelector("input").value || "0";
+        const yieldVal = row.children[COL.YIELD].querySelector("input").value || "0";
         if (parseInt(yieldVal) > 0) {
-          txt += `${row.children[0].textContent} | ${yieldVal} | ${row.children[2].querySelector("select").value} | ${row.children[3].textContent} | ${row.children[5].textContent}\n`;
+          const location = row.children[COL.LOCATION].querySelector("select").value;
+          txt += `${row.children[COL.ITEM].textContent} | ${yieldVal} | ${location} | ${row.children[COL.PRICE].textContent} | ${row.children[COL.TOTAL].textContent}\n`;
         }
       });
-  
+    
       const filename = `${title.replace(/\s+/g,"_")}_${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}.txt`;
       downloadFile(txt, filename);
     }
@@ -396,15 +408,16 @@
       const orderReady = document.getElementById("orderReadyAt").textContent;
   
       let csv = `Title:,${title}\nRefining Type:,${refiningType}\nRefining Cost:,${refiningCost} aUEC\nDuration:,${refiningHours}h ${refiningMinutes}m\nOrder Ready At:,${orderReady}\n\nItem,Yield,Location,Price Per SCU,Item Total\n`;
-  
+
       const rows = document.querySelectorAll("#priceTable tbody tr");
       rows.forEach(row => {
-        const yieldVal = row.children[1].querySelector("input").value || "0";
+        const yieldVal = row.children[COL.YIELD].querySelector("input").value || "0";
         if (parseInt(yieldVal) > 0) {
-          csv += `"${row.children[0].textContent}","${yieldVal}","${row.children[2].querySelector("select").value}","${row.children[3].textContent}","${row.children[5].textContent}"\n`;
+          const location = row.children[COL.LOCATION].querySelector("select").value;
+          csv += `"${row.children[COL.ITEM].textContent}","${yieldVal}","${location}","${row.children[COL.PRICE].textContent}","${row.children[COL.TOTAL].textContent}"\n`;
         }
       });
-  
+    
       const filename = `${title.replace(/\s+/g,"_")}_${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}.csv`;
       downloadFile(csv, filename);
       alert("Reminder: This CSV uses commas as delimiters.");
@@ -419,15 +432,16 @@
       const orderReady = document.getElementById("orderReadyAt").textContent;
   
       let textToCopy = `Title: ${title}\nRefining Type: ${refiningType}\nRefining Cost: ${refiningCost} aUEC\nDuration: ${refiningHours}h ${refiningMinutes}m\nOrder Ready At: ${orderReady}\n\nItem | Yield | Location | Price Per SCU | Item Total\n`;
-  
+
       const rows = document.querySelectorAll("#priceTable tbody tr");
       rows.forEach(row => {
-        const yieldVal = row.children[1].querySelector("input").value || "0";
+        const yieldVal = row.children[COL.YIELD].querySelector("input").value || "0";
         if (parseInt(yieldVal) > 0) {
-          textToCopy += `${row.children[0].textContent} | ${yieldVal} | ${row.children[2].querySelector("select").value} | ${row.children[3].textContent} | ${row.children[5].textContent}\n`;
+          const location = row.children[COL.LOCATION].querySelector("select").value;
+          textToCopy += `${row.children[COL.ITEM].textContent} | ${yieldVal} | ${location} | ${row.children[COL.PRICE].textContent} | ${row.children[COL.TOTAL].textContent}\n`;
         }
       });
-  
+    
       textToCopy += `\n${document.getElementById("grandTotal").textContent}`;
       navigator.clipboard.writeText(textToCopy).then(() => alert("Export data copied to clipboard!"));
     }
@@ -489,8 +503,8 @@
       tbody.innerHTML = "";
   
       rows.forEach(row => {
-        const name = row.children[0].value || "—";
-        let percent = parseFloat(row.children[1].value) || 0;
+        const name = row.children[COL.ITEM].value || "—";
+        let percent = parseFloat(row.children[COL.BONUS].value) || 0;
         let scu = (percent / 100) * rockSize;
         if (name.toLowerCase() === "inert material") scu = scu * (1 - inertFilter/100);
         const tr = document.createElement("tr");
