@@ -235,7 +235,7 @@
   
         row.children[2].appendChild(select);
   
-        row.children[3].textContent = bestPrice.toLocaleString();
+        row.children[4].textContent = bestPrice.toLocaleString();
   
         const yieldInput = document.createElement('input');
         yieldInput.type = 'number';
@@ -247,7 +247,7 @@
           const itemName = row.children[0].textContent;
           const selectedLoc = select.value;
           const price = destinations[selectedLoc] || 0;
-          row.children[3].textContent = price.toLocaleString();
+          row.children[4].textContent = price.toLocaleString();
   
           const yieldVal = parseFloat(yieldInput.value) || 0;
           let scu = Math.floor(yieldVal / 100);
@@ -259,7 +259,7 @@
 
           // BONUS COLUMN (display only)
           const bonusPercent = (itemBonus - 1) * 100;
-          const bonusCell = row.children[4];
+          const bonusCell = row.children[1];
 
           bonusCell.textContent = `${bonusPercent.toFixed(1)}%`;
         
@@ -308,8 +308,8 @@
     function updateAllRows() {
       const rows = document.querySelectorAll("#priceTable tbody tr");
       rows.forEach(row => {
-        const select = row.children[2].querySelector("select");
-        const yieldInput = row.children[1].querySelector("input");
+        const select = row.children[3].querySelector("select");
+        const yieldInput = row.children[2].querySelector("input");
         if (!select || !yieldInput) return;
     
         // Trigger the row's own update
