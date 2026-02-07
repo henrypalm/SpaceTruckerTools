@@ -26,7 +26,6 @@
   <!-- CONTENT -->
   <div class="container">
     <h1>Quantum Jump Data — Aaron’s Halo</h1>
-
     <div id="tables"></div>
   </div>
 
@@ -56,31 +55,45 @@
           const thead = document.createElement("thead");
           const tbody = document.createElement("tbody");
 
-          const endpoints = Object.keys(JumpData[system][start]);
+          const entries = JumpData[system][start];
+          const endpoints = Object.keys(entries);
+
+          // Determine min / max distances
+          const distances = endpoints.map(end => entries[end].distance);
+          const min = Math.min(...distances);
+          const max = Math.max(...distances);
 
           /* HEADER ROW */
           const headerRow = document.createElement("tr");
-          headerRow.innerHTML = `<th>${start}</th>`;
+          headerRow.innerHTML = `<th>Metric</th>`;
+
           endpoints.forEach(end => {
-            headerRow.innerHTML += `<th>${end}</th>`;
+            let className = "";
+            if (entries[end].distance === min) className = "shortest";
+            if (entries[end].distance === max) className = "longest";
+
+            headerRow.innerHTML += `<th class="${className}">${end}</th>`;
           });
+
           thead.appendChild(headerRow);
 
           /* DISTANCE ROW */
           const distanceRow = document.createElement("tr");
           distanceRow.innerHTML = `<td>Distance (mil km)</td>`;
+
           endpoints.forEach(end => {
-            const value = JumpData[system][start][end].distance;
-            distanceRow.innerHTML += `<td class="highlight">${value}</td>`;
+            distanceRow.innerHTML += `
+              <td class="highlight">${entries[end].distance}</td>
+            `;
           });
           tbody.appendChild(distanceRow);
 
           /* REVERSE ROW */
           const reverseRow = document.createElement("tr");
           reverseRow.innerHTML = `<td>Reverse</td>`;
+
           endpoints.forEach(end => {
-            const value = JumpData[system][start][end].reverse;
-            reverseRow.innerHTML += `<td>${value}</td>`;
+            reverseRow.innerHTML += `<td>${entries[end].reverse}</td>`;
           });
           tbody.appendChild(reverseRow);
 
