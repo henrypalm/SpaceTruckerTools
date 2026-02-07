@@ -108,3 +108,32 @@ th {
 .highlight {
   color: cyan;
 }
+
+/* System label */
+.system-title {
+  color: gold;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* Start point label */
+.start-title {
+  color: #4fc3ff;
+  margin: 1.2rem 0 0.4rem;
+  text-align: center;
+}
+
+/* Matrix table spacing */
+.jump-matrix {
+  margin-bottom: 2rem;
+}
+
+/* Shortest / longest indicators */
+th.shortest {
+  color: #4caf50; /* green */
+}
+
+th.longest {
+  color: #f44336; /* red */
+}
+
