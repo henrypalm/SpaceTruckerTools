@@ -81,6 +81,7 @@
         <thead>
           <tr>
             <th>Item</th>
+            <th>Bonus</th>
             <th>Yield</th>
             <th>Location</th>
             <th>Price Per SCU (aUEC)</th>
@@ -202,11 +203,12 @@
       Object.entries(itemPrices).forEach(([item, destinations]) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${item}</td>    <!-- Item -->
-          <td></td>           <!-- Yield input -->
-          <td></td>           <!-- Location dropdown -->
-          <td class="priceCell"></td>  <!-- Price per SCU -->
-          <td class="rowTotal">0</td>  <!-- Item total -->
+          <td>${item}</td>                <!-- Item -->
+          <td class="bonusCell">0%</td>   <!-- Bonus -->
+          <td></td>                       <!-- Yield input -->
+          <td></td>                       <!-- Location dropdown -->
+          <td class="priceCell"></td>     <!-- Price per SCU -->
+          <td class="rowTotal">0</td>     <!-- Item total -->
         `;
         row.children[0].style.color = itemColors[item] || 'white';
   
@@ -254,10 +256,29 @@
           const selectedSystem = solarSystemSelect.value;
           const selectedRefinery = refinerySelect.value;
           const itemBonus = refineryBonuses[selectedSystem]?.[selectedRefinery]?.[itemName] || 1;
-          scu = Math.floor(scu * itemBonus); // or Math.round
+
+          // BONUS COLUMN (display only)
+          const bonusPercent = (itemBonus - 1) * 100;
+          const bonusCell = row.children[4];
+
+          bonusCell.textContent = `${bonusPercent.toFixed(1)}%`;
         
+          if (bonusPercent > 0) {
+            bonusCell.style.color = "lightgreen";
+          } else if (bonusPercent < 0) {
+            bonusCell.style.color = "salmon";
+          } else {
+            bonusCell.style.color = "#aaa"; // neutral / 0%
+          }
+
+          bonusCell.style.fontWeight = bonusPercent !== 0 ? "bold" : "normal";
+
+          // Apply bonus to SCU - NEEDS TO BE UPDATED TO cSCU not SCU
+          scu = Math.floor(scu * itemBonus); // or Math.round
+
+          // Item total
           const total = scu * price;
-          row.children[4].textContent = total.toLocaleString();
+          row.children[5].textContent = total.toLocaleString();
   
           calculateTotal();
         }
@@ -348,7 +369,7 @@
       rows.forEach(row => {
         const yieldVal = row.children[1].querySelector("input").value || "0";
         if (parseInt(yieldVal) > 0) {
-          txt += `${row.children[0].textContent} | ${yieldVal} | ${row.children[2].querySelector("select").value} | ${row.children[3].textContent} | ${row.children[4].textContent}\n`;
+          txt += `${row.children[0].textContent} | ${yieldVal} | ${row.children[2].querySelector("select").value} | ${row.children[3].textContent} | ${row.children[5].textContent}\n`;
         }
       });
   
@@ -370,7 +391,7 @@
       rows.forEach(row => {
         const yieldVal = row.children[1].querySelector("input").value || "0";
         if (parseInt(yieldVal) > 0) {
-          csv += `"${row.children[0].textContent}","${yieldVal}","${row.children[2].querySelector("select").value}","${row.children[3].textContent}","${row.children[4].textContent}"\n`;
+          csv += `"${row.children[0].textContent}","${yieldVal}","${row.children[2].querySelector("select").value}","${row.children[3].textContent}","${row.children[5].textContent}"\n`;
         }
       });
   
@@ -393,7 +414,7 @@
       rows.forEach(row => {
         const yieldVal = row.children[1].querySelector("input").value || "0";
         if (parseInt(yieldVal) > 0) {
-          textToCopy += `${row.children[0].textContent} | ${yieldVal} | ${row.children[2].querySelector("select").value} | ${row.children[3].textContent} | ${row.children[4].textContent}\n`;
+          textToCopy += `${row.children[0].textContent} | ${yieldVal} | ${row.children[2].querySelector("select").value} | ${row.children[3].textContent} | ${row.children[5].textContent}\n`;
         }
       });
   
