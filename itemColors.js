@@ -29,7 +29,8 @@ const itemColors = {
   "Aluminum": "#FF0000",
   "Tin": "#FF0000",
   "Silicon": "#FF0000",
-  "Inert Materials": "#FF0000",
+  // F tier
+  "Inert Materials": "#FFFFFF",
   // Salvage Items
   "Recycled Material Composite": "#FFD700",
   "Construction Material": "#006400",
