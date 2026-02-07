@@ -1,7 +1,7 @@
 const Yield2SellItemPrices = {
   "Stileron": {
     "Levski, Nyx": 105473,
-    "Nyx GatewY, Pyro": 105473,
+    "Nyx Gateway, Pyro": 105473,
     "Deakins Research Outpost, Yela, Crusader, Stanton": 97083,
     "Terra Mills HydroFarm, Cellin, Crusader, Stanton": 90611,
     "ArcCorp Mining Area 141, Daymar, Crusader, Stanton": 89748,
@@ -16,7 +16,7 @@ const Yield2SellItemPrices = {
   "Quantanium": {
     "ArcCorp Mining Area 141, Daymar, Crusader, Stanton": 94378,
     "Fallow Field, Pyro IV, Pyro V, Pyro": 94378,
-    "Canard View, Termminus, Pyro": 94378,
+    "Canard View, Terminus, Pyro": 94378,
     "The Golden Riviera, Bloom, Pyro": 89884,
     "Ashland, Ignis, Pyro V, Pyro": 89884,
     "Orison, Crusader, Stanton": 88574.5,
@@ -34,7 +34,7 @@ const Yield2SellItemPrices = {
     "The Golden Riviera, Bloom, Pyro": 90221,
     "Sacren's Plot, Pyro IV, Pyro V, Pyro": 90221,
     "Patch City, Pyro": 81199,
-    "Rod's Fuel 'n Supplies, Pyro": 81199,
+    "Rod's Fuel 'N Supplies, Pyro": 81199,
     "Endgame, Pyro": 81199,
     "Dudley & Daughters, Pyro": 81199,
     "Canard View, Terminus, Pyro": 81199,
@@ -51,7 +51,7 @@ const Yield2SellItemPrices = {
     "Lorville, Hurston, Stanton": 21459,
     "Patch City, Pyro": 20498,
     "Sacren's Plot, Pyro IV, Pyro V, Pyro": 20498,
-    "Ashalnd, Ignis, Pyro V, Pyro": 20498,
+    "Ashland, Ignis, Pyro V, Pyro": 20498,
     "Jackson's Swap, Monox, Pyro": 20498,
     "Canard View, Terminus, Pyro": 20498
   },
@@ -61,7 +61,7 @@ const Yield2SellItemPrices = {
     "The Golden Riviera, Bloom, Pyro": 20440,
     "Jackson's Swap, Monox, Pyro": 19364,
     "Patch City, Pyro": 19364,
-    "Rod's Fuel 'n Supplies, Pyro": 19364,
+    "Rod's Fuel 'N Supplies, Pyro": 19364,
     "Dudley & Daughters, Pyro": 19364,
     "Endgame, Pyro": 19364,
     "Canard View, Terminus, Pyro": 19364,
@@ -189,7 +189,7 @@ const Yield2SellItemPrices = {
     "Baijini Point, ArcCorp, Stanton": 1714,
     "Patch City, Pyro": 1633,
     "Starlight Service Station, Pyro": 1633,
-    "Stanton Gateway, Nyz": 1633,
+    "Stanton Gateway, Nyx": 1633,
     "New Cabbage, MicroTech, Stanton": 1633,
     "Orison, Crusader, Stanton": 1633,
     "Area 18, ArcCorp, Stanton": 1633,
