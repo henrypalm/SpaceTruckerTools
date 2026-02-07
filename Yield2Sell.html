@@ -294,6 +294,7 @@
         // Trigger the row's own update
         const event = new Event('input');   // or 'change'
         yieldInput.dispatchEvent(event);
+        select.dispatchEvent(new Event('change'));
       });
     }
   
