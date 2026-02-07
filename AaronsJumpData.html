@@ -19,7 +19,7 @@
     <a href="ProfitSplitter.html">Profit Splitter</a>
     <a href="Yield2Sell.html">Yield 2 Sell</a>
     <a href="Scavenger.html">Scavenger</a>
-    <a href="AaronsJumpData.html">Aaron's Jump Data</a>
+    <a href="AaronsJumpData.html" class="active">Aaron's Jump Data</a>
     <a href="Profile.html">Profile</a>
   </div>
 
@@ -27,14 +27,22 @@
   <div class="container">
     <h1>Quantum Jump Data — Aaron’s Halo</h1>
 
+    <!-- SELECTORS -->
+    <div class="controls">
+      <label>
+        System:
+        <select id="systemSelect"></select>
+      </label>
+
+      <label>
+        Start Point:
+        <select id="startSelect"></select>
+      </label>
+    </div>
+
+    <!-- TABLE -->
     <table id="jumpTable">
-      <thead>
-        <tr>
-          <th>Route</th>
-          <th>Distance (mil km)</th>
-          <th>Reverse</th>
-        </tr>
-      </thead>
+      <thead></thead>
       <tbody></tbody>
     </table>
   </div>
@@ -44,48 +52,77 @@
 
   <!-- LOGIC -->
   <script>
+    const systemSelect = document.getElementById("systemSelect");
+    const startSelect = document.getElementById("startSelect");
+    const thead = document.querySelector("#jumpTable thead");
     const tbody = document.querySelector("#jumpTable tbody");
 
-    function populateTable() {
-      tbody.innerHTML = "";
+    function initSelectors() {
+      systemSelect.innerHTML = "";
 
-      for (const system in JumpData) {
-        const systemRow = document.createElement("tr");
-        systemRow.className = "system-row";
-        systemRow.innerHTML = `<td colspan="3">${system}</td>`;
-        tbody.appendChild(systemRow);
+      Object.keys(JumpData).forEach(system => {
+        const option = document.createElement("option");
+        option.value = system;
+        option.textContent = system;
+        systemSelect.appendChild(option);
+      });
 
-        for (const start in JumpData[system]) {
-          const startRow = document.createElement("tr");
-          startRow.className = "start-row";
-          startRow.innerHTML = `<td colspan="3">${start}</td>`;
-          tbody.appendChild(startRow);
+      systemSelect.addEventListener("change", updateStartPoints);
+      startSelect.addEventListener("change", buildMatrix);
 
-          for (const end in JumpData[system][start]) {
-            const jump = JumpData[system][start][end];
-
-            const jumpRow = document.createElement("tr");
-            jumpRow.className = "jump-row";
-            jumpRow.innerHTML = `
-              <td><span class="arrow">→</span>${end}</td>
-              <td class="highlight">${jump.distance ?? ""}</td>
-              <td>${jump.reverse ?? ""}</td>
-            `;
-            tbody.appendChild(jumpRow);
-          }
-        }
-      }
+      updateStartPoints();
     }
 
-    populateTable();
+    function updateStartPoints() {
+      const system = systemSelect.value;
+      startSelect.innerHTML = "";
 
-    // Active tab highlight
-    const currentPage = location.pathname.split("/").pop();
-    document.querySelectorAll(".nav-tabs a").forEach(link => {
-      if (link.getAttribute("href") === currentPage) {
-        link.classList.add("active");
-      }
-    });
+      Object.keys(JumpData[system]).forEach(start => {
+        const option = document.createElement("option");
+        option.value = start;
+        option.textContent = start;
+        startSelect.appendChild(option);
+      });
+
+      buildMatrix();
+    }
+
+    function buildMatrix() {
+      const system = systemSelect.value;
+      const start = startSelect.value;
+      const routes = JumpData[system][start];
+
+      thead.innerHTML = "";
+      tbody.innerHTML = "";
+
+      const endpoints = Object.keys(routes);
+
+      /* HEADER ROW */
+      const headerRow = document.createElement("tr");
+      headerRow.innerHTML = `<th>${start}</th>`;
+      endpoints.forEach(end => {
+        headerRow.innerHTML += `<th>${end}</th>`;
+      });
+      thead.appendChild(headerRow);
+
+      /* DISTANCE ROW */
+      const distanceRow = document.createElement("tr");
+      distanceRow.innerHTML = `<td>Distance (mil km)</td>`;
+      endpoints.forEach(end => {
+        distanceRow.innerHTML += `<td class="highlight">${routes[end].distance}</td>`;
+      });
+      tbody.appendChild(distanceRow);
+
+      /* REVERSE ROW */
+      const reverseRow = document.createElement("tr");
+      reverseRow.innerHTML = `<td>Reverse</td>`;
+      endpoints.forEach(end => {
+        reverseRow.innerHTML += `<td>${routes[end].reverse}</td>`;
+      });
+      tbody.appendChild(reverseRow);
+    }
+
+    initSelectors();
   </script>
 
 </body>
