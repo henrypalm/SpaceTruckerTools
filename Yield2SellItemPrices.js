@@ -126,18 +126,18 @@ const Yield2SellItemPrices = {
     "Starlight Service Station, Pyro": 4755
   },
   "Beryl": {
-    "": 5702,
-    "": 5322,
-    "": 5322,
-    "": 5294.51,
-    "": 5216,
-    "": 5069,
-    "": 4827,
-    "": 4790,
-    "": 4790,
-    "": 4790,
-    "": 4790,
-    "": 4790
+    "Rod's Fuel 'N Supplies, Pyro": 5703,
+    "HUR L5, Stanton": 5322,
+    "HUR L1, Stanton": 5322,
+    "HUR L4, Stanton": 5294.51,
+    "HUR L3, Stanton": 5216,
+    "Endgame, Pyro": 5069,
+    "Area 18, ArcCorp, Stanton": 4827,
+    "CRU L5, Stanton": 4790,
+    "MIC L5, Stanton": 4790,
+    "Lorville, Hurston, Stanton": 4790,
+    "New Cabbage, MicroTech, Stanton": 4790,
+    "Orison, Crusader, Stanton": 4790
   },
   "Agricium": {
     "ARC L4, Stanton": 4537.01,
@@ -211,7 +211,7 @@ const Yield2SellItemPrices = {
     "ROD'S FUEL 'N SUPPLIES, PYRO": 1450,
     "STARLIGHT SERVICE STATION, PYRO": 1450
   },
-  "Graphite?": {
+  "Graphite": {
     "NEW CABBAGE, MICROTECH, STANTON": 1325,
     "AREA 18, ARCCORP, STANTON": 1300,
     "ORISON, CRUSADER, STANTON": 1290,
