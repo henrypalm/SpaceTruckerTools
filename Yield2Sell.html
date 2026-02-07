@@ -43,7 +43,7 @@
       <h1>Yield 2 Sell</h1>
   
       <label for="refineryTitle" style="display:block; text-align:center; color: gold; margin-bottom: 0.5rem;">
-        Refinery:
+        Refinery Selection:
       </label>
       <div style="text-align:center; margin-bottom:1rem; color: gold;">
         <label for="solarSystem">Solar System: </label>
@@ -246,8 +246,15 @@
           const price = destinations[selectedLoc] || 0;
           row.children[3].textContent = price.toLocaleString();
   
-          const yieldVal = Math.floor(parseFloat(yieldInput.value) || 0);
-          const scu = Math.floor(yieldVal / 100);
+          const yieldVal = parseFloat(yieldInput.value) || 0;
+          let scu = Math.floor(yieldVal / 100);
+        
+          // Apply refinery bonus per item
+          const selectedSystem = solarSystemSelect.value;
+          const selectedRefinery = refinerySelect.value;
+          const itemBonus = refineryBonuses[selectedSystem]?.[selectedRefinery]?.[itemName] || 1;
+          scu = Math.floor(scu * itemBonus); // or Math.round
+        
           const total = scu * price;
           row.children[4].textContent = total.toLocaleString();
   
@@ -280,9 +287,9 @@
       const rows = document.querySelectorAll("#priceTable tbody tr");
       const selectedSystem = solarSystemSelect.value;
       const selectedRefinery = refinerySelect.value;
-      const bonus = (refineryBonuses[selectedSystem] && refineryBonuses[selectedSystem][selectedRefinery]) || 1;
   
       rows.forEach(row => {
+        const itemName = row.children[0].textContent;
         const select = row.children[2].querySelector("select");
         const yieldInput = row.children[1].querySelector("input");
         const destinations = itemPrices[row.children[0].textContent];
@@ -290,12 +297,17 @@
         if (!select || !yieldInput || !destinations) return;
   
         const price = destinations[select.value] || 0;
-        row.children[3].textContent = (price * bonus).toLocaleString();
-  
-        const yieldVal = Math.floor(parseFloat(yieldInput.value) || 0);
-        const scu = Math.floor(yieldVal / 100);
-        const total = scu * price * bonus;
-        row.children[4].textContent = total.toLocaleString();
+        const yieldVal = parseFloat(yieldInput.value) || 0;   // raw yield input
+        let scu = Math.floor(yieldVal / 100);                 // base SCU
+        
+        // Apply the refinery bonus per item
+        const itemBonus = (refineryBonuses[selectedSystem]?.[selectedRefinery]?.[itemName]) || 1;
+        scu = scu * itemBonus;
+        
+        const total = scu  * price;
+        
+        row.children[3].textContent = price.toLocaleString();   // price per SCU
+        row.children[4].textContent = total.toLocaleString();   // total aUEC
       });
   
       calculateTotal();
