@@ -32,8 +32,8 @@ const itemColors = {
   // F tier
   "Inert Materials": "#FFFFFF",
   // Salvage Items
-  "Recycled Material Composite": "#FFD700",
-  "Construction Material": "#006400",
+  "Construction Material": "#FFD700",
+  "Recycled Material Composite": "#006400",
   //Roc Minables
   // S tier
   "Janalite" : "#FFD700",
