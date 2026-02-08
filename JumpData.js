@@ -4,7 +4,7 @@ const JumpData = {
       "CRU-L4": { distance: 14.29, reverse: 9.7 },
       "Crusader": { distance: 33.2, reverse: 6.44 },
       "CRU-L5": { distance: 39.46, reverse: 5.7 },
-      "Hurston": { distance: 1347, reverse: 6.83 },
+      "Hurston": { distance: 13.47, reverse: 6.83 },
       "CRU-L3": { distance: 12.67, reverse: 10.03 }
     },
     "Arc-L2": {
