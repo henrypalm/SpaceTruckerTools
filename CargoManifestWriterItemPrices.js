@@ -355,33 +355,34 @@ const itemPrices = {
       "DUDLEY & DAUGHTERS, PYRO": { scu: 1062, cscu: 1, mscu: 1 }
     }
   },
-  "Gems": {
+  "Gem Mining": {
     "Janalite": {
-    "SERAPHIM STATION, CRUSADER, STANTON": { scu: 18559800, cscu: 1, mscu: 1 },
-    "HDMS-PINEWOOD, HURSTON, STANTON": { scu: 18502700, cscu: 1, mscu: 1 },
-    "HDMS-THEDUS, HURSTON, STANTON": { scu: 18502700, cscu: 1, mscu: 1 },
-    "HDMS-HADLEY, HURSTON, STANTON": { scu: 18502700, cscu: 1, mscu: 1 },
-    "ARCCORP MINING AREA 141, DAYMAR, CRUSADER, STANTON": { scu: 18502700, cscu: 1, mscu: 1 },
-    "HDMS-STANHOPE, HURSTON, STANTON": { scu: 18502700, cscu: 1, mscu: 1 },
-    "HDMS-LATHAN, ARIAL, HURSTON, STANTON": { scu: 17621600, cscu: 1, mscu: 1 },
-    "HDMS-OPAREI, HURSTON, STANTON": { scu: 17621600, cscu: 1, mscu: 1 },
-    "HDMS-BEZDEK, ARIAL, HURSTON, STANTON": { scu: 17621600, cscu: 1, mscu: 1 },
-    "ORISON, CRUSADER, STANTON": { scu: 16740500, cscu: 1, mscu: 1 },
-    "RUIN STATION, TERMINUS, PYRO": { scu: 15255700, cscu: 1, mscu: 1 },
-    "GRIM HEX, YELA, CRUSADER, STANTON": { scu: 15024600, cscu: 1, mscu: 1 }
+      "SERAPHIM STATION, CRUSADER, STANTON": { scu: 18559800, cscu: 1, mscu: 1 },
+      "HDMS-PINEWOOD, HURSTON, STANTON": { scu: 18502700, cscu: 1, mscu: 1 },
+      "HDMS-THEDUS, HURSTON, STANTON": { scu: 18502700, cscu: 1, mscu: 1 },
+      "HDMS-HADLEY, HURSTON, STANTON": { scu: 18502700, cscu: 1, mscu: 1 },
+      "ARCCORP MINING AREA 141, DAYMAR, CRUSADER, STANTON": { scu: 18502700, cscu: 1, mscu: 1 },
+      "HDMS-STANHOPE, HURSTON, STANTON": { scu: 18502700, cscu: 1, mscu: 1 },
+      "HDMS-LATHAN, ARIAL, HURSTON, STANTON": { scu: 17621600, cscu: 1, mscu: 1 },
+      "HDMS-OPAREI, HURSTON, STANTON": { scu: 17621600, cscu: 1, mscu: 1 },
+      "HDMS-BEZDEK, ARIAL, HURSTON, STANTON": { scu: 17621600, cscu: 1, mscu: 1 },
+      "ORISON, CRUSADER, STANTON": { scu: 16740500, cscu: 1, mscu: 1 },
+      "RUIN STATION, TERMINUS, PYRO": { scu: 15255700, cscu: 1, mscu: 1 },
+      "GRIM HEX, YELA, CRUSADER, STANTON": { scu: 15024600, cscu: 1, mscu: 1 }
     },
-    "SHUBIN MINING FACILITY SM0-22, MICROTECH, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
-    "HDMS-HAHN, MAGDA, HURSTON, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
-    "SHUBIN MINING FACILITY SM0-13, MICROTECH, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
-    "SHUBIN MINING FACILITY SM0-18, MICROTECH, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
-    "SHUBIN MINING FACILITY SM0-10, MICROTECH, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
-    "ARCCORP MINING AREA 056, WALA, ARCCORP, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
-    "SHUBIN MINING FACILITY SCD-1, DAYMAR, CRUSADER, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
-    "HDMS-LATHAN, ARIAL, HURSTON, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
-    "ARCCORP MINING AREA 061, WALA, ARCCORP, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
-    "HDMS-PERLMAN, MAGDA, HURSTON, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
-    "HDMS-ANDERSON, ABERDEEN, HURSTON, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
-    "SHUBIN MINING FACILITY SAL-2, LYRIA, ARCCORP, STANTON": { scu: 600600, cscu: 1, mscu: 1 }
+    "Hadanite":{
+      "SHUBIN MINING FACILITY SM0-22, MICROTECH, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
+      "HDMS-HAHN, MAGDA, HURSTON, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
+      "SHUBIN MINING FACILITY SM0-13, MICROTECH, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
+      "SHUBIN MINING FACILITY SM0-18, MICROTECH, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
+      "SHUBIN MINING FACILITY SM0-10, MICROTECH, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
+      "ARCCORP MINING AREA 056, WALA, ARCCORP, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
+      "SHUBIN MINING FACILITY SCD-1, DAYMAR, CRUSADER, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
+      "HDMS-LATHAN, ARIAL, HURSTON, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
+      "ARCCORP MINING AREA 061, WALA, ARCCORP, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
+      "HDMS-PERLMAN, MAGDA, HURSTON, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
+      "HDMS-ANDERSON, ABERDEEN, HURSTON, STANTON": { scu: 600600, cscu: 1, mscu: 1 },
+      "SHUBIN MINING FACILITY SAL-2, LYRIA, ARCCORP, STANTON": { scu: 600600, cscu: 1, mscu: 1 }
     },
     "Feynmaline": {
       "HDMS-BEZDEK, ARIAL, HURSTON, STANTON": { scu: 392700, cscu: 1, mscu: 1 },
