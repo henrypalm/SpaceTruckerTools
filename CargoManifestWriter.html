@@ -260,7 +260,7 @@
             <th>Total</th>
           </tr>
         </thead>
-        <tbody id="handMiningBody"></tbody>
+        <tbody id="gemMiningBody"></tbody>
       </table>
     </details>
   
@@ -345,13 +345,13 @@
     
     window.onload = function () {
       const shipMiningBody = document.getElementById("shipMiningBody");
-      const handMiningBody = document.getElementById("handMiningBody");
+      const gemMiningBody = document.getElementById("gemMiningBody");
       const salvageBody = document.getElementById("salvageBody");
       const shipPartsBody = document.getElementById("shipPartsBody");
 
       function updateGrandTotal() {
         let total = 0;
-        [shipMiningBody, handMiningBody, salvageBody, shipPartsBody].forEach(body => {
+        [shipMiningBody, gemMiningBody, salvageBody, shipPartsBody].forEach(body => {
           Array.from(body.children).forEach(row => {
             const value = parseFloat(row.children[4].querySelector("span").textContent.replace(/,/g, ""));
             total += isNaN(value) ? 0 : value;
@@ -484,7 +484,7 @@
       categories.forEach(category => {
         const targetBody =
           category === "Ship Mining" ? shipMiningBody :
-          category === "Handheld and Light Ship Mining" ? handMiningBody :
+          category === "Gem Mining" ? gemMiningBody :
           category === "Salvage" ? salvageBody : 
           category === "Ship Parts" ? shipPartsBody : null;
 
@@ -601,7 +601,7 @@
       document.getElementById("manifestTitleDisplay").textContent = manifest.title;
     
       // Clear all existing rows
-      ["shipMiningBody", "handMiningBody", "salvageBody", "shipPartsBody"].forEach(id => {
+      ["shipMiningBody", "gemMiningBody", "salvageBody", "shipPartsBody"].forEach(id => {
         document.getElementById(id).innerHTML = "";
       });
     
@@ -610,7 +610,7 @@
         let targetBodyId = "";
         switch (categoryData.category) {
           case "Ship Mining": targetBodyId = "shipMiningBody"; break;
-          case "Handheld and Light Ship Mining": targetBodyId = "handMiningBody"; break;
+          case "Gem Mining": targetBodyId = "gemMiningBody"; break;
           case "Salvage": targetBodyId = "salvageBody"; break;
           case "Ship Parts": targetBodyId = "shipPartsBody"; break;
           default: return; // skip unknown category
@@ -653,7 +653,7 @@
       // Collect all category data
       const categories = [
         { id: "shipMiningBody", name: "Ship Mining" },
-        { id: "handMiningBody", name: "Handheld and Light Ship Mining" },
+        { id: "gemMiningBody", name: "Gem Mining" },
         { id: "salvageBody", name: "Salvage" },
         { id: "shipPartsBody", name: "Ship Parts" }
       ];
@@ -720,7 +720,7 @@
     
       const bodies = [
         { label: "Ship Mining", body: document.getElementById("shipMiningBody") },
-        { label: "Handheld and Light Ship Mining", body: document.getElementById("handMiningBody") },
+        { label: "Gem Mining", body: document.getElementById("gemMiningBody") },
         { label: "Salvage", body: document.getElementById("salvageBody") },
         { label: "Ship Parts", body: document.getElementById("shipPartsBody") }
       ];
@@ -774,7 +774,7 @@
       
       const bodies = [
         { label: "Ship Mining", body: document.getElementById("shipMiningBody") },
-        { label: "Handheld and Light Ship Mining", body: document.getElementById("handMiningBody") },
+        { label: "Gem Mining", body: document.getElementById("gemMiningBody") },
         { label: "Salvage", body: document.getElementById("salvageBody") },
         { label: "Ship Parts", body: document.getElementById("shipPartsBody") }
       ];
