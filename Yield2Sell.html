@@ -201,6 +201,15 @@
   <script>
   document.addEventListener("DOMContentLoaded", () => {
 
+    const itemPrices = window.itemPrices || window.Yield2SellItemPrices || {};
+    const processList = Array.isArray(window.refineryProcesses)
+      ? window.refineryProcesses
+      : Object.entries(window.refineryProcesses || {}).map(([name, data]) => ({
+          name: name.trim(),
+          yieldMultiplier: data?.yieldMultiplier ?? data?.yield ?? 1
+        }));
+
+    
     const REFINE_METHOD_YIELD = {
       Ferron: 0.95,
       Dynix: 0.97
@@ -358,7 +367,7 @@
     const refiningTypePercent = document.getElementById("refiningTypePercent");
 
     function updateRefiningTypePercentLabel() {
-      const selectedProcess = refineryProcesses.find(process => process.name === refiningTypeSelect.value);
+      const selectedProcess = refineryList.find(process => process.name === refiningTypeSelect.value);
       if (!selectedProcess) {
         refiningTypePercent.textContent = "Yield: --";
         return;
@@ -370,7 +379,7 @@
     function populateRefiningTypeOptions() {
       refiningTypeSelect.innerHTML = "";
 
-      refineryProcesses.forEach((process, index) => {
+      refineryList.forEach((process, index) => {
         const option = document.createElement("option");
         option.value = process.name;
         option.textContent = `${process.name} (${(process.yieldMultiplier * 100).toFixed(1)}%)`;
