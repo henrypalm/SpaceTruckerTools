@@ -1,5 +1,5 @@
 const refineryProcesses = {
-    "Dinyx Solvention ": {
+    "Dinyx Solvention": {
         yield: 0.45
     },
     "Ferron Exchange": {
