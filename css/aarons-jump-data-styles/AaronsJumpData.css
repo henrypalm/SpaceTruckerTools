@@ -1,0 +1,139 @@
+/* GLOBAL */
+body {
+  background-color: #111;
+  background-image: url('/imgs/QuantumBackground.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: white;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding-bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  min-height: 100vh;
+}
+
+/* NAV BAR */
+.nav-tabs {
+  display: flex;
+  gap: 10px;
+  background-color: #222;
+  padding: 10px;
+  border-bottom: 2px solid #444;
+  justify-content: center;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.nav-tabs a {
+  color: #ccc;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  background-color: #333;
+}
+
+.nav-tabs a:hover {
+  background-color: #555;
+  color: white;
+}
+
+.nav-tabs a.active {
+  background-color: #2d89ff;
+  color: white;
+  font-weight: bold;
+}
+
+/* CONTENT CONTAINER */
+.container {
+  background-color: rgba(0, 0, 0, 0.75);
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 900px;
+  width: 95%;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+h1 {
+  text-align: center;
+  color: gold;
+  margin-bottom: 1.5rem;
+}
+
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.6rem;
+  border-bottom: 1px solid #444;
+  text-align: left;
+}
+
+th {
+  background-color: #222;
+}
+
+/* ROW TYPES */
+.system-row td {
+  background-color: #1b1b1b;
+  color: gold;
+  font-weight: bold;
+  padding-top: 1rem;
+}
+
+.start-row td {
+  background-color: #222;
+  color: #9adcff;
+  font-weight: bold;
+  padding-left: 1rem;
+}
+
+.jump-row td {
+  padding-left: 2.5rem;
+}
+
+/* MISC */
+.arrow {
+  color: #888;
+  margin-right: 0.4rem;
+}
+
+.highlight {
+  color: cyan;
+}
+
+/* System label */
+.system-title {
+  color: gold;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* Start point label */
+.start-title {
+  color: #4fc3ff;
+  margin: 1.2rem 0 0.4rem;
+  text-align: center;
+}
+
+/* Matrix table spacing */
+.jump-matrix {
+  margin-bottom: 2rem;
+}
+
+/* Shortest / longest indicators */
+th.shortest {
+  color: #4caf50; /* green */
+}
+
+th.longest {
+  color: #f44336; /* red */
+}
+
