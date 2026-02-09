@@ -17,6 +17,7 @@
   <!-- Load item data and color mappings -->
   <script src="Yield2SellItemPrices.js"></script>
   <script src="Yield2SellRefineryBonuses.js"></script>
+  <script src="refineryProcesses.js"></script>
   <script src="itemColors.js"></script>
   <script src="JumpData.js"></script>
 
@@ -71,9 +72,8 @@
       <div style="text-align:center; margin-bottom:1rem; color: gold;">
         <label for="refiningType">Refining Type: </label>
         <select id="refiningType" style="background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px; width:150px;">
-          <option value="Ferron">Ferron</option>
-          <option value="Dynix">Dynix</option>
         </select>
+        <span id="refiningTypePercent" style="margin-left:0.5rem; color:#aaa;">Yield: --</span>
       
         <label for="refiningCost" style="margin-left:1rem;">Refining Cost: </label>
         <input type="number" id="refiningCost" placeholder="aUEC" min="0" style="width:100px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
@@ -355,6 +355,35 @@
     const refinerySelect = document.getElementById("refineryName");
     const quantityModeSelect = document.getElementById("quantityMode");
     const refiningTypeSelect = document.getElementById("refiningType");
+    const refiningTypePercent = document.getElementById("refiningTypePercent");
+
+    function updateRefiningTypePercentLabel() {
+      const selectedProcess = refineryProcesses.find(process => process.name === refiningTypeSelect.value);
+      if (!selectedProcess) {
+        refiningTypePercent.textContent = "Yield: --";
+        return;
+      }
+
+      refiningTypePercent.textContent = `Yield: ${(selectedProcess.yieldMultiplier * 100).toFixed(1)}%`;
+    }
+
+    function populateRefiningTypeOptions() {
+      refiningTypeSelect.innerHTML = "";
+
+      refineryProcesses.forEach((process, index) => {
+        const option = document.createElement("option");
+        option.value = process.name;
+        option.textContent = `${process.name} (${(process.yieldMultiplier * 100).toFixed(1)}%)`;
+
+        if (index === 0) {
+          option.selected = true;
+        }
+
+        refiningTypeSelect.appendChild(option);
+      });
+
+      updateRefiningTypePercentLabel();
+    }
   
     function updateAllRows() {
       const rows = document.querySelectorAll("#priceTable tbody tr");
@@ -400,8 +429,10 @@
       updateQuantityModeUI();
       updateAllRows();
     });
-    refiningTypeSelect.addEventListener("change", updateAllRows);
-
+    refiningTypeSelect.addEventListener("change", () => {
+      updateRefiningTypePercentLabel();
+      updateAllRows();
+    });
   
     // ====== Export / Clipboard ======
     function downloadFile(content, filename) {
@@ -503,6 +534,7 @@
     document.getElementById('refiningMinutes').addEventListener('input', updateOrderReadyAt);
   
     // Initial population
+    populateRefiningTypeOptions();
     populateTable();
     updateQuantityModeUI();
     updateOrderReadyAt();
