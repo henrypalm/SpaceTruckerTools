@@ -191,10 +191,11 @@
         <table id="jumpTable">
           <thead>
             <tr>
+              <th>System</th>
               <th>From</th>
               <th>To</th>
-              <th>Drop-Out Range (millions of km)</th>
-              <th>Notes</th>
+              <th>Distance</th>
+              <th>Reverse</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -774,46 +775,104 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
     };
   
     // ====== Jump Data Modal ======
-    (function(){
+    (function () {
       const modal = document.getElementById("jumpDataModal");
       const closeBtn = modal.querySelector(".close");
       const tbody = modal.querySelector("#jumpTable tbody");
-  
+    
       function populateJumpTable() {
         tbody.innerHTML = "";
-        JumpData.forEach(entry => {
-          const row = document.createElement("tr");
-          row.innerHTML = `<td>${entry.from}</td><td>${entry.to}</td><td class="highlight">${entry.range}</td><td>${entry.notes || ""}</td>`;
-          tbody.appendChild(row);
+    
+        if (!window.JumpData) {
+          tbody.innerHTML = `<tr><td colspan="5">JumpData not loaded.</td></tr>`;
+          return;
+        }
+    
+        Object.entries(window.JumpData).forEach(([system, fromMap]) => {
+          Object.entries(fromMap).forEach(([from, toMap]) => {
+            Object.entries(toMap).forEach(([to, data]) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td>${system}</td>
+                <td>${from}</td>
+                <td>${to}</td>
+                <td class="highlight">${data.distance}</td>
+                <td>${data.reverse ?? ""}</td>
+              `;
+              tbody.appendChild(row);
+            });
+          });
         });
       }
-  
-      window.openJumpDataModal = function() {
+    
+      window.openJumpDataModal = function () {
         populateJumpTable();
         modal.style.display = "flex";
       };
-  
-      closeBtn.onclick = () => { modal.style.display = "none"; };
-      window.onclick = (e) => { if(e.target===modal) modal.style.display="none"; };
-  
-      window.exportJumpDataToTXT = function() {
-        let txt = "Quantum Jump Reference to Aaron's Halo\n\nFrom | To | Range (mil km) | Notes\n";
-        JumpData.forEach(entry => { txt += `${entry.from} | ${entry.to} | ${entry.range} | ${entry.notes || ""}\n`; });
-        downloadFile(txt, `AaronJumpData_${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.txt`);
+    
+      closeBtn.onclick = () => {
+        modal.style.display = "none";
       };
-  
-      window.exportJumpDataToCSV = function() {
-        let csv = "From,To,Range (mil km),Notes\n";
-        JumpData.forEach(entry => { csv += `"${entry.from}","${entry.to}","${entry.range}","${entry.notes || ""}"\n`; });
-        downloadFile(csv, `AaronJumpData_${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.csv`);
+    
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.style.display = "none";
+      });
+    
+      window.exportJumpDataToTXT = function () {
+        if (!window.JumpData) return alert("JumpData not loaded.");
+    
+        let txt = "Quantum Jump Reference\n\nSystem | From | To | Distance | Reverse\n";
+    
+        Object.entries(window.JumpData).forEach(([system, fromMap]) => {
+          Object.entries(fromMap).forEach(([from, toMap]) => {
+            Object.entries(toMap).forEach(([to, data]) => {
+              txt += `${system} | ${from} | ${to} | ${data.distance} | ${data.reverse ?? ""}\n`;
+            });
+          });
+        });
+    
+        downloadFile(
+          txt,
+          `AaronJumpData_${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-")}.txt`
+        );
       };
-  
-      window.copyJumpDataToClipboard = function() {
-        let text = "Quantum Jump Reference to Aaron's Halo\n\nFrom | To | Range (mil km) | Notes\n";
-        JumpData.forEach(entry => { text += `${entry.from} | ${entry.to} | ${entry.range} | ${entry.notes || ""}\n`; });
-        navigator.clipboard.writeText(text).then(()=>alert("Copied Jump Data to clipboard!"));
+    
+      window.exportJumpDataToCSV = function () {
+        if (!window.JumpData) return alert("JumpData not loaded.");
+    
+        let csv = "System,From,To,Distance,Reverse\n";
+    
+        Object.entries(window.JumpData).forEach(([system, fromMap]) => {
+          Object.entries(fromMap).forEach(([from, toMap]) => {
+            Object.entries(toMap).forEach(([to, data]) => {
+              csv += `"${system}","${from}","${to}","${data.distance}","${data.reverse ?? ""}"\n`;
+            });
+          });
+        });
+    
+        downloadFile(
+          csv,
+          `AaronJumpData_${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-")}.csv`
+        );
       };
-  
+    
+      window.copyJumpDataToClipboard = function () {
+        if (!window.JumpData) return alert("JumpData not loaded.");
+    
+        let text = "Quantum Jump Reference\n\nSystem | From | To | Distance | Reverse\n";
+    
+        Object.entries(window.JumpData).forEach(([system, fromMap]) => {
+          Object.entries(fromMap).forEach(([from, toMap]) => {
+            Object.entries(toMap).forEach(([to, data]) => {
+              text += `${system} | ${from} | ${to} | ${data.distance} | ${data.reverse ?? ""}\n`;
+            });
+          });
+        });
+    
+        navigator.clipboard
+          .writeText(text)
+          .then(() => alert("Copied Jump Data to clipboard!"));
+      };
     })();
   
   }); // end DOMContentLoaded
