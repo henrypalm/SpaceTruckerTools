@@ -92,7 +92,13 @@
           <tr>
             <th>Item</th>
             <th>Bonus</th>
-            <th>Yield</th>
+            <th>
+              <label for="quantityMode" style="display:none;">Quantity Mode</label>
+              <select id="quantityMode" style="background:#111; border:1px solid #555; color:white; padding:0.2rem; border-radius:4px;">
+                <option value="yield" selected>Yield</option>
+                <option value="raw">Raw</option>
+              </select>
+            </th>
             <th>Location</th>
             <th>Price Per SCU (aUEC)</th>
             <th>Item Total</th>
@@ -195,6 +201,11 @@
   <script>
   document.addEventListener("DOMContentLoaded", () => {
 
+    const REFINE_METHOD_YIELD = {
+      Ferron: 0.95,
+      Dynix: 0.97
+    };
+
     // ===== Column constants =====
     const COL = {
       ITEM: 0,
@@ -269,8 +280,17 @@
           const price = destinations[selectedLoc] || 0;
           row.children[COL.PRICE].textContent = price.toLocaleString();
   
-          const yieldVal = parseFloat(yieldInput.value) || 0;
-          let scu = Math.floor(yieldVal / 100);
+          const enteredValue = parseFloat(yieldInput.value) || 0;
+          const quantityMode = quantityModeSelect.value;
+          const selectedRefiningType = refiningTypeSelect.value;
+
+          let scu = 0;
+          if (quantityMode === 'raw') {
+            const refiningYield = REFINE_METHOD_YIELD[selectedRefiningType] || 1;
+            scu = Math.floor((enteredValue * refiningYield) / 100);
+          } else {
+            scu = Math.floor(enteredValue / 100);
+          }
         
           // Apply refinery bonus per item
           const selectedSystem = solarSystemSelect.value;
@@ -309,6 +329,15 @@
         tbody.appendChild(row);
       });
     }
+
+    function updateQuantityModeUI() {
+      const isRaw = quantityModeSelect.value === 'raw';
+      const inputPlaceholder = isRaw ? 'Raw' : 'Yield';
+      const inputs = document.querySelectorAll("#priceTable tbody tr td:nth-child(3) input");
+      inputs.forEach(input => {
+        input.placeholder = inputPlaceholder;
+      });
+    }
   
     // ====== Calculate grand total ======
     function calculateTotal() {
@@ -324,6 +353,8 @@
     const refineryBonuses = Yield2SellRefineryBonuses;
     const solarSystemSelect = document.getElementById("solarSystem");
     const refinerySelect = document.getElementById("refineryName");
+    const quantityModeSelect = document.getElementById("quantityMode");
+    const refiningTypeSelect = document.getElementById("refiningType");
   
     function updateAllRows() {
       const rows = document.querySelectorAll("#priceTable tbody tr");
@@ -365,6 +396,11 @@
     });
   
     refinerySelect.addEventListener("change", updateAllRows);
+    quantityModeSelect.addEventListener("change", () => {
+      updateQuantityModeUI();
+      updateAllRows();
+    });
+    refiningTypeSelect.addEventListener("change", updateAllRows);
 
   
     // ====== Export / Clipboard ======
@@ -468,6 +504,7 @@
   
     // Initial population
     populateTable();
+    updateQuantityModeUI();
     updateOrderReadyAt();
   
     // ====== Rock Composition Modal ======
