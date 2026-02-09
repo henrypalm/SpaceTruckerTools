@@ -362,4 +362,5 @@ const Yield2SellItemPrices = {
   }
 };
 
-const itemPrices = Yield2SellItemPrices;
+window.itemPrices = Yield2SellItemPrices;
+//const itemPrices = Yield2SellItemPrices;
