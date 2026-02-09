@@ -8,3 +8,6 @@ const refineryProcesses = {
 };
 
 const refineryPercentage = refineryProcesses;
+
+window.refineryProcesses = refineryProcesses;
+window.refineryPercentage = refineryPercentage;
