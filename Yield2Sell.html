@@ -209,12 +209,6 @@
           yieldMultiplier: data?.yieldMultiplier ?? data?.yield ?? 1
         }));
 
-    
-    const REFINE_METHOD_YIELD = {
-      Ferron: 0.95,
-      Dynix: 0.97
-    };
-
     // ===== Column constants =====
     const COL = {
       ITEM: 0,
@@ -291,11 +285,12 @@
   
           const enteredValue = parseFloat(yieldInput.value) || 0;
           const quantityMode = quantityModeSelect.value;
-          const selectedRefiningType = refiningTypeSelect.value;
+          
+          const selectedProcess = processList.find(p => p.name === refiningTypeSelect.value);
+          const refiningYield = selectedProcess?.yieldMultiplier ?? 1;
 
           let scu = 0;
-          if (quantityMode === 'raw') {
-            const refiningYield = REFINE_METHOD_YIELD[selectedRefiningType] || 1;
+          if (quantityMode === "raw") {
             scu = Math.floor((enteredValue * refiningYield) / 100);
           } else {
             scu = Math.floor(enteredValue / 100);
