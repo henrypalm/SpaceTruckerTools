@@ -1,21 +1,21 @@
 .saved-composition {
   position: relative;
-  background:#1c1c1c;
-  border:1px solid #555;
-  border-radius:10px;
-  margin:1rem auto;
-  padding:1rem;
-  max-width:600px;
+  background: #1c1c1c;
+  border: 1px solid #555;
+  border-radius: 10px;
+  margin: 1rem auto;
+  padding: 1rem;
+  max-width: 600px;
 }
 
 .saved-composition h3 {
-  margin-top:0;
-  color:gold;
+  margin-top: 0;
+  color: gold;
 }
 
-body { 
-  font-family: Arial, sans-serif; 
-  margin: 20px; 
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
 }
 
 /* Modal styling */
@@ -27,14 +27,14 @@ body {
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  background-color: rgba(0,0,0,0.7);
+  overflow: hidden; /* keep overlay from scrolling */
+  background-color: rgba(0, 0, 0, 0.7);
   justify-content: center;
   align-items: center;
 }
 
 .modal-content {
-  background: #1c1c1c;   
+  background: #1c1c1c;
   color: white;
   padding: 20px;
   border-radius: 8px;
@@ -49,7 +49,9 @@ body {
   color: red;
 }
 
-table, th, td {
+table,
+th,
+td {
   border: 1px solid black;
   border-collapse: collapse;
   padding: 5px;
@@ -70,40 +72,43 @@ table, th, td {
   padding: 2px 6px;
 }
 
-
 .remove-btn:hover {
   background: darkred;
 }
 
-/* Make the rock modal content a fixed-height column layout */
-.rock-modal-content {
+/* ================================
+   ROCK MODAL: INTERNAL SCROLL FIX
+   ================================ */
+
+/* Rock modal content must be a constrained flex column */
+#rockModal .rock-modal-content {
   display: flex;
   flex-direction: column;
   height: 85vh;
-  max-height: 85vh;          /* controls modal height */
-  overflow: hidden;          /* important: scroll happens in .rock-scroll-area */
+  max-height: 85vh;
+  overflow: hidden; /* scroll happens inside .rock-scroll-area */
 }
 
-/* Sticky creation section */
-.rock-sticky-top {
+/* Sticky header section stays at top */
+#rockModal .rock-sticky-top {
   flex: 0 0 auto;
   position: sticky;
   top: 0;
   z-index: 5;
-  background: #111;          /* match your modal theme */
+  background: #111;
   border-bottom: 1px solid #333;
   padding-bottom: 0.5rem;
 }
 
 /* Optional: tighten spacing */
-.rock-controls label {
+#rockModal .rock-controls label {
   display: inline-block;
   margin-right: 1rem;
   margin-top: 0.25rem;
   color: gold;
 }
 
-#materialsWrapper {
+#rockModal #materialsWrapper {
   border: 1px solid #555;
   padding: 0.5rem;
   margin: 0.5rem 0;
@@ -111,12 +116,11 @@ table, th, td {
   background: #1a1a1a;
 }
 
-/* Scroll area inside the modal */
-.rock-scroll-area {
-  scrollbar-gutter: stable;
-  flex: 1;
-  overflow-y: auto;
+/* ✅ Scrollable section (THIS is the critical part) */
+#rockModal .rock-scroll-area {
+  flex: 1 1 auto;
+  min-height: 0;            /* <-- critical: allows overflow in flex layouts */
+  overflow-y: auto;         /* auto = only show scrollbar when needed */
   padding-top: 0.75rem;
+  scrollbar-gutter: stable; /* keeps layout from shifting */
 }
-
-
