@@ -1,4 +1,4 @@
-const JumpData = {
+const JumpData = window.JumpData = window.JumpData || {
   "Stanton": {
     "Arc-L1": {
       "CRU-L4": { distance: 14.29, reverse: 9.7 },
