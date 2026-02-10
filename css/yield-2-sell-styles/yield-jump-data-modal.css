@@ -19,6 +19,7 @@
    Generic Modal Content
 ============================ */
 .modal-content {
+  /* remove background: url if no image is wanted */
   background: url('/imgs/QuantumBackground.png') no-repeat center center fixed;
   background-size: cover;
 
