@@ -74,3 +74,44 @@ table, th, td {
 .remove-btn:hover {
   background: darkred;
 }
+
+/* Make the rock modal content a fixed-height column layout */
+.rock-modal-content {
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;          /* controls modal height */
+  overflow: hidden;          /* important: scroll happens in .rock-scroll-area */
+}
+
+/* Sticky creation section */
+.rock-sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #111;          /* match your modal theme */
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.5rem;
+}
+
+/* Optional: tighten spacing */
+.rock-controls label {
+  display: inline-block;
+  margin-right: 1rem;
+  margin-top: 0.25rem;
+  color: gold;
+}
+
+#materialsWrapper {
+  border: 1px solid #555;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  border-radius: 5px;
+  background: #1a1a1a;
+}
+
+/* Scroll area inside the modal */
+.rock-scroll-area {
+  overflow-y: auto;
+  padding-top: 0.75rem;
+}
+
