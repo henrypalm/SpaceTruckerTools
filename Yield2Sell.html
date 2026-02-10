@@ -193,7 +193,6 @@
         <table id="jumpTable">
           <thead>
             <tr>
-              <th>From</th>
               <th>To</th>
               <th>Distance</th>
               <th>Reverse</th>
@@ -877,7 +876,6 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
             Object.entries(toMap).forEach(([to, data]) => {
               const row = document.createElement("tr");
               row.innerHTML = `
-                <td>${from}</td>
                 <td>${to}</td>
                 <td class="highlight">${data.distance}</td>
                 <td>${data.reverse ?? ""}</td>
