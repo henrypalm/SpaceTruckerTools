@@ -855,7 +855,7 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
         tbody.innerHTML = "";
       
         if (!window.JumpData) {
-          tbody.innerHTML = `<tr><td colspan="4">JumpData not loaded.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="3">JumpData not loaded.</td></tr>`;
           return;
         }
       
@@ -863,14 +863,14 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
           // System header row
           const sysRow = document.createElement("tr");
           sysRow.className = "jump-system-row";
-          sysRow.innerHTML = `<td colspan="4">${system}</td>`;
+          sysRow.innerHTML = `<td colspan="3">${system}</td>`;
           tbody.appendChild(sysRow);
       
           Object.entries(fromMap).forEach(([from, toMap]) => {
             // From header row
             const fromRow = document.createElement("tr");
             fromRow.className = "jump-from-row";
-            fromRow.innerHTML = `<td colspan="4">${from}</td>`;
+            fromRow.innerHTML = `<td colspan="3">${from}</td>`;
             tbody.appendChild(fromRow);
       
             Object.entries(toMap).forEach(([to, data]) => {
