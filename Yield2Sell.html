@@ -17,11 +17,11 @@
   <!-- Load item data and color mappings -->
   <script src="Yield2SellItemPrices.js"></script>
   <script src="Yield2SellRefineryBonuses.js"></script>
+  <script src="refineryProcesses.js"></script>
   <script src="itemColors.js"></script>
   <script src="JumpData.js"></script>
 
   <style>
-
 
   </style>
 </head>
@@ -45,6 +45,13 @@
       <label for="refineryTitle" style="display:block; text-align:center; color: gold; margin-bottom: 0.5rem;">
         Refinery Selection:
       </label>
+
+      <div style="text-align:center; margin-bottom: 1rem;">
+        <input id="refineryTitle"
+               type="text"
+               placeholder="Refinery Title"
+               style="width:250px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
+      </div>
       
       <div style="text-align:center; margin-bottom:1rem; color: gold;">
 
@@ -71,9 +78,8 @@
       <div style="text-align:center; margin-bottom:1rem; color: gold;">
         <label for="refiningType">Refining Type: </label>
         <select id="refiningType" style="background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px; width:150px;">
-          <option value="Ferron">Ferron</option>
-          <option value="Dynix">Dynix</option>
         </select>
+        <span id="refiningTypePercent" style="margin-left:0.5rem; color:#aaa;">Yield: --</span>
       
         <label for="refiningCost" style="margin-left:1rem;">Refining Cost: </label>
         <input type="number" id="refiningCost" placeholder="aUEC" min="0" style="width:100px; background:#111; border:1px solid #555; color:white; padding:0.3rem; border-radius:4px;" />
@@ -85,6 +91,12 @@
         <div style="margin-top:0.5rem; font-weight:bold;">
           Order Ready At: <span id="orderReadyAt" style="color: lightgreen;">--:--</span>
         </div>
+
+        <div class="clear-buttons"
+             style="margin:0.5rem 0; text-align:center; gap:1rem; display:flex; justify-content:center; flex-wrap:wrap;">
+          <button class="clearQtyBtn">Clear Raw/Yield</button>
+          <button class="clearAllBtn">Clear All</button>
+        </div>
       </div>
   
       <table id="priceTable">
@@ -92,7 +104,13 @@
           <tr>
             <th>Item</th>
             <th>Bonus</th>
-            <th>Yield</th>
+            <th>
+              <label for="quantityMode" style="display:none;">Quantity Mode</label>
+              <select id="quantityMode" style="background:#111; border:1px solid #555; color:white; padding:0.2rem; border-radius:4px;">
+                <option value="yield" selected>Yield</option>
+                <option value="raw">Raw</option>
+              </select>
+            </th>
             <th>Location</th>
             <th>Price Per SCU (aUEC)</th>
             <th>Item Total</th>
@@ -109,52 +127,59 @@
         <button id="exportTxtBtn">Export TXT</button>
         <button id="exportCsvBtn">Export CSV</button>
         <button id="copyClipboardBtn">Copy to Clipboard</button>
+
+        <button class="clearQtyBtn">Clear Raw/Yield</button>
+        <button class="clearAllBtn">Clear All</button>
       </div>
 
       <!-- Jump Data Modal Button-->
-      <button onclick="openJumpDataModal()">Open Jump Data</button>
+      <button type="button" onclick="openJumpDataModal()">Open Jump Data</button>
+      
 
       <!-- Rock Composition Modal Button-->
       <button id="openRockModal" onclick="openRockModal()">Open Rock Composition</button>
 
   <!-- Rock Composition Modal -->
   <div id="rockModal" class="modal">
-    <div class="modal-content">
-      <div class="initial-container">
+    <div class="modal-content rock-modal-content">
+      <div class="rock-sticky-top">
         <div class="modal-title-and-button">
           <span class="close" onclick="closeRockModal()">&times;</span>
           <h2 style="display:inline-block; margin-right:1rem;">Rock Composition</h2>
-          <button onclick="saveCompositionTable()">Save Composition</button>
+          <button type="button" onclick="saveCompositionTable()">Save Composition</button>
         </div>
-    
-        <label>Rock Size (SCU): 
-          <input type="number" id="rockSize" placeholder="SCU" oninput="updateRockTable()">
-        </label>
-    
-        <label>Inert Material Filtering (%):
-          <input type="number" id="inertFilter" value="%" min="0" max="100" oninput="updateRockTable()">
-        </label>
-    
-        <div id="materialsWrapper" style="border:1px solid #555; padding:0.5rem; margin:0.5rem 0; border-radius:5px; background:#1a1a1a;">
-          <div id="materialsContainer"></div>
-          <button onclick="addMaterial()">Add Material</button>
+  
+        <div class="rock-controls">
+          <label>Rock Size (SCU):
+            <input type="number" id="rockSize" placeholder="SCU" oninput="updateRockTable()">
+          </label>
+  
+          <label>Inert Material Filtering (%):
+            <input type="number" id="inertFilter" value="0" min="0" max="100" oninput="updateRockTable()">
+          </label>
+  
+          <div id="materialsWrapper">
+            <div id="materialsContainer"></div>
+            <button type="button" onclick="addMaterial()">Add Material</button>
+          </div>
         </div>
-      </div> 
-      <!-- testing end of initial container -->
+      </div>
   
-      <table id="compositionTable">
-        <thead>
-          <tr>
-            <th>Material</th>
-            <th>Percentage (%)</th>
-            <th>SCU</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <!-- Scrollable section -->
+      <div class="rock-scroll-area">
+        <table id="compositionTable">
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Percentage (%)</th>
+              <th>SCU</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
   
-      <div id="savedTables"></div>
-      
+        <div id="savedTables"></div>
+      </div>
     </div>
   </div>
   <!-- END Rock Composition Modal -->
@@ -169,10 +194,11 @@
         <table id="jumpTable">
           <thead>
             <tr>
+              <th>System</th>
               <th>From</th>
               <th>To</th>
-              <th>Drop-Out Range (millions of km)</th>
-              <th>Notes</th>
+              <th>Distance</th>
+              <th>Reverse</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -194,6 +220,14 @@
 
   <script>
   document.addEventListener("DOMContentLoaded", () => {
+
+    const itemPrices = window.itemPrices || window.Yield2SellItemPrices || {};
+    const processList = Array.isArray(window.refineryProcesses)
+      ? window.refineryProcesses
+      : Object.entries(window.refineryProcesses || {}).map(([name, data]) => ({
+          name: name.trim(),
+          yieldMultiplier: data?.yieldMultiplier ?? data?.yield ?? 1
+        }));
 
     // ===== Column constants =====
     const COL = {
@@ -269,8 +303,18 @@
           const price = destinations[selectedLoc] || 0;
           row.children[COL.PRICE].textContent = price.toLocaleString();
   
-          const yieldVal = parseFloat(yieldInput.value) || 0;
-          let scu = Math.floor(yieldVal / 100);
+          const enteredValue = parseFloat(yieldInput.value) || 0;
+          const quantityMode = quantityModeSelect.value;
+          
+          const selectedProcess = processList.find(p => p.name === refiningTypeSelect.value);
+          const refiningYield = selectedProcess?.yieldMultiplier ?? 1;
+
+          let scu = 0;
+          if (quantityMode === "raw") {
+            scu = Math.floor((enteredValue * refiningYield) / 100);
+          } else {
+            scu = Math.floor(enteredValue / 100);
+          }
         
           // Apply refinery bonus per item
           const selectedSystem = solarSystemSelect.value;
@@ -309,6 +353,15 @@
         tbody.appendChild(row);
       });
     }
+
+    function updateQuantityModeUI() {
+      const isRaw = quantityModeSelect.value === 'raw';
+      const inputPlaceholder = isRaw ? 'Raw' : 'Yield';
+      const inputs = document.querySelectorAll("#priceTable tbody tr td:nth-child(3) input");
+      inputs.forEach(input => {
+        input.placeholder = inputPlaceholder;
+      });
+    }
   
     // ====== Calculate grand total ======
     function calculateTotal() {
@@ -324,6 +377,37 @@
     const refineryBonuses = Yield2SellRefineryBonuses;
     const solarSystemSelect = document.getElementById("solarSystem");
     const refinerySelect = document.getElementById("refineryName");
+    const quantityModeSelect = document.getElementById("quantityMode");
+    const refiningTypeSelect = document.getElementById("refiningType");
+    const refiningTypePercent = document.getElementById("refiningTypePercent");
+
+    function updateRefiningTypePercentLabel() {
+      const selectedProcess = processList.find(process => process.name === refiningTypeSelect.value);
+      if (!selectedProcess) {
+        refiningTypePercent.textContent = "Yield: --";
+        return;
+      }
+
+      refiningTypePercent.textContent = `Yield: ${(selectedProcess.yieldMultiplier * 100).toFixed(1)}%`;
+    }
+
+    function populateRefiningTypeOptions() {
+      refiningTypeSelect.innerHTML = "";
+
+      processList.forEach((process, index) => {
+        const option = document.createElement("option");
+        option.value = process.name;
+        option.textContent = `${process.name} (${(process.yieldMultiplier * 100).toFixed(1)}%)`;
+
+        if (index === 0) {
+          option.selected = true;
+        }
+
+        refiningTypeSelect.appendChild(option);
+      });
+
+      updateRefiningTypePercentLabel();
+    }
   
     function updateAllRows() {
       const rows = document.querySelectorAll("#priceTable tbody tr");
@@ -365,7 +449,76 @@
     });
   
     refinerySelect.addEventListener("change", updateAllRows);
+    quantityModeSelect.addEventListener("change", () => {
+      updateQuantityModeUI();
+      updateAllRows();
+    });
+    refiningTypeSelect.addEventListener("change", () => {
+      updateRefiningTypePercentLabel();
+      updateAllRows();
+    });
 
+    // ====== Clear Helpers ======
+    function clearQuantityInputs() {
+      // Clears only Raw/Yield inputs
+      const inputs = document.querySelectorAll(
+        "#priceTable tbody tr td:nth-child(3) input"
+      );
+    
+      inputs.forEach(input => {
+        input.value = "";
+      });
+    
+      // Recalculate rows & totals
+      updateAllRows();
+      calculateTotal();
+    }
+    
+    function clearAll() {
+      if (!confirm("Clear ALL inputs and reset selections?")) return;
+    
+      // Clear title if present
+      const titleEl = document.getElementById("refineryTitle");
+      if (titleEl) titleEl.value = "";
+    
+      // Clear refinery inputs
+      document.getElementById("refiningCost").value = "";
+      document.getElementById("refiningHours").value = "";
+      document.getElementById("refiningMinutes").value = "";
+    
+      // Reset solar system & refinery
+      solarSystemSelect.value = "";
+      refinerySelect.innerHTML =
+        '<option value="">--Select Refinery--</option>';
+      refinerySelect.value = "";
+    
+      // Reset quantity mode
+      quantityModeSelect.value = "yield";
+      updateQuantityModeUI();
+    
+      // Reset refining type
+      if (refiningTypeSelect.options.length > 0) {
+        refiningTypeSelect.selectedIndex = 0;
+      }
+      updateRefiningTypePercentLabel();
+    
+      // Clear yield/raw inputs
+      clearQuantityInputs();
+    
+      // Recalculate order ready time
+      updateOrderReadyAt();
+    }
+    
+    // ====== Button Handlers ======
+    document.querySelectorAll(".clearQtyBtn")
+      .forEach(btn =>
+        btn.addEventListener("click", clearQuantityInputs)
+      );
+    
+    document.querySelectorAll(".clearAllBtn")
+      .forEach(btn =>
+        btn.addEventListener("click", clearAll)
+      );
   
     // ====== Export / Clipboard ======
     function downloadFile(content, filename) {
@@ -375,25 +528,70 @@
       link.download = filename;
       link.click();
     }
+
+    function calculateExportYield(row) {
+      const rawValue = parseFloat(
+        row.children[COL.YIELD].querySelector("input").value
+      ) || 0;
+    
+      const itemName = row.children[COL.ITEM].textContent;
+    
+      const selectedProcess = processList.find(
+        p => p.name === refiningTypeSelect.value
+      );
+      const refiningYield = selectedProcess?.yieldMultiplier ?? 1;
+    
+      const selectedSystem = solarSystemSelect.value;
+      const selectedRefinery = refinerySelect.value;
+      const itemBonus =
+        refineryBonuses[selectedSystem]?.[selectedRefinery]?.[itemName] || 1;
+    
+      // Final desired formula
+      const refinedYield = rawValue * refiningYield * itemBonus;
+    
+      return refinedYield;
+    }
   
     function exportTXT() {
       const title = (document.getElementById("refineryTitle")?.value.trim() || "Yield 2 Sell Export");
-      const refiningType = document.getElementById("refiningType").value;
+      const quantityMode = document.getElementById("quantityMode").value; // "yield" or "raw"
+      const modeLabel = quantityMode === "raw" ? "Raw" : "Yield";
+    
+      const refiningType = document.getElementById("refiningType").selectedOptions[0]?.textContent || "";
       const refiningCost = document.getElementById("refiningCost").value || "0";
       const refiningHours = document.getElementById("refiningHours").value || "0";
       const refiningMinutes = document.getElementById("refiningMinutes").value || "0";
       const orderReady = document.getElementById("orderReadyAt").textContent;
-  
-      let txt = `Title: ${title}\nRefining Type: ${refiningType}\nRefining Cost: ${refiningCost} aUEC\nDuration: ${refiningHours}h ${refiningMinutes}m\nOrder Ready At: ${orderReady}\n\nItem | Yield | Location | Price Per SCU | Item Total\n`;
-
+    
+      // Column header depends on mode
+      const qtyHeader = quantityMode === "raw" ? "Raw Value (Refined Yield)" : "Yield";
+    
+      let txt =
+`Title: ${title}
+Mode: ${modeLabel}
+Refining Type: ${refiningType}
+Refining Cost: ${refiningCost} aUEC
+Duration: ${refiningHours}h ${refiningMinutes}m
+Order Ready At: ${orderReady}
+    
+Item | ${qtyHeader} | Location | Price Per SCU | Item Total
+`;
+    
       const rows = document.querySelectorAll("#priceTable tbody tr");
       rows.forEach(row => {
-        const yieldVal = row.children[COL.YIELD].querySelector("input").value || "0";
-        if (parseInt(yieldVal) > 0) {
+        const inputVal = row.children[COL.YIELD].querySelector("input").value || "0";
+        if (parseFloat(inputVal) > 0) {
           const location = row.children[COL.LOCATION].querySelector("select").value;
-          txt += `${row.children[COL.ITEM].textContent} | ${yieldVal} | ${location} | ${row.children[COL.PRICE].textContent} | ${row.children[COL.TOTAL].textContent}\n`;
+    
+          const qtyOut = (quantityMode === "raw")
+            ? `${inputVal} (${calculateExportYield(row).toFixed(1)} yield)`
+            : `${inputVal}`;
+    
+          txt += `${row.children[COL.ITEM].textContent} | ${qtyOut} | ${location} | ${row.children[COL.PRICE].textContent} | ${row.children[COL.TOTAL].textContent}\n`;
         }
       });
+    
+      txt += `\n${document.getElementById("grandTotal").textContent}`;
     
       const filename = `${title.replace(/\s+/g,"_")}_${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}.txt`;
       downloadFile(txt, filename);
@@ -401,20 +599,39 @@
   
     function exportCSV() {
       const title = (document.getElementById("refineryTitle")?.value.trim() || "Yield 2 Sell Export");
-      const refiningType = document.getElementById("refiningType").value;
+      const quantityMode = document.getElementById("quantityMode").value;
+      const modeLabel = quantityMode === "raw" ? "Raw" : "Yield";
+    
+      const refiningType = document.getElementById("refiningType").selectedOptions[0]?.textContent || "";
       const refiningCost = document.getElementById("refiningCost").value || "0";
       const refiningHours = document.getElementById("refiningHours").value || "0";
       const refiningMinutes = document.getElementById("refiningMinutes").value || "0";
       const orderReady = document.getElementById("orderReadyAt").textContent;
-  
-      let csv = `Title:,${title}\nRefining Type:,${refiningType}\nRefining Cost:,${refiningCost} aUEC\nDuration:,${refiningHours}h ${refiningMinutes}m\nOrder Ready At:,${orderReady}\n\nItem,Yield,Location,Price Per SCU,Item Total\n`;
-
+    
+      const qtyHeader = quantityMode === "raw" ? "Raw Value (Refined Yield)" : "Yield";
+    
+      let csv =
+`Title:,${title}
+Mode:,${modeLabel}
+Refining Type:,${refiningType}
+Refining Cost:,${refiningCost} aUEC
+Duration:,${refiningHours}h ${refiningMinutes}m
+Order Ready At:,${orderReady}
+    
+Item,${qtyHeader},Location,Price Per SCU,Item Total
+`;
+    
       const rows = document.querySelectorAll("#priceTable tbody tr");
       rows.forEach(row => {
-        const yieldVal = row.children[COL.YIELD].querySelector("input").value || "0";
-        if (parseInt(yieldVal) > 0) {
+        const inputVal = row.children[COL.YIELD].querySelector("input").value || "0";
+        if (parseFloat(inputVal) > 0) {
           const location = row.children[COL.LOCATION].querySelector("select").value;
-          csv += `"${row.children[COL.ITEM].textContent}","${yieldVal}","${location}","${row.children[COL.PRICE].textContent}","${row.children[COL.TOTAL].textContent}"\n`;
+    
+          const qtyOut = (quantityMode === "raw")
+            ? `${inputVal} (${calculateExportYield(row).toFixed(1)} yield)`
+            : `${inputVal}`;
+    
+          csv += `"${row.children[COL.ITEM].textContent}","${qtyOut}","${location}","${row.children[COL.PRICE].textContent}","${row.children[COL.TOTAL].textContent}"\n`;
         }
       });
     
@@ -425,20 +642,39 @@
   
     function copyToClipboard() {
       const title = (document.getElementById("refineryTitle")?.value.trim() || "Yield 2 Sell Export");
-      const refiningType = document.getElementById("refiningType").value;
+      const quantityMode = document.getElementById("quantityMode").value;
+      const modeLabel = quantityMode === "raw" ? "Raw" : "Yield";
+    
+      const refiningType = document.getElementById("refiningType").selectedOptions[0]?.textContent || "";
       const refiningCost = document.getElementById("refiningCost").value || "0";
       const refiningHours = document.getElementById("refiningHours").value || "0";
       const refiningMinutes = document.getElementById("refiningMinutes").value || "0";
       const orderReady = document.getElementById("orderReadyAt").textContent;
-  
-      let textToCopy = `Title: ${title}\nRefining Type: ${refiningType}\nRefining Cost: ${refiningCost} aUEC\nDuration: ${refiningHours}h ${refiningMinutes}m\nOrder Ready At: ${orderReady}\n\nItem | Yield | Location | Price Per SCU | Item Total\n`;
-
+    
+      const qtyHeader = quantityMode === "raw" ? "Raw Value (Refined Yield)" : "Yield";
+    
+      let textToCopy =
+`Title: ${title}
+Mode: ${modeLabel}
+Refining Type: ${refiningType}
+Refining Cost: ${refiningCost} aUEC
+Duration: ${refiningHours}h ${refiningMinutes}m
+Order Ready At: ${orderReady}
+    
+Item | ${qtyHeader} | Location | Price Per SCU | Item Total
+`;
+    
       const rows = document.querySelectorAll("#priceTable tbody tr");
       rows.forEach(row => {
-        const yieldVal = row.children[COL.YIELD].querySelector("input").value || "0";
-        if (parseInt(yieldVal) > 0) {
+        const inputVal = row.children[COL.YIELD].querySelector("input").value || "0";
+        if (parseFloat(inputVal) > 0) {
           const location = row.children[COL.LOCATION].querySelector("select").value;
-          textToCopy += `${row.children[COL.ITEM].textContent} | ${yieldVal} | ${location} | ${row.children[COL.PRICE].textContent} | ${row.children[COL.TOTAL].textContent}\n`;
+    
+          const qtyOut = (quantityMode === "raw")
+            ? `${inputVal} (${calculateExportYield(row).toFixed(1)} yield)`
+            : `${inputVal}`;
+    
+          textToCopy += `${row.children[COL.ITEM].textContent} | ${qtyOut} | ${location} | ${row.children[COL.PRICE].textContent} | ${row.children[COL.TOTAL].textContent}\n`;
         }
       });
     
@@ -467,127 +703,250 @@
     document.getElementById('refiningMinutes').addEventListener('input', updateOrderReadyAt);
   
     // Initial population
+    populateRefiningTypeOptions();
     populateTable();
+    updateQuantityModeUI();
     updateOrderReadyAt();
   
     // ====== Rock Composition Modal ======
-    window.openRockModal = function() {
+
+    window.getInertRow = function () {
+      const rows = document.querySelectorAll("#materialsContainer .material-row");
+      return Array.from(rows).find(r => r.dataset?.inert === "1") || null;
+    };
+    
+    window.openRockModal = function () {
       document.getElementById("rockModal").style.display = "flex";
-      if (document.getElementsByClassName("material-row").length === 0) {
-        addMaterial();
-        addMaterial("Inert Material","%");
+    
+      const container = document.getElementById("materialsContainer");
+    
+      if (container.querySelectorAll(".material-row").length === 0) {
+        window.addMaterial();
+        window.addMaterial("Inert Material", "0");
+      } else {
+        if (!window.getInertRow()) window.addMaterial("Inert Material", "0");
+        window.updateRockTable();
       }
     };
-    window.closeRockModal = function() {
+    
+    window.closeRockModal = function () {
       document.getElementById("rockModal").style.display = "none";
     };
-  
-    window.addMaterial = function(name="",percent="") {
+    
+    window.addMaterial = function (name = "", percent = "") {
       const container = document.getElementById("materialsContainer");
+      const isInert = (name || "").trim().toLowerCase() === "inert material";
+    
       const row = document.createElement("div");
       row.className = "material-row";
-      row.innerHTML = `
-        <input type="text" placeholder="Material" value="${name}" oninput="updateRockTable()">
-        <input type="number" placeholder="%" value="${percent}" oninput="updateRockTable()">
-        <button class="remove-btn" onclick="this.parentElement.remove(); updateRockTable()">x</button>
-      `;
-      container.appendChild(row);
-      updateRockTable();
+    
+      if (isInert) {
+        row.dataset.inert = "1";
+        row.innerHTML = `
+          <input type="text" value="Inert Material" disabled>
+          <input type="number" value="0" disabled>
+          <button class="remove-btn" disabled title="Inert is automatic">x</button>
+        `;
+      } else {
+        row.innerHTML = `
+          <input type="text" placeholder="Material" value="${name}" oninput="updateRockTable()">
+          <input type="number" placeholder="%" value="${percent}" min="0" max="100" step="0.1" oninput="updateRockTable()">
+          <button class="remove-btn" type="button" onclick="this.parentElement.remove(); updateRockTable()">x</button>
+        `;
+      }
+    
+      const inertRow = window.getInertRow();
+      if (inertRow) container.insertBefore(row, inertRow);
+      else container.appendChild(row);
+    
+      window.updateRockTable();
     };
-  
-    window.updateRockTable = function() {
+    
+    window.updateRockTable = function () {
       const rockSize = parseFloat(document.getElementById("rockSize").value) || 0;
-      const inertFilter = parseFloat(document.getElementById("inertFilter").value) || 0;
-      const rows = document.querySelectorAll("#materialsContainer .material-row");
+    
+      const inertFilterRaw = parseFloat(document.getElementById("inertFilter").value) || 0;
+      const inertFilter = Math.max(0, Math.min(100, inertFilterRaw));
+    
+      const materialRows = Array.from(document.querySelectorAll("#materialsContainer .material-row"));
       const tbody = document.querySelector("#compositionTable tbody");
       tbody.innerHTML = "";
-  
-      rows.forEach(row => {
-        const name = row.children[COL.ITEM].value || "—";
-        let percent = parseFloat(row.children[COL.BONUS].value) || 0;
+    
+      let definedSum = 0;
+      materialRows.forEach(row => {
+        if (row.dataset.inert === "1") return;
+        const percentInput = row.querySelector('input[type="number"]');
+        definedSum += (parseFloat(percentInput?.value) || 0);
+      });
+    
+      let inertPercent = 100 - definedSum;
+      inertPercent = Math.max(0, Math.min(100, inertPercent));
+    
+      const inertRow = window.getInertRow();
+      if (inertRow) {
+        const inertPercentInput = inertRow.querySelector('input[type="number"]');
+        if (inertPercentInput) inertPercentInput.value = inertPercent.toFixed(1);
+      }
+    
+      materialRows.forEach(row => {
+        const isInert = row.dataset.inert === "1";
+    
+        let name = "—";
+        let percent = 0;
+    
+        if (isInert) {
+          name = "Inert Material";
+          percent = inertPercent;
+        } else {
+          const nameInput = row.querySelector('input[type="text"]');
+          const percentInput = row.querySelector('input[type="number"]');
+          name = (nameInput?.value || "—").trim() || "—";
+          percent = parseFloat(percentInput?.value) || 0;
+        }
+    
         let scu = (percent / 100) * rockSize;
-        if (name.toLowerCase() === "inert material") scu = scu * (1 - inertFilter/100);
+        if (isInert) scu = scu * (1 - inertFilter / 100);
+    
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${name}</td><td>${percent}%</td><td>${scu.toFixed(2)}</td>`;
+        tr.innerHTML = `<td>${name}</td><td>${percent.toFixed(1)}%</td><td>${scu.toFixed(2)}</td>`;
         tbody.appendChild(tr);
       });
     };
-  
-    window.saveCompositionTable = function() {
+    
+    window.saveCompositionTable = function () {
       const rockSize = document.getElementById("rockSize").value || "0";
       const rows = document.querySelectorAll("#compositionTable tbody tr");
       if (rows.length === 0) return;
+    
       const container = document.createElement("div");
       container.className = "saved-composition";
+    
       const removeBtn = document.createElement("button");
       removeBtn.className = "remove-btn";
       removeBtn.textContent = "×";
       removeBtn.onclick = () => container.remove();
       container.appendChild(removeBtn);
+    
       const header = document.createElement("h3");
       header.textContent = `Rock Composition (Size: ${rockSize} SCU)`;
       container.appendChild(header);
+    
       const table = document.createElement("table");
       table.innerHTML = document.getElementById("compositionTable").innerHTML;
       table.style.width = "100%";
       container.appendChild(table);
+    
       document.getElementById("savedTables").appendChild(container);
+    
       document.getElementById("rockSize").value = "";
+      document.getElementById("inertFilter").value = "0";
       document.getElementById("materialsContainer").innerHTML = "";
       document.querySelector("#compositionTable tbody").innerHTML = "";
-      addMaterial();
-      addMaterial("Inert Material","%");
+    
+      window.addMaterial();
+      window.addMaterial("Inert Material", "0");
+      window.updateRockTable();
     };
   
     // ====== Jump Data Modal ======
-    (function(){
+    (function () {
       const modal = document.getElementById("jumpDataModal");
       const closeBtn = modal.querySelector(".close");
       const tbody = modal.querySelector("#jumpTable tbody");
-  
+    
       function populateJumpTable() {
         tbody.innerHTML = "";
-        JumpData.forEach(entry => {
-          const row = document.createElement("tr");
-          row.innerHTML = `<td>${entry.from}</td><td>${entry.to}</td><td class="highlight">${entry.range}</td><td>${entry.notes || ""}</td>`;
-          tbody.appendChild(row);
+    
+        if (!window.JumpData) {
+          tbody.innerHTML = `<tr><td colspan="5">JumpData not loaded.</td></tr>`;
+          return;
+        }
+    
+        Object.entries(window.JumpData).forEach(([system, fromMap]) => {
+          Object.entries(fromMap).forEach(([from, toMap]) => {
+            Object.entries(toMap).forEach(([to, data]) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td>${system}</td>
+                <td>${from}</td>
+                <td>${to}</td>
+                <td class="highlight">${data.distance}</td>
+                <td>${data.reverse ?? ""}</td>
+              `;
+              tbody.appendChild(row);
+            });
+          });
         });
       }
-  
-      window.openJumpDataModal = function() {
+    
+      window.openJumpDataModal = function () {
         populateJumpTable();
         modal.style.display = "flex";
       };
-  
-      closeBtn.onclick = () => { modal.style.display = "none"; };
-      window.onclick = (e) => { if(e.target===modal) modal.style.display="none"; };
-  
-      function downloadFile(content, filename) {
-        const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = filename;
-        link.click();
-      }
-  
-      window.exportJumpDataToTXT = function() {
-        let txt = "Quantum Jump Reference to Aaron's Halo\n\nFrom | To | Range (mil km) | Notes\n";
-        JumpData.forEach(entry => { txt += `${entry.from} | ${entry.to} | ${entry.range} | ${entry.notes || ""}\n`; });
-        downloadFile(txt, `AaronJumpData_${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.txt`);
+    
+      closeBtn.onclick = () => {
+        modal.style.display = "none";
       };
-  
-      window.exportJumpDataToCSV = function() {
-        let csv = "From,To,Range (mil km),Notes\n";
-        JumpData.forEach(entry => { csv += `"${entry.from}","${entry.to}","${entry.range}","${entry.notes || ""}"\n`; });
-        downloadFile(csv, `AaronJumpData_${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.csv`);
+    
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.style.display = "none";
+      });
+    
+      window.exportJumpDataToTXT = function () {
+        if (!window.JumpData) return alert("JumpData not loaded.");
+    
+        let txt = "Quantum Jump Reference\n\nSystem | From | To | Distance | Reverse\n";
+    
+        Object.entries(window.JumpData).forEach(([system, fromMap]) => {
+          Object.entries(fromMap).forEach(([from, toMap]) => {
+            Object.entries(toMap).forEach(([to, data]) => {
+              txt += `${system} | ${from} | ${to} | ${data.distance} | ${data.reverse ?? ""}\n`;
+            });
+          });
+        });
+    
+        downloadFile(
+          txt,
+          `AaronJumpData_${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-")}.txt`
+        );
       };
-  
-      window.copyJumpDataToClipboard = function() {
-        let text = "Quantum Jump Reference to Aaron's Halo\n\nFrom | To | Range (mil km) | Notes\n";
-        JumpData.forEach(entry => { text += `${entry.from} | ${entry.to} | ${entry.range} | ${entry.notes || ""}\n`; });
-        navigator.clipboard.writeText(text).then(()=>alert("Copied Jump Data to clipboard!"));
+    
+      window.exportJumpDataToCSV = function () {
+        if (!window.JumpData) return alert("JumpData not loaded.");
+    
+        let csv = "System,From,To,Distance,Reverse\n";
+    
+        Object.entries(window.JumpData).forEach(([system, fromMap]) => {
+          Object.entries(fromMap).forEach(([from, toMap]) => {
+            Object.entries(toMap).forEach(([to, data]) => {
+              csv += `"${system}","${from}","${to}","${data.distance}","${data.reverse ?? ""}"\n`;
+            });
+          });
+        });
+    
+        downloadFile(
+          csv,
+          `AaronJumpData_${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-")}.csv`
+        );
       };
-  
+    
+      window.copyJumpDataToClipboard = function () {
+        if (!window.JumpData) return alert("JumpData not loaded.");
+    
+        let text = "Quantum Jump Reference\n\nSystem | From | To | Distance | Reverse\n";
+    
+        Object.entries(window.JumpData).forEach(([system, fromMap]) => {
+          Object.entries(fromMap).forEach(([from, toMap]) => {
+            Object.entries(toMap).forEach(([to, data]) => {
+              text += `${system} | ${from} | ${to} | ${data.distance} | ${data.reverse ?? ""}\n`;
+            });
+          });
+        });
+    
+        navigator.clipboard
+          .writeText(text)
+          .then(() => alert("Copied Jump Data to clipboard!"));
+      };
     })();
   
   }); // end DOMContentLoaded
