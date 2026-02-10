@@ -22,7 +22,6 @@
   <script src="JumpData.js"></script>
 
   <style>
-
   </style>
 </head>
 <body>
@@ -856,8 +855,10 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
     
       function populateJumpTable() {
         tbody.innerHTML = "";
+
+        const dataSource = window.JumpData || window.JumpDATA || window.jumpData || (typeof JumpData !== "undefined" ? JumpData : null);
     
-        if (!window.JumpData) {
+        if (!dataSource) {
           tbody.innerHTML = `<tr><td colspan="5">JumpData not loaded.</td></tr>`;
           return;
         }
