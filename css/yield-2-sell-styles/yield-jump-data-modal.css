@@ -1,26 +1,27 @@
+/* ============================
+   Base Modal Overlay
+============================ */
 .modal {
   display: none;
   position: fixed;
   z-index: 2000;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
+  inset: 0;
   overflow: hidden;
   background-color: rgba(0,0,0,0.8);
   background: url('/imgs/QuantumBackground.png') no-repeat center center fixed;
   background-size: cover;
 
-  /* center modal via flex */
-  display: flex;
+  /* Center modals */
   justify-content: center;
   align-items: center;
 }
 
+/* ============================
+   Generic Modal Content
+============================ */
 .modal-content {
   background: url('/imgs/QuantumBackground.png') no-repeat center center fixed;
   background-size: cover;
-
-
-  margin: 0 auto;
 
   padding: 20px;
   border-radius: 12px;
@@ -28,13 +29,6 @@
   width: 90%;
   color: white;
   position: relative;
-
-  display: flex;
-  flex-direction: column;
-
-  height: 85vh;       
-  max-height: 85vh;
-  overflow: hidden;
 }
 
 .modal-content .close {
@@ -46,22 +40,56 @@
   font-weight: bold;
   cursor: pointer;
 }
-.modal-content .close:hover { color: #fff; }
 
-.container {
-  background-color: rgba(0, 0, 0, 0.75);
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-
-  flex: 1;
-  overflow-y: auto;
-  min-height: 0;
-  padding-right: 6px;
+.modal-content .close:hover {
+  color: #fff;
 }
 
-h1 { text-align: center; color: gold; }
+/* ============================
+   Jump Data Modal Layout
+============================ */
+#jumpDataModal {
+  justify-content: center;
+  align-items: center;
+}
 
+/* Modal becomes flex column */
+#jumpDataModal .modal-content {
+  display: flex;
+  flex-direction: column;
+
+  width: 90%;
+  max-width: 900px;
+  height: 85vh;
+  max-height: 85vh;
+
+  overflow: hidden;
+}
+
+/* Scroll container */
+#jumpDataModal .container {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+
+  background-color: rgba(0,0,0,0.75);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* ============================
+   General Typography
+============================ */
+h1 {
+  text-align: center;
+  color: gold;
+}
+
+/* ============================
+   Table Styles
+============================ */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -75,7 +103,7 @@ th, td {
 
 th {
   background-color: #222;
-  text-align: left;
+  text-align: center;
 }
 
 .highlight {
@@ -83,29 +111,32 @@ th {
   font-weight: bold;
 }
 
-/* ===== Jump table section dividers ===== */
-
-#jumpTable .jump-system-row td {
+/* ============================
+   Jump Table Divider Rows
+============================ */
+#jumpTable tr.jump-system-row td {
   background: rgba(0,0,0,0.55);
   color: gold;
   font-weight: bold;
-  text-align: center;   
+  text-align: center;
   padding: 10px;
   border-top: 2px solid #444;
   border-bottom: 1px solid #333;
 }
 
-#jumpTable .jump-from-row td {
+#jumpTable tr.jump-from-row td {
   background: rgba(0,0,0,0.40);
   color: #ddd;
   font-weight: bold;
-  text-align: center;   
+  text-align: center;
   padding: 8px 10px;
   border-top: 1px solid #333;
   border-bottom: 1px solid #333;
 }
 
-/* sticky export buttons */
+/* ============================
+   Sticky Export Buttons
+============================ */
 #exportBox {
   margin-top: 1rem;
   display: flex;
@@ -120,6 +151,9 @@ th {
   border-top: 1px solid #333;
 }
 
+/* ============================
+   Buttons
+============================ */
 button {
   background-color: #333;
   border: 1px solid #555;
@@ -130,4 +164,6 @@ button {
   font-weight: bold;
 }
 
-button:hover { background-color: #555; }
+button:hover {
+  background-color: #555;
+}
