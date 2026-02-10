@@ -134,49 +134,53 @@
       </div>
 
       <!-- Jump Data Modal Button-->
-      <button onclick="openJumpDataModal()">Open Jump Data</button>
+      <button type="button" onclick="openJumpDataModal()">Open Jump Data</button>
+      
 
       <!-- Rock Composition Modal Button-->
       <button id="openRockModal" onclick="openRockModal()">Open Rock Composition</button>
 
   <!-- Rock Composition Modal -->
   <div id="rockModal" class="modal">
-    <div class="modal-content">
-      <div class="initial-container">
+    <div class="modal-content rock-modal-content">
+      <div class="rock-sticky-top">
         <div class="modal-title-and-button">
           <span class="close" onclick="closeRockModal()">&times;</span>
           <h2 style="display:inline-block; margin-right:1rem;">Rock Composition</h2>
-          <button onclick="saveCompositionTable()">Save Composition</button>
+          <button type="button" onclick="saveCompositionTable()">Save Composition</button>
         </div>
-    
-        <label>Rock Size (SCU): 
-          <input type="number" id="rockSize" placeholder="SCU" oninput="updateRockTable()">
-        </label>
-    
-        <label>Inert Material Filtering (%):
-          <input type="number" id="inertFilter" value="%" min="0" max="100" oninput="updateRockTable()">
-        </label>
-    
-        <div id="materialsWrapper" style="border:1px solid #555; padding:0.5rem; margin:0.5rem 0; border-radius:5px; background:#1a1a1a;">
-          <div id="materialsContainer"></div>
-          <button onclick="addMaterial()">Add Material</button>
+  
+        <div class="rock-controls">
+          <label>Rock Size (SCU):
+            <input type="number" id="rockSize" placeholder="SCU" oninput="updateRockTable()">
+          </label>
+  
+          <label>Inert Material Filtering (%):
+            <input type="number" id="inertFilter" value="0" min="0" max="100" oninput="updateRockTable()">
+          </label>
+  
+          <div id="materialsWrapper">
+            <div id="materialsContainer"></div>
+            <button type="button" onclick="addMaterial()">Add Material</button>
+          </div>
         </div>
-      </div> 
-      <!-- testing end of initial container -->
+      </div>
   
-      <table id="compositionTable">
-        <thead>
-          <tr>
-            <th>Material</th>
-            <th>Percentage (%)</th>
-            <th>SCU</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <!-- Scrollable section -->
+      <div class="rock-scroll-area">
+        <table id="compositionTable">
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Percentage (%)</th>
+              <th>SCU</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
   
-      <div id="savedTables"></div>
-      
+        <div id="savedTables"></div>
+      </div>
     </div>
   </div>
   <!-- END Rock Composition Modal -->
@@ -706,72 +710,166 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
     updateOrderReadyAt();
   
     // ====== Rock Composition Modal ======
+
+    /*
+    function getInertRow() {
+      const rows = document.querySelectorAll("#materialsContainer .material-row");
+      return Array.from(rows).find(r => r.dataset?.inert === "1") || null;
+    } */
+    
     window.openRockModal = function() {
       document.getElementById("rockModal").style.display = "flex";
-      if (document.getElementsByClassName("material-row").length === 0) {
+    
+      const container = document.getElementById("materialsContainer");
+    
+      // Initialize with one editable row + one inert row
+      if (container.querySelectorAll(".material-row").length === 0) {
         addMaterial();
-        addMaterial("Inert Material","%");
+        addMaterial("Inert Material", "0");
+      } else {
+        // Ensure inert exists (in case old data)
+        if (!getInertRow()) addMaterial("Inert Material", "0");
+        updateRockTable();
       }
     };
+    
     window.closeRockModal = function() {
       document.getElementById("rockModal").style.display = "none";
     };
-  
-    window.addMaterial = function(name="",percent="") {
+    
+    window.addMaterial = function(name = "", percent = "") {
       const container = document.getElementById("materialsContainer");
+    
+      const isInert = (name || "").trim().toLowerCase() === "inert material";
+    
       const row = document.createElement("div");
       row.className = "material-row";
-      row.innerHTML = `
-        <input type="text" placeholder="Material" value="${name}" oninput="updateRockTable()">
-        <input type="number" placeholder="%" value="${percent}" oninput="updateRockTable()">
-        <button class="remove-btn" onclick="this.parentElement.remove(); updateRockTable()">x</button>
-      `;
-      container.appendChild(row);
+    
+      if (isInert) {
+        row.dataset.inert = "1";
+        row.innerHTML = `
+          <input type="text" value="Inert Material" disabled>
+          <input type="number" value="0" disabled>
+          <button class="remove-btn" disabled title="Inert is automatic">x</button>
+        `;
+      } else {
+        row.innerHTML = `
+          <input type="text" placeholder="Material" value="${name}" oninput="updateRockTable()">
+          <input type="number" placeholder="%" value="${percent}" min="0" max="100" step="0.1" oninput="updateRockTable()">
+          <button class="remove-btn" type="button" onclick="this.parentElement.remove(); updateRockTable()">x</button>
+        `;
+      }
+    
+      // Insert ABOVE inert, otherwise append
+      const inertRow = getInertRow();
+      if (inertRow) {
+        container.insertBefore(row, inertRow);
+      } else {
+        container.appendChild(row);
+      }
+    
       updateRockTable();
     };
-  
+    
     window.updateRockTable = function() {
       const rockSize = parseFloat(document.getElementById("rockSize").value) || 0;
-      const inertFilter = parseFloat(document.getElementById("inertFilter").value) || 0;
-      const rows = document.querySelectorAll("#materialsContainer .material-row");
+    
+      // Clamp inert filter to 0-100
+      const inertFilterRaw = parseFloat(document.getElementById("inertFilter").value) || 0;
+      const inertFilter = Math.max(0, Math.min(100, inertFilterRaw));
+    
+      const materialRows = Array.from(document.querySelectorAll("#materialsContainer .material-row"));
       const tbody = document.querySelector("#compositionTable tbody");
       tbody.innerHTML = "";
-  
-      rows.forEach(row => {
-        const name = row.children[COL.ITEM].value || "—";
-        let percent = parseFloat(row.children[COL.BONUS].value) || 0;
+    
+      // Sum all NON-inert percentages
+      let definedSum = 0;
+    
+      materialRows.forEach(row => {
+        if (row.dataset.inert === "1") return;
+    
+        const percentInput = row.querySelector('input[type="number"]');
+        const p = parseFloat(percentInput?.value) || 0;
+        definedSum += p;
+      });
+    
+      // Remainder for inert
+      let inertPercent = 100 - definedSum;
+      if (inertPercent < 0) inertPercent = 0;
+      if (inertPercent > 100) inertPercent = 100;
+    
+      // Update inert row display input (disabled)
+      const inertRow = getInertRow();
+      if (inertRow) {
+        const inertPercentInput = inertRow.querySelector('input[type="number"]');
+        if (inertPercentInput) inertPercentInput.value = inertPercent.toFixed(1);
+      }
+    
+      // Build output table rows in the same order as input rows
+      materialRows.forEach(row => {
+        const isInert = row.dataset.inert === "1";
+    
+        let name = "—";
+        let percent = 0;
+    
+        if (isInert) {
+          name = "Inert Material";
+          percent = inertPercent;
+        } else {
+          const nameInput = row.querySelector('input[type="text"]');
+          const percentInput = row.querySelector('input[type="number"]');
+          name = (nameInput?.value || "—").trim() || "—";
+          percent = parseFloat(percentInput?.value) || 0;
+        }
+    
         let scu = (percent / 100) * rockSize;
-        if (name.toLowerCase() === "inert material") scu = scu * (1 - inertFilter/100);
+    
+        // Apply inert filtering only to inert
+        if (isInert) {
+          scu = scu * (1 - inertFilter / 100);
+        }
+    
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${name}</td><td>${percent}%</td><td>${scu.toFixed(2)}</td>`;
+        tr.innerHTML = `<td>${name}</td><td>${percent.toFixed(1)}%</td><td>${scu.toFixed(2)}</td>`;
         tbody.appendChild(tr);
       });
     };
-  
+    
     window.saveCompositionTable = function() {
       const rockSize = document.getElementById("rockSize").value || "0";
       const rows = document.querySelectorAll("#compositionTable tbody tr");
       if (rows.length === 0) return;
+    
       const container = document.createElement("div");
       container.className = "saved-composition";
+    
       const removeBtn = document.createElement("button");
       removeBtn.className = "remove-btn";
       removeBtn.textContent = "×";
       removeBtn.onclick = () => container.remove();
       container.appendChild(removeBtn);
+    
       const header = document.createElement("h3");
       header.textContent = `Rock Composition (Size: ${rockSize} SCU)`;
       container.appendChild(header);
+    
       const table = document.createElement("table");
       table.innerHTML = document.getElementById("compositionTable").innerHTML;
       table.style.width = "100%";
       container.appendChild(table);
+    
       document.getElementById("savedTables").appendChild(container);
+    
+      // Reset inputs
       document.getElementById("rockSize").value = "";
+      document.getElementById("inertFilter").value = "0";
       document.getElementById("materialsContainer").innerHTML = "";
       document.querySelector("#compositionTable tbody").innerHTML = "";
+    
+      // Recreate initial rows
       addMaterial();
-      addMaterial("Inert Material","%");
+      addMaterial("Inert Material", "0");
+      updateRockTable();
     };
   
     // ====== Jump Data Modal ======
