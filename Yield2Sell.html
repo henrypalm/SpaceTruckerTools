@@ -711,35 +711,31 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
   
     // ====== Rock Composition Modal ======
 
-    
-    function getInertRow() {
+    window.getInertRow = function () {
       const rows = document.querySelectorAll("#materialsContainer .material-row");
       return Array.from(rows).find(r => r.dataset?.inert === "1") || null;
-    } 
+    };
     
-    window.openRockModal = function() {
+    window.openRockModal = function () {
       document.getElementById("rockModal").style.display = "flex";
     
       const container = document.getElementById("materialsContainer");
     
-      // Initialize with one editable row + one inert row
       if (container.querySelectorAll(".material-row").length === 0) {
-        addMaterial();
-        addMaterial("Inert Material", "0");
+        window.addMaterial();
+        window.addMaterial("Inert Material", "0");
       } else {
-        // Ensure inert exists (in case old data)
-        if (!getInertRow()) addMaterial("Inert Material", "0");
-        updateRockTable();
+        if (!window.getInertRow()) window.addMaterial("Inert Material", "0");
+        window.updateRockTable();
       }
     };
     
-    window.closeRockModal = function() {
+    window.closeRockModal = function () {
       document.getElementById("rockModal").style.display = "none";
     };
     
-    window.addMaterial = function(name = "", percent = "") {
+    window.addMaterial = function (name = "", percent = "") {
       const container = document.getElementById("materialsContainer");
-    
       const isInert = (name || "").trim().toLowerCase() === "inert material";
     
       const row = document.createElement("div");
@@ -760,21 +756,16 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
         `;
       }
     
-      // Insert ABOVE inert, otherwise append
-      const inertRow = getInertRow();
-      if (inertRow) {
-        container.insertBefore(row, inertRow);
-      } else {
-        container.appendChild(row);
-      }
+      const inertRow = window.getInertRow();
+      if (inertRow) container.insertBefore(row, inertRow);
+      else container.appendChild(row);
     
-      updateRockTable();
+      window.updateRockTable();
     };
     
-    window.updateRockTable = function() {
+    window.updateRockTable = function () {
       const rockSize = parseFloat(document.getElementById("rockSize").value) || 0;
     
-      // Clamp inert filter to 0-100
       const inertFilterRaw = parseFloat(document.getElementById("inertFilter").value) || 0;
       const inertFilter = Math.max(0, Math.min(100, inertFilterRaw));
     
@@ -782,30 +773,22 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
       const tbody = document.querySelector("#compositionTable tbody");
       tbody.innerHTML = "";
     
-      // Sum all NON-inert percentages
       let definedSum = 0;
-    
       materialRows.forEach(row => {
         if (row.dataset.inert === "1") return;
-    
         const percentInput = row.querySelector('input[type="number"]');
-        const p = parseFloat(percentInput?.value) || 0;
-        definedSum += p;
+        definedSum += (parseFloat(percentInput?.value) || 0);
       });
     
-      // Remainder for inert
       let inertPercent = 100 - definedSum;
-      if (inertPercent < 0) inertPercent = 0;
-      if (inertPercent > 100) inertPercent = 100;
+      inertPercent = Math.max(0, Math.min(100, inertPercent));
     
-      // Update inert row display input (disabled)
-      const inertRow = getInertRow();
+      const inertRow = window.getInertRow();
       if (inertRow) {
         const inertPercentInput = inertRow.querySelector('input[type="number"]');
         if (inertPercentInput) inertPercentInput.value = inertPercent.toFixed(1);
       }
     
-      // Build output table rows in the same order as input rows
       materialRows.forEach(row => {
         const isInert = row.dataset.inert === "1";
     
@@ -823,11 +806,7 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
         }
     
         let scu = (percent / 100) * rockSize;
-    
-        // Apply inert filtering only to inert
-        if (isInert) {
-          scu = scu * (1 - inertFilter / 100);
-        }
+        if (isInert) scu = scu * (1 - inertFilter / 100);
     
         const tr = document.createElement("tr");
         tr.innerHTML = `<td>${name}</td><td>${percent.toFixed(1)}%</td><td>${scu.toFixed(2)}</td>`;
@@ -835,7 +814,7 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
       });
     };
     
-    window.saveCompositionTable = function() {
+    window.saveCompositionTable = function () {
       const rockSize = document.getElementById("rockSize").value || "0";
       const rows = document.querySelectorAll("#compositionTable tbody tr");
       if (rows.length === 0) return;
@@ -860,16 +839,14 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
     
       document.getElementById("savedTables").appendChild(container);
     
-      // Reset inputs
       document.getElementById("rockSize").value = "";
       document.getElementById("inertFilter").value = "0";
       document.getElementById("materialsContainer").innerHTML = "";
       document.querySelector("#compositionTable tbody").innerHTML = "";
     
-      // Recreate initial rows
-      addMaterial();
-      addMaterial("Inert Material", "0");
-      updateRockTable();
+      window.addMaterial();
+      window.addMaterial("Inert Material", "0");
+      window.updateRockTable();
     };
   
     // ====== Jump Data Modal ======
