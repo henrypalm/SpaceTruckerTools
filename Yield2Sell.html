@@ -730,6 +730,26 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
     window.closeRockModal = function () {
       document.getElementById("rockModal").style.display = "none";
     };
+
+    /* Close rock modal on outside click or Escape */
+    (function () {
+      const rockModal = document.getElementById("rockModal");
+      if (!rockModal) return;
+    
+      // Click outside modal content
+      rockModal.addEventListener("click", (e) => {
+        if (e.target === rockModal) {
+          window.closeRockModal();
+        }
+      });
+    
+      // Escape key closes modal
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && rockModal.style.display === "flex") {
+          window.closeRockModal();
+        }
+      });
+    })();
     
     window.addMaterial = function (name = "", percent = "") {
       const container = document.getElementById("materialsContainer");
@@ -892,12 +912,20 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
         modal.style.display = "flex";
       };
     
-      closeBtn.onclick = () => {
+      function closeJumpModal() {
         modal.style.display = "none";
-      };
-    
+      }
+      
+      closeBtn.onclick = closeJumpModal;
+      
       modal.addEventListener("click", (e) => {
-        if (e.target === modal) modal.style.display = "none";
+        if (e.target === modal) closeJumpModal();
+      });
+      
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modal.style.display === "flex") {
+          closeJumpModal();
+        }
       });
     
       window.exportJumpDataToTXT = function () {
