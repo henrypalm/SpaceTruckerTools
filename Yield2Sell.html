@@ -193,7 +193,6 @@
         <table id="jumpTable">
           <thead>
             <tr>
-              <th>System</th>
               <th>From</th>
               <th>To</th>
               <th>Distance</th>
@@ -855,18 +854,29 @@ Item | ${qtyHeader} | Location | Price Per SCU | Item Total
     
       function populateJumpTable() {
         tbody.innerHTML = "";
-
+      
         if (!window.JumpData) {
-          tbody.innerHTML = `<tr><td colspan="5">JumpData not loaded.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="4">JumpData not loaded.</td></tr>`;
           return;
         }
-    
+      
         Object.entries(window.JumpData).forEach(([system, fromMap]) => {
+          // System header row
+          const sysRow = document.createElement("tr");
+          sysRow.className = "jump-system-row";
+          sysRow.innerHTML = `<td colspan="4">${system}</td>`;
+          tbody.appendChild(sysRow);
+      
           Object.entries(fromMap).forEach(([from, toMap]) => {
+            // From header row
+            const fromRow = document.createElement("tr");
+            fromRow.className = "jump-from-row";
+            fromRow.innerHTML = `<td colspan="4">${from}</td>`;
+            tbody.appendChild(fromRow);
+      
             Object.entries(toMap).forEach(([to, data]) => {
               const row = document.createElement("tr");
               row.innerHTML = `
-                <td>${system}</td>
                 <td>${from}</td>
                 <td>${to}</td>
                 <td class="highlight">${data.distance}</td>
