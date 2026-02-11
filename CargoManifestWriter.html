@@ -615,8 +615,6 @@
       // Set title
       const titleInput = document.getElementById("manifestTitle");
       titleInput.value = manifest.title || "";
-      document.getElementById("manifestTitleDisplay").textContent =
-        (manifest.title || "").trim() !== "" ? manifest.title : "Cargo Manifest Writer";
     
       // Rebuild full tables (full catalog)
       if (window.buildAllTables) window.buildAllTables();
