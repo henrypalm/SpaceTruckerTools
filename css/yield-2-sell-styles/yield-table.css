@@ -33,6 +33,12 @@ select {
   border-radius: 4px;
 }
 
-.qtyWrap { display: flex; flex-direction: column; gap: 2px; }
-.refinedYieldLine { font-size: 0.8rem; color: #aaa; min-height: 1em; }
-.refinedYieldLine strong { color: #ddd; font-weight: 600; }
+.qtyWrap { 
+  display: flex; flex-direction: column; gap: 2px; 
+}
+.refinedYieldLine { 
+  font-size: 0.8rem; color: #aaa; min-height: 1em; 
+}
+.refinedYieldLine strong { 
+  color: #ddd; font-weight: 600; 
+}
