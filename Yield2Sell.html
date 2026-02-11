@@ -288,12 +288,33 @@
         row.children[COL.LOCATION].appendChild(select);
   
         row.children[COL.PRICE].textContent = bestPrice.toLocaleString();
-  
+
+        /*
         const yieldInput = document.createElement('input');
         yieldInput.type = 'number';
         yieldInput.min = 0;
         yieldInput.placeholder = 'Yield';
-        row.children[COL.YIELD].appendChild(yieldInput);
+        row.children[COL.YIELD].appendChild(yieldInput); 
+        */
+
+        // Quantity (Yield/Raw) UI
+        const qtyWrap = document.createElement("div");
+        qtyWrap.className = "qtyWrap";
+        
+        const yieldInput = document.createElement("input");
+        yieldInput.type = "number";
+        yieldInput.min = 0;
+        yieldInput.placeholder = "Yield";
+        
+        const refinedYieldLine = document.createElement("div");
+        refinedYieldLine.className = "refinedYieldLine";
+        refinedYieldLine.textContent = ""; // blank in yield mode
+        
+        qtyWrap.appendChild(yieldInput);
+        qtyWrap.appendChild(refinedYieldLine);
+        
+        row.children[COL.YIELD].appendChild(qtyWrap);
+
   
         function updateRow() {
           const itemName = row.children[COL.ITEM].textContent;
@@ -318,6 +339,15 @@
           const selectedSystem = solarSystemSelect.value;
           const selectedRefinery = refinerySelect.value;
           const itemBonus = refineryBonuses[selectedSystem]?.[selectedRefinery]?.[itemName] || 1;
+
+          // Show refined yield under the input when in RAW mode
+          const refinedYield = enteredValue * refiningYield * itemBonus;
+          
+          if (quantityMode === "raw" && enteredValue > 0) {
+            refinedYieldLine.innerHTML = `Yield: <strong>${refinedYield.toFixed(1)}</strong>`;
+          } else {
+            refinedYieldLine.textContent = ""; // hide in yield mode or when empty
+          }
 
           // BONUS COLUMN (display only)
           const bonusPercent = (itemBonus - 1) * 100;
@@ -359,6 +389,8 @@
       inputs.forEach(input => {
         input.placeholder = inputPlaceholder;
       });
+
+      updateAllRows();
     }
   
     // ====== Calculate grand total ======
