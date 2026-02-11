@@ -300,8 +300,8 @@
       <button onclick="exportCSV()">Export CSV</button>
       <button onclick="exportTXT()">Export TXT</button>
       <button onclick="copyToClipboard()">Copy to Clipboard</button>
-      <button onclick="saveManifestToLocalStorage()">Save Manifest</button>
-      <button onclick="saveManifestToLocalStorage(true)">Start New Manifest</button>
+      <button onclick="saveManifestToLocalStorage(false, true)">Save Manifest</button>
+      <button onclick="saveManifestToLocalStorage(true, true)">Start New Manifest</button>
       <button onclick="openSavedManifestsModal()">View Saved Manifests</button>
       <button onclick="openWorkOrdersModal()">Open Work Orders</button>
       <div id="grandTotalDisplay">Total: 0 aUEC</div>
@@ -480,21 +480,32 @@
         updateRowTotals();
       }
 
-      const categories = Object.keys(itemPrices);
-      categories.forEach(category => {
-        const targetBody =
-          category === "Ship Mining" ? shipMiningBody :
-          category === "Gem Mining" ? gemMiningBody :
-          category === "Salvage" ? salvageBody : 
-          category === "Ship Parts" ? shipPartsBody : null;
+      window.createCargoRow = createCargoRow;
 
-        if (!targetBody) return;
-        const items = Object.keys(itemPrices[category]);
-        items.forEach(item => {
-          const itemPricesForItem = itemPrices[category][item];
-          createCargoRow(item, targetBody, itemPricesForItem);
+      window.buildAllTables = function () {
+        shipMiningBody.innerHTML = "";
+        gemMiningBody.innerHTML = "";
+        salvageBody.innerHTML = "";
+        shipPartsBody.innerHTML = "";
+      
+        const categories = Object.keys(itemPrices || {});
+        categories.forEach(category => {
+          const targetBody =
+            category === "Ship Mining" ? shipMiningBody :
+            category === "Gem Mining" ? gemMiningBody :
+            category === "Salvage" ? salvageBody :
+            category === "Ship Parts" ? shipPartsBody : null;
+      
+          if (!targetBody) return;
+      
+          const items = Object.keys(itemPrices[category] || {});
+          items.forEach(item => {
+            window.createCargoRow(item, targetBody, itemPrices[category][item]);
+          });
         });
-      });
+      };
+
+      window.buildAllTables();
 
       document.getElementById("manifestTitle").addEventListener("input", () => {
         const title = document.getElementById("manifestTitle").value;
@@ -627,7 +638,7 @@
           }
     
           // Create the row
-          createCargoRow(itemData.item, targetBody, itemPrices[categoryData.category][itemData.item]);
+          window.createCargoRow(itemData.item, targetBody, itemPrices[categoryData.category][itemData.item]);
     
           // Find the newly created row
           const row = Array.from(targetBody.children).find(r => r.children[0].innerText.trim() === itemData.item);
@@ -644,7 +655,7 @@
       });
     }
 
-    function saveManifestToLocalStorage(startNew = false) {
+    function saveManifestToLocalStorage(startNew = false, showAlert = false) {
       const titleInput = document.getElementById("manifestTitle");
       const title = titleInput.value.trim() || "Untitled Manifest";
       const now = new Date();
@@ -701,15 +712,21 @@
     
       // Optional: display last saved time
       document.getElementById("lastSaved").textContent = `Last saved: ${dateSaved}`;
+
+      // adding Last saved alert
+      if (showAlert) {
+        alert(startNew ? "Manifest saved. Starting a new manifest." : "Manifest saved!");
+      }
     
       // If starting new, clear input and table rows
       if (startNew) {
         titleInput.value = "";
         document.getElementById("manifestTitleDisplay").textContent = "Cargo Manifest Writer";
-        categories.forEach(cat => {
-          document.getElementById(cat.id).innerHTML = "";
-        });
-        localStorage.removeItem("currentManifestKey"); // reset current key
+      
+        // Rebuild blank tables (don’t leave them empty)
+        if (window.buildAllTables) window.buildAllTables();
+      
+        localStorage.removeItem("currentManifestKey");
       }
     }
     
