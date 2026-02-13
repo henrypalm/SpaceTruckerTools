@@ -368,11 +368,8 @@
 
           bonusCell.style.fontWeight = bonusPercent !== 0 ? "bold" : "normal";
 
-          // Apply bonus to SCU - NEEDS TO BE UPDATED TO cSCU not SCU
-          // scu = scu * itemBonus; 
-
-          // Item total
-          const total = scu * price;
+          // Item total -- changed to include Math.trunc to drop decimals
+          const total = Math.trunc(scu * price);
           row.children[COL.TOTAL].textContent = total.toLocaleString();
   
           calculateTotal();
