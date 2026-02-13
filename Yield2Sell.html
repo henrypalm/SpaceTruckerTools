@@ -328,25 +328,28 @@
           const selectedProcess = processList.find(p => p.name === refiningTypeSelect.value);
           const refiningYield = selectedProcess?.yieldMultiplier ?? 1;
 
-          let scu = 0;
-          if (quantityMode === "raw") {
-            scu = Math.floor((enteredValue * refiningYield) / 100);
-          } else {
-            scu = Math.floor(enteredValue / 100);
-          }
-        
           // Apply refinery bonus per item
           const selectedSystem = solarSystemSelect.value;
           const selectedRefinery = refinerySelect.value;
           const itemBonus = refineryBonuses[selectedSystem]?.[selectedRefinery]?.[itemName] || 1;
 
-          // Show refined yield under the input when in RAW mode
-          const refinedYield = enteredValue * refiningYield * itemBonus;
+          let scu = 0;
+          if (quantityMode === "raw") {
+            scu = (enteredValue * refiningYield * itemBonus) / 100;
+          } else {
+            scu = enteredValue / 100;
+          }
+          
+          // refined yield (for display/consistency)
+          const refinedYield =
+            (quantityMode === "raw")
+              ? (enteredValue * refiningYield * itemBonus)
+              : enteredValue;
           
           if (quantityMode === "raw" && enteredValue > 0) {
             refinedYieldLine.innerHTML = `Yield: <strong>${refinedYield.toFixed(1)}</strong>`;
           } else {
-            refinedYieldLine.textContent = ""; // hide in yield mode or when empty
+            refinedYieldLine.textContent = "";
           }
 
           // BONUS COLUMN (display only)
@@ -366,7 +369,7 @@
           bonusCell.style.fontWeight = bonusPercent !== 0 ? "bold" : "normal";
 
           // Apply bonus to SCU - NEEDS TO BE UPDATED TO cSCU not SCU
-          scu = Math.floor(scu * itemBonus); // or Math.round
+          // scu = scu * itemBonus; 
 
           // Item total
           const total = scu * price;
